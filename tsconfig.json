@@ -1,0 +1,23 @@
+{
+    "compilerOptions": {
+      "target": "es2017",
+      "module": "commonjs",
+      "rootDir": "src",
+      "outDir": "dist",
+      "strict": true,
+      "esModuleInterop": true,
+      "skipLibCheck": true,
+      "forceConsistentCasingInFileNames": true,
+      "types": ["node", "prisma"]
+    },
+    "include": [
+      "src/**/*.ts",
+      "backend/**/*.ts",
+      "**/*.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      "dist",
+      "**/*.spec.ts"
+    ]
+  }
