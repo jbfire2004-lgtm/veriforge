@@ -1,0 +1,31 @@
+{
+  "name": "my-nestjs-app",
+  "version": "1.0.0",
+  "description": "A NestJS application",
+  "main": "dist/main.js",
+  "scripts": {
+    "start": "node dist/main.js",
+    "build": "tsc",
+    "watch": "tsc -w",
+    "test": "jest",
+    "test:e2e": "jest --config test/jest-e2e.json"
+  },
+  "dependencies": {
+    "@nestjs/common": "^9.0.0",
+    "@nestjs/core": "^9.0.0",
+    "@nestjs/platform-express": "^9.0.0",
+    "@prisma/client": "^7.7.0",
+    "dotenv": "^17.4.1",
+    "reflect-metadata": "^0.1.13",
+    "rxjs": "^7.0.0"
+  },
+  "devDependencies": {
+    "@nestjs/testing": "^9.0.0",
+    "supertest": "^6.0.0",
+    "ts-loader": "^9.0.0",
+    "typescript": "^6.0.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT"
+}

@@ -1,0 +1,259 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id              String          @id @default(uuid())
+  firstName       String
+  lastName        String
+  email           String          @unique
+  passwordHash    String
+  role            UserRole
+  contractorId    String?
+  employerId      String?
+  status          UserStatus      @default(ACTIVE)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  assignments     Assignment[]
+  trainingRecords TrainingRecord[]
+  credentials     Credential[]
+}
+
+enum UserRole {
+  WORKER
+  SUPERVISOR
+  ADMIN
+  REGULATOR
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model Contractor {
+  id        String        @id @default(uuid())
+  name      String
+  type      ContractorType
+  status    String        @default("ACTIVE")
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  users     User[]
+  projects  Project[]
+}
+
+enum ContractorType {
+  CONTRACTOR
+  OWNER
+  PRIME
+}
+
+model Project {
+  id          String        @id @default(uuid())
+  name        String
+  ownerId     String
+  location    String?
+  status      String        @default("ACTIVE")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  owner       Contractor    @relation(fields: [ownerId], references: [id])
+  assignments Assignment[]
+}
+
+model Course {
+  id              String        @id @default(uuid())
+  title           String
+  description     String
+  category        String
+  hazardTags      Json
+  tradeTags       Json
+  durationMinutes Int
+  status          CourseStatus  @default(DRAFT)
+  createdByUserId String
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  modules         Module[]
+  quizzes         Quiz[]
+  assignments     Assignment[]
+}
+
+enum CourseStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model Module {
+  id          String      @id @default(uuid())
+  courseId    String
+  type        ModuleType
+  title       String
+  contentUrl  String?
+  orderIndex  Int
+  metadata    Json?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  course      Course      @relation(fields: [courseId], references: [id])
+}
+
+enum ModuleType {
+  PDF
+  VIDEO
+  QUIZ
+}
+
+model Assignment {
+  id               String             @id @default(uuid())
+  courseId         String
+  userId           String
+  assignedByUserId String
+  assignedAt       DateTime           @default(now())
+  dueAt            DateTime?
+  status           AssignmentStatus   @default(OPEN)
+  completionAt     DateTime?
+  projectId        String?
+  contractorId     String?
+  priority         AssignmentPriority @default(NORMAL)
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  course           Course             @relation(fields: [courseId], references: [id])
+  user             User               @relation(fields: [userId], references: [id])
+  trainingRecord   TrainingRecord?
+}
+
+enum AssignmentStatus {
+  OPEN
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+enum AssignmentPriority {
+  NORMAL
+  HIGH
+}
+
+model TrainingRecord {
+  id             String          @id @default(uuid())
+  assignmentId   String          @unique
+  courseId       String
+  userId         String
+  startedAt      DateTime?
+  completedAt    DateTime?
+  score          Int?
+  status         TrainingStatus  @default(NOT_STARTED)
+  details        Json?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  assignment     Assignment      @relation(fields: [assignmentId], references: [id])
+  user           User            @relation(fields: [userId], references: [id])
+  course         Course          @relation(fields: [courseId], references: [id])
+  credential     Credential?
+}
+
+enum TrainingStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  FAILED
+}
+
+model Quiz {
+  id           String        @id @default(uuid())
+  courseId     String
+  title        String
+  passingScore Int
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  course       Course        @relation(fields: [courseId], references: [id])
+  questions    Question[]
+  attempts     QuizAttempt[]
+}
+
+model Question {
+  id            String        @id @default(uuid())
+  quizId        String
+  type          QuestionType
+  prompt        String
+  options       Json
+  correctAnswer Json
+  orderIndex    Int
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  quiz          Quiz          @relation(fields: [quizId], references: [id])
+}
+
+enum QuestionType {
+  MCQ
+  TRUE_FALSE
+  MULTI_SELECT
+}
+
+model QuizAttempt {
+  id            String        @id @default(uuid())
+  quizId        String
+  userId        String
+  assignmentId  String
+  startedAt     DateTime      @default(now())
+  completedAt   DateTime?
+  score         Int?
+  passed        Boolean       @default(false)
+  answers       Json?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  quiz          Quiz          @relation(fields: [quizId], references: [id])
+  user          User          @relation(fields: [userId], references: [id])
+  assignment    Assignment    @relation(fields: [assignmentId], references: [id])
+}
+
+model Credential {
+  id               String            @id @default(uuid())
+  userId           String
+  courseId         String
+  trainingRecordId String            @unique
+  issuedAt         DateTime          @default(now())
+  expiresAt        DateTime?
+  status           CredentialStatus  @default(ACTIVE)
+  ledgerHash       String
+  qrCodeUrl        String?
+  metadata         Json?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  user             User              @relation(fields: [userId], references: [id])
+  course           Course            @relation(fields: [courseId], references: [id])
+  trainingRecord   TrainingRecord    @relation(fields: [trainingRecordId], references: [id])
+}
+
+enum CredentialStatus {
+  ACTIVE
+  EXPIRED
+  REVOKED
+}
+
+model LedgerEntry {
+  id          String     @id @default(uuid())
+  type        LedgerType
+  payloadHash String
+  payload     Json?
+  createdAt   DateTime   @default(now())
+}
+
+enum LedgerType {
+  TRAINING_COMPLETION
+  CREDENTIAL_ISSUED
+}
