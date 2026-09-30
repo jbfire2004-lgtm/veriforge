@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum JhaStatus {
+  draft
+  pending_signatures
+  pending_approval
+  approved
+  rejected
+}
+
+model Jha {
+  id           String    @id @default(uuid()) @db.Uuid
+  companyId    String    @map("company_id") @db.Uuid
+  projectId    String    @map("project_id") @db.Uuid
+  title        String
+  description  String?
+  status       JhaStatus @default(draft)
+  riskScore    Int       @default(0) @map("risk_score")
+  sifScore     Int       @default(0) @map("sif_score")
+  hecaCategory String    @default("routine") @map("heca_category")
+  version      Int       @default(1)
+  createdBy    String    @map("created_by") @db.Uuid
+  approvedBy   String?   @map("approved_by") @db.Uuid
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  hazards    JhaHazard[]
+  controls   JhaControl[]
+  signatures JhaSignature[]
+  versions   JhaVersion[]
+
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@index([companyId, status])
+  @@map("jhas")
+}
+
+model JhaHazard {
+  id           String  @id @default(uuid()) @db.Uuid
+  jhaId        String  @map("jha_id") @db.Uuid
+  hazardId     String  @map("hazard_id") @db.Uuid
+  severity     Int
+  likelihood   Int
+  sifPotential Boolean @default(false) @map("sif_potential")
+  hecaCategory String  @default("routine") @map("heca_category")
+
+  jha Jha @relation(fields: [jhaId], references: [id], onDelete: Cascade)
+
+  @@unique([jhaId, hazardId])
+  @@index([jhaId])
+  @@map("jha_hazards")
+}
+
+model JhaControl {
+  id              String @id @default(uuid()) @db.Uuid
+  jhaId           String @map("jha_id") @db.Uuid
+  controlId       String @map("control_id") @db.Uuid
+  controlStrength Int    @map("control_strength")
+
+  jha Jha @relation(fields: [jhaId], references: [id], onDelete: Cascade)
+
+  @@unique([jhaId, controlId])
+  @@index([jhaId])
+  @@map("jha_controls")
+}
+
+model JhaSignature {
+  id            String   @id @default(uuid()) @db.Uuid
+  jhaId         String   @map("jha_id") @db.Uuid
+  workerId      String   @map("worker_id") @db.Uuid
+  signatureBlob String   @map("signature_blob") @db.Text
+  signedAt      DateTime @default(now()) @map("signed_at")
+
+  jha Jha @relation(fields: [jhaId], references: [id], onDelete: Cascade)
+
+  @@unique([jhaId, workerId])
+  @@index([jhaId])
+  @@map("jha_signatures")
+}
+
+model JhaVersion {
+  id        String   @id @default(uuid()) @db.Uuid
+  jhaId     String   @map("jha_id") @db.Uuid
+  version   Int
+  snapshot  Json     @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at")
+
+  jha Jha @relation(fields: [jhaId], references: [id], onDelete: Cascade)
+
+  @@unique([jhaId, version])
+  @@index([jhaId])
+  @@map("jha_versions")
+}
+
+model JhaOfflineSync {
+  id           String    @id @default(uuid()) @db.Uuid
+  companyId    String    @map("company_id") @db.Uuid
+  deviceId     String    @map("device_id")
+  clientSyncId String    @map("client_sync_id")
+  action       String
+  payload      Json      @db.JsonB
+  status       String    @default("pending")
+  result       Json?     @db.JsonB
+  createdAt    DateTime  @default(now()) @map("created_at")
+  syncedAt     DateTime? @map("synced_at")
+
+  @@unique([deviceId, clientSyncId])
+  @@index([companyId])
+  @@index([deviceId])
+  @@map("jha_offline_sync")
+}

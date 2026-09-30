@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.recommendationRouter = void 0;
+const express_1 = require("express");
+const recommendation_controller_1 = require("../controllers/recommendation.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const recommendation_validators_1 = require("../validators/recommendation.validators");
+exports.recommendationRouter = (0, express_1.Router)();
+exports.recommendationRouter.use(auth_middleware_1.requireAuth);
+exports.recommendationRouter.post('/', recommendation_validators_1.recommendValidators, error_handler_1.handleValidation, recommendation_controller_1.recommendationController.recommend);
+exports.recommendationRouter.get('/:entity_type/:id', recommendation_validators_1.getValidators, error_handler_1.handleValidation, recommendation_controller_1.recommendationController.getByEntity);

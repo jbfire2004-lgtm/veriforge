@@ -1,0 +1,34 @@
+services:
+  work-package-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_work_package
+      POSTGRES_PASSWORD: vera_work_package_secret
+      POSTGRES_DB: vera_work_package
+    ports:
+      - "5451:5432"
+    volumes:
+      - work_package_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_work_package -d vera_work_package"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  pm-work-package-service:
+    build: .
+    ports:
+      - "3019:3019"
+    environment:
+      NODE_ENV: production
+      PORT: 3019
+      DATABASE_URL: postgresql://vera_work_package:vera_work_package_secret@work-package-db:5432/vera_work_package?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      PM_PROJECT_SERVICE_URL: http://host.docker.internal:3018
+    depends_on:
+      work-package-db:
+        condition: service_healthy
+
+volumes:
+  work_package_pg_data:

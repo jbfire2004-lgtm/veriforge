@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.emergencyRouter = void 0;
+const express_1 = require("express");
+const emergency_controller_1 = require("../controllers/emergency.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const emergency_validators_1 = require("../validators/emergency.validators");
+exports.emergencyRouter = (0, express_1.Router)();
+exports.emergencyRouter.use(auth_middleware_1.requireAuth);
+exports.emergencyRouter.post('/declare', auth_middleware_1.requireSupervisor, emergency_validators_1.declareValidators, error_handler_1.handleValidation, emergency_controller_1.emergencyController.declare);
+exports.emergencyRouter.post('/plan', emergency_validators_1.planValidators, error_handler_1.handleValidation, emergency_controller_1.emergencyController.createPlan);
+exports.emergencyRouter.post('/equipment', emergency_validators_1.equipmentValidators, error_handler_1.handleValidation, emergency_controller_1.emergencyController.createEquipment);
+exports.emergencyRouter.post('/:id/all_clear', auth_middleware_1.requireSupervisor, emergency_validators_1.eventActionValidators, error_handler_1.handleValidation, emergency_controller_1.emergencyController.allClear);
+exports.emergencyRouter.post('/:id/close', auth_middleware_1.requireSupervisor, emergency_validators_1.eventActionValidators, error_handler_1.handleValidation, emergency_controller_1.emergencyController.close);
+exports.emergencyRouter.post('/:id/muster/start', auth_middleware_1.requireSupervisor, emergency_validators_1.musterStartValidators, error_handler_1.handleValidation, emergency_controller_1.emergencyController.musterStart);
+exports.emergencyRouter.post('/:id/muster/checkin', emergency_validators_1.musterCheckinValidators, error_handler_1.handleValidation, emergency_controller_1.emergencyController.musterCheckin);
+exports.emergencyRouter.get('/:id/status', emergency_validators_1.statusValidators, error_handler_1.handleValidation, emergency_controller_1.emergencyController.status);

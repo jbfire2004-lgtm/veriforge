@@ -1,0 +1,36 @@
+services:
+  incident-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_incident
+      POSTGRES_PASSWORD: vera_incident_secret
+      POSTGRES_DB: vera_incident
+    ports:
+      - "5461:5432"
+    volumes:
+      - incident_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_incident -d vera_incident"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  incident-service:
+    build: .
+    ports:
+      - "3029:3029"
+    environment:
+      NODE_ENV: production
+      PORT: 3029
+      DATABASE_URL: postgresql://vera_incident:vera_incident_secret@incident-db:5432/vera_incident?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      CORRECTIVE_ACTION_SERVICE_URL: http://host.docker.internal:3008/corrective-action
+      WORKER_SAFETY_SERVICE_URL: http://host.docker.internal:3011/worker
+      EMERGENCY_RESPONSE_SERVICE_URL: http://host.docker.internal:3017/emergency
+    depends_on:
+      incident-db:
+        condition: service_healthy
+
+volumes:
+  incident_pg_data:

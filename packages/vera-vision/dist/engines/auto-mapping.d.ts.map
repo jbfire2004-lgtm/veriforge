@@ -1,0 +1,1 @@
+{"version":3,"file":"auto-mapping.d.ts","sourceRoot":"","sources":["../../src/engines/auto-mapping.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,cAAc,EAAE,gBAAgB,EAAE,mBAAmB,EAAE,MAAM,UAAU,CAAC;AAGtF,qBAAa,iBAAiB;IAC5B,GAAG,CAAC,MAAM,EAAE,cAAc,EAAE,EAAE,KAAK,EAAE,mBAAmB,GAAG,gBAAgB,EAAE;CAgF9E"}

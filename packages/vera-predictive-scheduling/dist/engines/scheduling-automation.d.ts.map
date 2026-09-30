@@ -1,0 +1,1 @@
+{"version":3,"file":"scheduling-automation.d.ts","sourceRoot":"","sources":["../../src/engines/scheduling-automation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,0BAA0B,EAAE,oBAAoB,EAAE,MAAM,UAAU,CAAC;AAEjF,qBAAa,0BAA0B;IACrC,QAAQ,CACN,OAAO,EAAE,IAAI,CACX,0BAA0B,EACxB,SAAS,GACT,WAAW,GACX,WAAW,GACX,UAAU,GACV,UAAU,GACV,UAAU,GACV,OAAO,GACP,MAAM,GACN,WAAW,CACd,GACA,oBAAoB;CAqCxB"}

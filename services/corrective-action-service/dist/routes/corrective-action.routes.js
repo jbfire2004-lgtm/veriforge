@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.correctiveActionRouter = void 0;
+const express_1 = require("express");
+const corrective_action_controller_1 = require("../controllers/corrective-action.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const corrective_action_validators_1 = require("../validators/corrective-action.validators");
+exports.correctiveActionRouter = (0, express_1.Router)();
+exports.correctiveActionRouter.use(auth_middleware_1.requireAuth);
+exports.correctiveActionRouter.post('/', corrective_action_validators_1.createValidators, error_handler_1.handleValidation, corrective_action_controller_1.correctiveActionController.create);
+exports.correctiveActionRouter.post('/offline/sync', corrective_action_validators_1.offlineSyncValidators, error_handler_1.handleValidation, corrective_action_controller_1.correctiveActionController.syncOffline);
+exports.correctiveActionRouter.post('/assign', corrective_action_validators_1.assignValidators, error_handler_1.handleValidation, corrective_action_controller_1.correctiveActionController.assign);
+exports.correctiveActionRouter.post('/escalate', corrective_action_validators_1.escalateValidators, error_handler_1.handleValidation, corrective_action_controller_1.correctiveActionController.escalate);
+exports.correctiveActionRouter.post('/verify', auth_middleware_1.requireVerifier, corrective_action_validators_1.verifyValidators, error_handler_1.handleValidation, corrective_action_controller_1.correctiveActionController.verify);
+exports.correctiveActionRouter.get('/:id', corrective_action_validators_1.idParamValidators, error_handler_1.handleValidation, corrective_action_controller_1.correctiveActionController.getById);

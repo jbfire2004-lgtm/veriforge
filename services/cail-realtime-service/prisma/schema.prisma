@@ -1,0 +1,26 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CailInferenceLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  companyId  String   @map("company_id") @db.Uuid
+  modelId    String   @map("model_id")
+  version    Int
+  engineLayer String  @map("engine_layer")
+  inputData  Json     @map("input_data") @db.JsonB
+  outputData Json     @map("output_data") @db.JsonB
+  latencyMs  Int      @map("latency_ms")
+  timestamp  DateTime @default(now())
+
+  @@index([companyId])
+  @@index([companyId, timestamp])
+  @@index([modelId, version])
+  @@index([engineLayer])
+  @@map("cail_inference_logs")
+}

@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum WorkPackageStatus {
+  draft
+  planned
+  active
+  completed
+  on_hold
+  cancelled
+}
+
+model WorkPackage {
+  id                   String            @id @default(uuid()) @db.Uuid
+  companyId            String            @map("company_id") @db.Uuid
+  projectId            String            @map("project_id") @db.Uuid
+  title                String
+  description          String?
+  requiredEquipment    Json              @default("[]") @map("required_equipment") @db.JsonB
+  requiredWorkers      Json              @default("[]") @map("required_workers") @db.JsonB
+  requiredTraining     Json              @default("[]") @map("required_training") @db.JsonB
+  requiredJha          Json              @default("[]") @map("required_jha") @db.JsonB
+  requiredInspections  Json              @default("[]") @map("required_inspections") @db.JsonB
+  requiredPermits      Json              @default("[]") @map("required_permits") @db.JsonB
+  version              Int               @default(1)
+  status               WorkPackageStatus @default(draft)
+  createdAt            DateTime          @default(now()) @map("created_at")
+  updatedAt            DateTime          @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@index([projectId])
+  @@index([companyId, projectId])
+  @@index([status])
+  @@map("work_packages")
+}

@@ -1,0 +1,37 @@
+services:
+  stations-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_stations
+      POSTGRES_PASSWORD: vera_stations_secret
+      POSTGRES_DB: vera_stations
+    ports:
+      - "5447:5432"
+    volumes:
+      - stations_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_stations -d vera_stations"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  safety-stations-service:
+    build: .
+    ports:
+      - "3015:3015"
+    environment:
+      NODE_ENV: production
+      PORT: 3015
+      DATABASE_URL: postgresql://vera_stations:vera_stations_secret@stations-db:5432/vera_stations?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      WORKER_SAFETY_SERVICE_URL: http://host.docker.internal:3011
+      EQUIPMENT_SAFETY_SERVICE_URL: http://host.docker.internal:3013
+      JHA_SERVICE_URL: http://host.docker.internal:3007
+      ACCESS_CONTROL_SERVICE_URL: http://host.docker.internal:3014
+    depends_on:
+      stations-db:
+        condition: service_healthy
+
+volumes:
+  stations_pg_data:

@@ -1,0 +1,205 @@
+/* VeraPM Safety Forms — aliases platform tokens (app/vera-tokens.css) */
+
+.sf-theme {
+  --sf-slate-950: var(--color-gray-900);
+  --sf-slate-900: var(--color-gray-800);
+  --sf-slate-800: var(--color-gray-700);
+  --sf-slate-700: var(--color-gray-600);
+  --sf-slate-600: var(--color-gray-500);
+  --sf-slate-500: var(--color-gray-400);
+  --sf-slate-400: var(--color-gray-300);
+  --sf-slate-200: var(--color-gray-200);
+  --sf-slate-100: var(--color-gray-100);
+  --sf-slate-50: var(--color-gray-50);
+
+  --sf-blue-500: var(--color-primary-light);
+  --sf-blue-400: #4a9ad4;
+  --sf-blue-600: var(--color-primary);
+  --sf-blue-glow: color-mix(in srgb, var(--color-primary) 28%, transparent);
+
+  --sf-bg: var(--background);
+  --sf-bg-elevated: var(--surface);
+  --sf-surface: var(--surface);
+  --sf-surface-hover: var(--muted);
+  --sf-border: var(--border);
+  --sf-border-strong: color-mix(in srgb, var(--foreground) 18%, var(--border));
+  --sf-text: var(--foreground);
+  --sf-text-muted: var(--muted-foreground);
+  --sf-text-subtle: var(--color-gray-400);
+  --sf-primary: var(--color-gray-700);
+  --sf-primary-hover: var(--color-gray-600);
+  --sf-primary-muted: color-mix(in srgb, var(--color-gray-700) 8%, transparent);
+  --sf-accent: var(--color-primary);
+  --sf-accent-hover: var(--color-primary-dark);
+  --sf-success: var(--color-success);
+  --sf-warning: var(--color-warning);
+  --sf-danger: var(--color-danger);
+  --sf-inspection: var(--color-inspection-teal);
+  --sf-gradient-header: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 8%, transparent) 0%,
+    color-mix(in srgb, var(--color-gray-700) 3%, transparent) 50%,
+    transparent 100%
+  );
+  --sf-gradient-accent: linear-gradient(90deg, transparent, var(--sf-blue-400), transparent);
+  --sf-shadow-sm: var(--shadow-sm);
+  --sf-shadow-md: var(--shadow-md);
+  --sf-shadow-lg: var(--shadow-lg);
+  --sf-shadow-glow: 0 0 0 3px var(--sf-blue-glow);
+  --sf-radius-sm: var(--radius-sm);
+  --sf-radius-md: var(--radius-md);
+  --sf-radius-lg: var(--radius-lg);
+  --sf-radius-xl: var(--radius-lg);
+  --sf-font-display: var(--font-sans);
+  --sf-transition: var(--transition-fast) cubic-bezier(0.4, 0, 0.2, 1);
+  --sf-transition-slow: var(--transition-normal) cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+[data-theme="dark"] .sf-theme,
+.sf-theme.sf-dark {
+  --sf-bg: var(--background);
+  --sf-bg-elevated: var(--surface);
+  --sf-surface: var(--surface);
+  --sf-surface-hover: var(--muted);
+  --sf-border: var(--border);
+  --sf-border-strong: color-mix(in srgb, var(--foreground) 20%, var(--border));
+  --sf-text: var(--foreground);
+  --sf-text-muted: var(--muted-foreground);
+  --sf-text-subtle: var(--color-gray-400);
+  --sf-primary: var(--color-primary-light);
+  --sf-primary-hover: #4a9ad4;
+  --sf-primary-muted: color-mix(in srgb, var(--color-primary) 15%, transparent);
+  --sf-gradient-header: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--color-primary) 14%, transparent) 0%,
+    color-mix(in srgb, var(--color-gray-900) 40%, transparent) 100%
+  );
+  --sf-shadow-md: var(--shadow-md);
+  --sf-shadow-lg: var(--shadow-lg);
+}
+
+.sf-theme {
+  color: var(--sf-text);
+  background: var(--sf-bg);
+  font-family: var(--sf-font-display);
+}
+
+.sf-page-bg {
+  background:
+    linear-gradient(180deg, rgba(30, 111, 184, 0.04) 0%, transparent 40%),
+    var(--sf-bg);
+  min-height: 100%;
+}
+
+.sf-card {
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  border-radius: var(--sf-radius-md);
+  box-shadow: none;
+  transition: border-color var(--sf-transition);
+}
+
+.sf-card:hover {
+  box-shadow: none;
+}
+
+.sf-card-interactive:hover {
+  transform: none;
+  border-color: var(--sf-border-strong);
+}
+
+.sf-divider {
+  height: 1px;
+  background: var(--sf-gradient-accent);
+  opacity: 0.5;
+  margin: var(--space-6, 24px) 0;
+}
+
+.sf-focus-ring:focus-visible {
+  outline: none;
+  box-shadow: var(--sf-shadow-glow);
+}
+
+.sf-btn-ripple {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px 0 0 -4px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.45);
+  pointer-events: none;
+  animation: sf-ripple 0.5s ease-out forwards;
+  transform: translateZ(0);
+}
+
+.sf-animate-in {
+  animation: sf-fade-slide-in var(--sf-transition-slow) both;
+}
+
+.sf-pulse-save {
+  animation: sf-pulse-save 1.2s ease-in-out infinite;
+}
+
+@keyframes sf-fade-slide-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes sf-pulse-save {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes sf-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes sf-ripple {
+  to {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+@keyframes sf-check-pop {
+  0% {
+    transform: scale(0.6);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.sf-glass {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+[data-theme="dark"] .sf-theme .sf-glass,
+.sf-theme.sf-dark .sf-glass {
+  background: rgba(30, 41, 59, 0.75);
+  border-color: rgba(148, 163, 184, 0.15);
+}

@@ -1,0 +1,1 @@
+{"version":3,"file":"marketplace-policy.d.ts","sourceRoot":"","sources":["../../src/engines/marketplace-policy.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,uBAAuB,EAAE,iBAAiB,EAAE,MAAM,UAAU,CAAC;AAE3E,qBAAa,uBAAuB;IAClC,QAAQ,CAAC,GAAG,EAAE,uBAAuB,GAAG,iBAAiB,EAAE;CAe5D"}

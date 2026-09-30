@@ -1,0 +1,49 @@
+.link {
+  display: block;
+  text-decoration: none;
+  color: inherit;
+}
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.iconBox {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid #424242;
+  background: #0d0d0d;
+  color: #c62828;
+  flex-shrink: 0;
+  border-radius: 0;
+}
+
+.iconLegacy {
+  color: #c62828;
+}
+
+.copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-orbitron, "Orbitron", sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fafafa;
+}
+
+.subtitle {
+  margin: 4px 0 0;
+  font-family: var(--font-exo-2, "Exo 2", sans-serif);
+  font-size: 12px;
+  color: #b0b0b0;
+}

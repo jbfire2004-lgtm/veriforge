@@ -1,0 +1,39 @@
+services:
+  auth-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_auth
+      POSTGRES_PASSWORD: vera_auth_secret
+      POSTGRES_DB: vera_auth
+    ports:
+      - "5433:5432"
+    volumes:
+      - auth_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_auth -d vera_auth"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  auth-service:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      NODE_ENV: production
+      PORT: 3001
+      DATABASE_URL: postgresql://vera_auth:vera_auth_secret@auth-db:5432/vera_auth?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      JWT_REFRESH_SECRET: change-me-refresh-secret-min-32-chars-long
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_DAYS: 7
+      BCRYPT_ROUNDS: 12
+      COOKIE_SECURE: "false"
+      CORS_ORIGIN: http://localhost:3000
+      LOG_LEVEL: info
+    depends_on:
+      auth-db:
+        condition: service_healthy
+
+volumes:
+  auth_pg_data:

@@ -1,0 +1,19 @@
+﻿node : PASS src/verisuite-sms/__tests__/sms-backend-services.spec.ts (65.453 s)
+At C:\Users\JB01\AppData\Local\Temp\ps-script-bf3ea3a3-b567-4386-b32e-8644eca7ebc1.ps1:104 char:55
++ ... 96'; $out = node node_modules/jest/bin/jest.js --runInBand src/verisu ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (PASS src/verisu...c.ts (65.453 s):String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+PASS src/verisuite-sms/__tests__/sms-api-rbac-contract.spec.ts
+PASS src/verisuite-sms/__tests__/sms-pagination-performance.spec.ts
+PASS src/verisuite-sms/__tests__/sms-idempotency.spec.ts
+PASS src/verisuite-sms/__tests__/sms-ai-guardrails.spec.ts
+PASS src/verisuite-sms/__tests__/sms-ai-behaviors.spec.ts
+PASS src/verisuite-sms/__tests__/sms-anonymization.spec.ts
+
+Test Suites: 7 passed, 7 total
+Tests:       68 passed, 68 total
+Snapshots:   0 total
+Time:        68.102 s
+Ran all test suites matching /src\\verisuite-sms|verisuite-sms/i.

@@ -1,0 +1,1 @@
+{"version":3,"file":"multi-project-balancing.d.ts","sourceRoot":"","sources":["../../src/engines/multi-project-balancing.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAE5E,qBAAa,2BAA2B;IACtC,OAAO,CAAC,GAAG,EAAE,sBAAsB,GAAG,mBAAmB;CAyE1D"}

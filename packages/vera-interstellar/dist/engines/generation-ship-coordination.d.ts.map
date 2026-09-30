@@ -1,0 +1,1 @@
+{"version":3,"file":"generation-ship-coordination.d.ts","sourceRoot":"","sources":["../../src/engines/generation-ship-coordination.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,0BAA0B,EAAE,wBAAwB,EAAE,MAAM,UAAU,CAAC;AAErF,qBAAa,gCAAgC;IAC3C,UAAU,CAAC,GAAG,EAAE,wBAAwB,GAAG,0BAA0B;CAetE"}

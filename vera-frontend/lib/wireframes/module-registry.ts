@@ -1,0 +1,171 @@
+import {
+  Building2,
+  ClipboardList,
+  GraduationCap,
+  HardHat,
+  Users,
+  Wrench,
+} from "lucide-react";
+import type { ModuleId, ModuleWireframe } from "./types";
+
+export type { ModuleId } from "./types";
+
+export const MODULE_WIREFRAMES: Record<ModuleId, ModuleWireframe> = {
+  workers: {
+    id: "workers",
+    title: "Workers",
+    description: "Roster, compliance, training, and project assignments.",
+    listPath: "/admin/workers",
+    detailPath: (id) => `/admin/workers/${id}`,
+    createLabel: "Add worker",
+    icon: Users,
+    filters: [
+      { id: "active", label: "Active" },
+      { id: "inactive", label: "Inactive" },
+      { id: "compliant", label: "Compliant" },
+      { id: "noncompliant", label: "Non-compliant" },
+    ],
+    columns: [
+      { id: "name", header: "Name", mobilePrimary: true },
+      { id: "company", header: "Company", mobileSecondary: true },
+      { id: "trade", header: "Trade" },
+      { id: "compliance", header: "Compliance" },
+      { id: "expiry", header: "Expiry", mobileSecondary: true },
+      { id: "actions", header: "" },
+    ],
+    tabs: [
+      "overview",
+      "compliance",
+      "assignments",
+      "training",
+      "documents",
+      "history",
+    ],
+  },
+  equipment: {
+    id: "equipment",
+    title: "Equipment",
+    description: "Assets, inspections, competency, and lockout status.",
+    listPath: "/admin/equipment",
+    detailPath: (id) => `/admin/equipment/${id}`,
+    createLabel: "Add equipment",
+    icon: Wrench,
+    filters: [
+      { id: "active", label: "Active" },
+      { id: "inactive", label: "Inactive" },
+      { id: "compliant", label: "Compliant" },
+      { id: "lockout", label: "Lockout" },
+    ],
+    columns: [
+      { id: "tag", header: "Asset tag", mobilePrimary: true },
+      { id: "type", header: "Type", mobileSecondary: true },
+      { id: "status", header: "Status" },
+      { id: "compliance", header: "Compliance" },
+      { id: "inspection", header: "Next inspection" },
+      { id: "actions", header: "" },
+    ],
+    tabs: [
+      "overview",
+      "compliance",
+      "assignments",
+      "inspections",
+      "documents",
+      "history",
+    ],
+  },
+  training: {
+    id: "training",
+    title: "Training",
+    description: "Records, certificates, and provider validation.",
+    listPath: "/admin/training",
+    detailPath: (id) => `/admin/training/${id}`,
+    createLabel: "Upload training",
+    icon: GraduationCap,
+    filters: [
+      { id: "verified", label: "Verified" },
+      { id: "pending", label: "Pending" },
+      { id: "rejected", label: "Rejected" },
+    ],
+    columns: [
+      { id: "worker", header: "Worker", mobilePrimary: true },
+      { id: "course", header: "Course", mobileSecondary: true },
+      { id: "provider", header: "Provider" },
+      { id: "status", header: "Status" },
+      { id: "expiry", header: "Expiry" },
+      { id: "actions", header: "" },
+    ],
+    tabs: ["overview", "compliance", "documents", "history"],
+  },
+  trainingProviders: {
+    id: "trainingProviders",
+    title: "Training providers",
+    description: "Schools, courses, instructors, and approvals.",
+    listPath: "/provider-portal",
+    detailPath: (id) => `/provider-portal/profile?id=${id}`,
+    createLabel: "Register provider",
+    icon: GraduationCap,
+    filters: [
+      { id: "approved", label: "Approved" },
+      { id: "pending", label: "Pending" },
+    ],
+    columns: [
+      { id: "name", header: "Provider", mobilePrimary: true },
+      { id: "approval", header: "Approval", mobileSecondary: true },
+      { id: "courses", header: "Courses" },
+      { id: "instructors", header: "Instructors" },
+      { id: "actions", header: "" },
+    ],
+    tabs: ["overview", "training", "compliance", "history", "settings"],
+  },
+  unionHalls: {
+    id: "unionHalls",
+    title: "Union halls",
+    description: "Members, dispatch, and training receipts.",
+    listPath: "/union-hall",
+    detailPath: (id) => `/union-hall/${id}`,
+    icon: Building2,
+    filters: [
+      { id: "active", label: "Active dispatch" },
+      { id: "members", label: "Members" },
+    ],
+    columns: [
+      { id: "name", header: "Hall", mobilePrimary: true },
+      { id: "members", header: "Members", mobileSecondary: true },
+      { id: "dispatch", header: "Dispatch status" },
+      { id: "actions", header: "" },
+    ],
+    tabs: ["overview", "assignments", "training", "history"],
+  },
+  projects: {
+    id: "projects",
+    title: "Projects",
+    description: "Sites, worker/equipment readiness, and compliance.",
+    listPath: "/admin/projects",
+    detailPath: (id) => `/admin/projects/${id}`,
+    createLabel: "Add project",
+    icon: ClipboardList,
+    filters: [
+      { id: "active", label: "Active" },
+      { id: "closed", label: "Closed" },
+    ],
+    columns: [
+      { id: "name", header: "Project", mobilePrimary: true },
+      { id: "company", header: "Company", mobileSecondary: true },
+      { id: "status", header: "Status" },
+      { id: "workers", header: "Workers" },
+      { id: "equipment", header: "Equipment" },
+      { id: "actions", header: "" },
+    ],
+    tabs: [
+      "overview",
+      "compliance",
+      "assignments",
+      "documents",
+      "history",
+    ],
+  },
+};
+
+export function getModuleWireframe(id: ModuleId): ModuleWireframe {
+  return MODULE_WIREFRAMES[id];
+}

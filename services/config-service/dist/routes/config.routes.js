@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.configRouter = void 0;
+const express_1 = require("express");
+const config_controller_1 = require("../controllers/config.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const config_validators_1 = require("../validators/config.validators");
+exports.configRouter = (0, express_1.Router)();
+exports.configRouter.use(auth_middleware_1.requireAuth);
+exports.configRouter.get('/namespaces', config_controller_1.configController.listNamespaces);
+exports.configRouter.get('/:namespace/:key', config_validators_1.getEntryValidators, error_handler_1.handleValidation, config_controller_1.configController.getEntry);
+exports.configRouter.get('/:namespace', config_validators_1.listNamespaceValidators, error_handler_1.handleValidation, config_controller_1.configController.listNamespace);
+exports.configRouter.put('/:namespace/:key', auth_middleware_1.requireAdmin, config_validators_1.upsertValidators, error_handler_1.handleValidation, config_controller_1.configController.upsert);
+exports.configRouter.delete('/:namespace/:key', auth_middleware_1.requireAdmin, config_validators_1.deleteValidators, error_handler_1.handleValidation, config_controller_1.configController.remove);

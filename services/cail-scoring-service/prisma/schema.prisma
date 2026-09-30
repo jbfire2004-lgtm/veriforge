@@ -1,0 +1,46 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ScoreType {
+  worker_safety
+  equipment_safety
+  project_safety
+  company_safety
+  hazard_severity
+  control_strength
+  jha_quality
+  inspection_quality
+  corrective_action_priority
+  emergency_readiness
+  access_compliance
+}
+
+model CailScore {
+  id                  String    @id @default(uuid()) @db.Uuid
+  companyId           String    @map("company_id") @db.Uuid
+  projectId           String?   @map("project_id") @db.Uuid
+  workerId            String?   @map("worker_id") @db.Uuid
+  equipmentId         String?   @map("equipment_id") @db.Uuid
+  entityType          String    @map("entity_type")
+  entityId            String    @map("entity_id") @db.Uuid
+  scoreType           ScoreType @map("score_type")
+  scoreValue          Float     @map("score_value")
+  contributingFactors Json      @map("contributing_factors") @db.JsonB
+  createdAt           DateTime  @default(now()) @map("created_at")
+
+  @@index([companyId])
+  @@index([companyId, scoreType])
+  @@index([entityType, entityId])
+  @@index([companyId, entityType, entityId])
+  @@index([projectId])
+  @@index([workerId])
+  @@index([equipmentId])
+  @@index([createdAt])
+  @@map("cail_scores")
+}

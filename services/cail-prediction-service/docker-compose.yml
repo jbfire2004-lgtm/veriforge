@@ -1,0 +1,34 @@
+services:
+  cail-prediction-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_cail_predict
+      POSTGRES_PASSWORD: vera_cail_predict_secret
+      POSTGRES_DB: vera_cail_predict
+    ports:
+      - "5456:5432"
+    volumes:
+      - cail_predict_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_cail_predict -d vera_cail_predict"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  cail-prediction-service:
+    build: .
+    ports:
+      - "3024:3024"
+    environment:
+      NODE_ENV: production
+      PORT: 3024
+      DATABASE_URL: postgresql://vera_cail_predict:vera_cail_predict_secret@cail-prediction-db:5432/vera_cail_predict?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      MODEL_KEY: deterministic_rules_v1
+    depends_on:
+      cail-prediction-db:
+        condition: service_healthy
+
+volumes:
+  cail_predict_pg_data:

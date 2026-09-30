@@ -1,0 +1,52 @@
+.icon {
+  composes: root from "./shared.module.css";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: var(--vf-safety-white);
+  transition:
+    color 150ms cubic-bezier(0.2, 0, 0, 1),
+    background 150ms cubic-bezier(0.2, 0, 0, 1),
+    border-color 150ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.icon:hover {
+  background: rgba(59, 63, 69, 0.45);
+}
+
+.neutral {
+  color: #5a6169;
+}
+
+.active {
+  color: var(--vf-safety-blue);
+  filter: none;
+}
+
+.critical {
+  color: var(--vf-critical);
+  filter: none;
+}
+
+.contrast {
+  color: var(--vf-safety-white);
+}
+
+.tile {
+  border: 1px solid var(--vf-steel-grey);
+  background: var(--vf-deep-slate);
+  background-image: none;
+  padding: 8px;
+  border-radius: 3px;
+}
+
+.tile:hover {
+  border-color: var(--vf-safety-blue);
+  background: var(--vf-graphite);
+}
+
+.tileActive {
+  border-color: var(--vf-safety-blue);
+  box-shadow: inset 3px 0 0 var(--vf-safety-blue);
+}

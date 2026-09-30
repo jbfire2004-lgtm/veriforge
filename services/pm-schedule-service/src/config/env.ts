@@ -1,0 +1,22 @@
+import dotenv from 'dotenv';
+
+dotenv.config();
+
+function required(name: string): string {
+  const v = process.env[name];
+  if (!v) throw new Error(`Missing required environment variable: ${name}`);
+  return v;
+}
+
+export const env = {
+  nodeEnv: process.env.NODE_ENV ?? 'development',
+  port: Number(process.env.PORT ?? 3021),
+  databaseUrl: required('DATABASE_URL'),
+  jwtAccessSecret: required('JWT_ACCESS_SECRET'),
+  authValidateUrl: process.env.AUTH_VALIDATE_URL,
+  pmProjectServiceUrl: process.env.PM_PROJECT_SERVICE_URL,
+  pmTaskServiceUrl: process.env.PM_TASK_SERVICE_URL,
+  cailServiceUrl: process.env.CAIL_SERVICE_URL,
+  logLevel: process.env.LOG_LEVEL ?? 'info',
+  corsOrigin: process.env.CORS_ORIGIN ?? '*',
+};

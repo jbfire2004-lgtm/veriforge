@@ -1,0 +1,1 @@
+{"version":3,"file":"realtime-readiness.d.ts","sourceRoot":"","sources":["../../src/engines/realtime-readiness.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,mBAAmB,EAAE,MAAM,UAAU,CAAC;AAGzE,qBAAa,uBAAuB;IAClC,MAAM,CAAC,GAAG,EAAE,mBAAmB,EAAE,YAAY,EAAE,GAAG,CAAC,MAAM,EAAE,MAAM,CAAC,GAAG,mBAAmB,EAAE;CAuE3F"}

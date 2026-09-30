@@ -1,0 +1,19 @@
+{
+  "name": "@vera/api-contract",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Shared VERA API error shape, Zod schemas, and DTO validators for frontend + backend",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

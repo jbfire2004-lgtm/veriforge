@@ -1,0 +1,42 @@
+.panel {
+  composes: root from "./shared.module.css";
+  position: relative;
+  overflow: hidden;
+  background-image: none;
+  background-color: var(--vf-deep-slate);
+  border: 1px solid var(--vf-steel-grey);
+  border-radius: 3px;
+  box-shadow: none;
+  color: var(--vf-safety-white);
+  padding: 16px;
+  transition:
+    border-color 150ms cubic-bezier(0.2, 0, 0, 1),
+    background 150ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.panel::before {
+  display: none;
+}
+
+.panel:hover {
+  border-color: #6b737c;
+  background-color: var(--vf-graphite);
+}
+
+.active {
+  border-color: var(--vf-safety-blue);
+  box-shadow: inset 3px 0 0 var(--vf-safety-blue);
+}
+
+.tempered::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    130deg,
+    transparent 0%,
+    rgba(200, 159, 61, 0.1) 45%,
+    transparent 100%
+  );
+}

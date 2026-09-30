@@ -1,0 +1,1 @@
+{"version":3,"file":"enterprise-prediction.d.ts","sourceRoot":"","sources":["../../src/engines/enterprise-prediction.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,iBAAiB,EAAE,gBAAgB,EAAE,MAAM,UAAU,CAAC;AACpE,OAAO,KAAK,EAAE,eAAe,EAAE,MAAM,mCAAmC,CAAC;AAEzE,qBAAa,0BAA0B;IACrC,OAAO,CAAC,GAAG,EAAE,iBAAiB,EAAE,MAAM,EAAE,UAAU,CAAC,OAAO,eAAe,CAAC,GAAG,gBAAgB,EAAE;CA8ChG"}

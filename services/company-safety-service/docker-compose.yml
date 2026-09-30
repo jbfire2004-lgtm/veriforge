@@ -1,0 +1,33 @@
+services:
+  company-safety-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_company
+      POSTGRES_PASSWORD: vera_company_secret
+      POSTGRES_DB: vera_company
+    ports:
+      - "5441:5432"
+    volumes:
+      - company_safety_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_company -d vera_company"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  company-safety-service:
+    build: .
+    ports:
+      - "3009:3009"
+    environment:
+      NODE_ENV: production
+      PORT: 3009
+      DATABASE_URL: postgresql://vera_company:vera_company_secret@company-safety-db:5432/vera_company?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+    depends_on:
+      company-safety-db:
+        condition: service_healthy
+
+volumes:
+  company_safety_pg_data:

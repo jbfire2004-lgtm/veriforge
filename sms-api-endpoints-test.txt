@@ -1,0 +1,14 @@
+PASS src/verisuite-sms/__tests__/sms-api-rbac-contract.spec.ts (23.391 s)
+PASS src/verisuite-sms/__tests__/sms-ai-behaviors.spec.ts
+PASS src/verisuite-sms/__tests__/sms-idempotency.spec.ts
+PASS src/verisuite-sms/__tests__/sms-pagination-performance.spec.ts
+PASS src/verisuite-sms/__tests__/sms-ai-guardrails.spec.ts
+PASS src/verisuite-sms/__tests__/sms-anonymization.spec.ts
+PASS src/verisuite-sms/__tests__/sms-backend-services.spec.ts (9.289 s)
+
+Test Suites: 7 passed, 7 total
+Tests:       68 passed, 68 total
+Snapshots:   0 total
+Time:        34.906 s
+Ran all test suites matching /src\\verisuite-sms|verisuite-sms/i.
+=== EXIT_CODE=0 ===

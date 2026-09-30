@@ -1,0 +1,59 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,500;9..40,700&family=Source+Sans+3:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --vf-ink: #0f1714;
+  --vf-forest: #1a3a32;
+  --vf-moss: #2d6a4f;
+  --vf-mint: #52b788;
+  --vf-sand: #e8efe9;
+  --vf-mist: #f3f7f4;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Source Sans 3", system-ui, sans-serif;
+  color: var(--vf-ink);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(45, 106, 79, 0.12), transparent 55%),
+    radial-gradient(900px 500px at 100% 0%, rgba(82, 183, 136, 0.1), transparent 50%),
+    linear-gradient(180deg, #f7faf8 0%, #eef3f0 100%);
+}
+
+@layer components {
+  .vf-panel {
+    @apply rounded-xl border border-forge-sand/80 bg-white/90 shadow-panel backdrop-blur-sm;
+  }
+
+  .vf-btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition
+      focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-forge-moss
+      disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .vf-btn-primary {
+    @apply vf-btn bg-forge-forest text-white hover:bg-forge-moss;
+  }
+
+  .vf-btn-secondary {
+    @apply vf-btn border border-forge-sand bg-white text-forge-ink hover:bg-forge-mist;
+  }
+
+  .vf-input {
+    @apply w-full rounded-lg border border-forge-sand bg-white px-3 py-2.5 text-sm text-forge-ink
+      placeholder:text-forge-steel/60 focus:border-forge-moss focus:outline-none focus:ring-2 focus:ring-forge-mint/40;
+  }
+
+  .vf-label {
+    @apply mb-1.5 block text-sm font-medium text-forge-forest;
+  }
+}

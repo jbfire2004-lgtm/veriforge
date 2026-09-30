@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.stationRouter = void 0;
+const express_1 = require("express");
+const station_controller_1 = require("../controllers/station.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const station_validators_1 = require("../validators/station.validators");
+exports.stationRouter = (0, express_1.Router)();
+exports.stationRouter.use(auth_middleware_1.requireAuth);
+exports.stationRouter.post('/register', station_validators_1.registerValidators, error_handler_1.handleValidation, station_controller_1.stationController.register);
+exports.stationRouter.post('/heartbeat', station_validators_1.heartbeatValidators, error_handler_1.handleValidation, station_controller_1.stationController.heartbeat);
+exports.stationRouter.post('/validate/worker', station_validators_1.validateWorkerValidators, error_handler_1.handleValidation, station_controller_1.stationController.validateWorker);
+exports.stationRouter.post('/validate/equipment', station_validators_1.validateEquipmentValidators, error_handler_1.handleValidation, station_controller_1.stationController.validateEquipment);
+exports.stationRouter.post('/muster/checkin', station_validators_1.musterValidators, error_handler_1.handleValidation, station_controller_1.stationController.musterCheckin);
+exports.stationRouter.post('/emergency/mode', auth_middleware_1.requireSupervisor, station_validators_1.emergencyValidators, error_handler_1.handleValidation, station_controller_1.stationController.emergencyMode);
+exports.stationRouter.post('/offline/sync', station_validators_1.offlineSyncValidators, error_handler_1.handleValidation, station_controller_1.stationController.offlineSync);

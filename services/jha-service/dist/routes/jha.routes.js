@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.jhaRouter = void 0;
+const express_1 = require("express");
+const jha_controller_1 = require("../controllers/jha.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const jha_validators_1 = require("../validators/jha.validators");
+exports.jhaRouter = (0, express_1.Router)();
+exports.jhaRouter.use(auth_middleware_1.requireAuth);
+exports.jhaRouter.post('/', jha_validators_1.createJhaValidators, error_handler_1.handleValidation, jha_controller_1.jhaController.create);
+exports.jhaRouter.post('/offline/sync', jha_validators_1.offlineSyncValidators, error_handler_1.handleValidation, jha_controller_1.jhaController.syncOffline);
+exports.jhaRouter.post('/:id/hazards', jha_validators_1.addHazardsValidators, error_handler_1.handleValidation, jha_controller_1.jhaController.addHazards);
+exports.jhaRouter.post('/:id/controls', jha_validators_1.addControlsValidators, error_handler_1.handleValidation, jha_controller_1.jhaController.addControls);
+exports.jhaRouter.post('/:id/sign', jha_validators_1.signValidators, error_handler_1.handleValidation, jha_controller_1.jhaController.sign);
+exports.jhaRouter.post('/:id/approve', auth_middleware_1.requireSupervisor, jha_validators_1.approveValidators, error_handler_1.handleValidation, jha_controller_1.jhaController.approve);
+exports.jhaRouter.get('/:id/score', jha_validators_1.scoreValidators, error_handler_1.handleValidation, jha_controller_1.jhaController.score);

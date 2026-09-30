@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.controlRouter = void 0;
+const express_1 = require("express");
+const control_controller_1 = require("../controllers/control.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const hazard_control_validators_1 = require("../validators/hazard-control.validators");
+exports.controlRouter = (0, express_1.Router)();
+exports.controlRouter.use(auth_middleware_1.requireAuth);
+exports.controlRouter.post('/', hazard_control_validators_1.createControlValidators, error_handler_1.handleValidation, control_controller_1.controlController.create);
+exports.controlRouter.get('/:id', hazard_control_validators_1.idParamValidators, error_handler_1.handleValidation, control_controller_1.controlController.getById);

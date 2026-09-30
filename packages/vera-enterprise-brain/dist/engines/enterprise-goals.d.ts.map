@@ -1,0 +1,1 @@
+{"version":3,"file":"enterprise-goals.d.ts","sourceRoot":"","sources":["../../src/engines/enterprise-goals.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,iBAAiB,EAAE,eAAe,EAAE,MAAM,UAAU,CAAC;AAGnE,qBAAa,oBAAoB;IAC/B,OAAO,CAAC,GAAG,EAAE,iBAAiB,GAAG,eAAe;IAiBhD,OAAO,CAAC,KAAK,EAAE,eAAe,GAAG;QAAE,OAAO,EAAE,MAAM,CAAC;QAAC,SAAS,EAAE,MAAM,EAAE,CAAA;KAAE;CAO1E"}

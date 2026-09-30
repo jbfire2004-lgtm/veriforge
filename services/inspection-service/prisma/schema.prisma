@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum InspectionStatus {
+  draft
+  scheduled
+  in_progress
+  submitted
+  failed
+  passed
+  closed
+}
+
+model Inspection {
+  id               String           @id @default(uuid()) @db.Uuid
+  companyId        String           @map("company_id") @db.Uuid
+  projectId        String           @map("project_id") @db.Uuid
+  checklistId      String?          @map("checklist_id") @db.Uuid
+  checklistType    String           @map("checklist_type")
+  title            String
+  description      String?          @db.Text
+  checklistItems   Json             @default("[]") @map("checklist_items") @db.JsonB
+  equipmentId      String?          @map("equipment_id") @db.Uuid
+  workerId         String?          @map("worker_id") @db.Uuid
+  inspectorId      String?          @map("inspector_id") @db.Uuid
+  location         String?
+  scheduledAt      DateTime?        @map("scheduled_at")
+  startedAt        DateTime?        @map("started_at")
+  submittedAt      DateTime?        @map("submitted_at")
+  completedAt      DateTime?        @map("completed_at")
+  status           InspectionStatus @default(draft)
+  score            Int?
+  maxScore         Int?             @map("max_score")
+  passThreshold    Int?             @map("pass_threshold")
+  safetyGatePassed Boolean?         @map("safety_gate_passed")
+  safetyGateReason String?          @map("safety_gate_reason") @db.Text
+  metadata         Json             @default("{}") @db.JsonB
+  createdBy        String           @map("created_by") @db.Uuid
+  createdAt        DateTime         @default(now()) @map("created_at")
+  updatedAt        DateTime         @updatedAt @map("updated_at")
+  deletedAt        DateTime?        @map("deleted_at")
+
+  findings InspectionFinding[]
+
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@index([companyId, status])
+  @@index([companyId, workerId])
+  @@index([companyId, equipmentId])
+  @@index([deletedAt])
+  @@map("inspections")
+}
+
+model InspectionFinding {
+  id                 String   @id @default(uuid()) @db.Uuid
+  inspectionId       String   @map("inspection_id") @db.Uuid
+  itemKey            String   @map("item_key")
+  findingType        String   @map("finding_type")
+  severity           String?
+  description        String?  @db.Text
+  photoUrl           String?  @map("photo_url") @db.Text
+  hazardId           String?  @map("hazard_id") @db.Uuid
+  controlId          String?  @map("control_id") @db.Uuid
+  correctiveActionId String?  @map("corrective_action_id") @db.Uuid
+  metadata           Json     @default("{}") @db.JsonB
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  inspection Inspection @relation(fields: [inspectionId], references: [id], onDelete: Cascade)
+
+  @@index([inspectionId])
+  @@index([itemKey])
+  @@map("inspection_findings")
+}
+
+model InspectionOfflineSync {
+  id           String    @id @default(uuid()) @db.Uuid
+  companyId    String    @map("company_id") @db.Uuid
+  deviceId     String    @map("device_id")
+  clientSyncId String    @map("client_sync_id")
+  action       String
+  payload      Json      @db.JsonB
+  status       String    @default("pending")
+  result       Json?     @db.JsonB
+  createdAt    DateTime  @default(now()) @map("created_at")
+  syncedAt     DateTime? @map("synced_at")
+
+  @@unique([deviceId, clientSyncId])
+  @@index([companyId])
+  @@index([deviceId])
+  @@map("inspection_offline_sync")
+}

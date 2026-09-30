@@ -1,0 +1,40 @@
+.emblem {
+  composes: tokens from "./shared.module.css";
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 112px;
+  height: 112px;
+  border: 2px solid var(--vf-forge-red);
+  background: linear-gradient(150deg, #3a1010 0%, #c62828 45%, #6d1616 100%);
+  box-shadow: 0 0 40px rgba(198, 40, 40, 0.65), inset 0 0 24px rgba(0, 0, 0, 0.35);
+  border-radius: 0;
+  animation: vf-mobile-emblem-glow 2.4s ease-in-out infinite;
+}
+
+.shine {
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 255, 255, 0.18),
+    transparent 55%
+  );
+}
+
+@keyframes vf-mobile-emblem-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 28px rgba(198, 40, 40, 0.45), inset 0 0 20px rgba(0, 0, 0, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 48px rgba(198, 40, 40, 0.8), inset 0 0 24px rgba(0, 0, 0, 0.25);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .emblem {
+    animation: none !important;
+  }
+}

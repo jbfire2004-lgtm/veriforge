@@ -1,0 +1,33 @@
+services:
+  cail-train-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_cail_train
+      POSTGRES_PASSWORD: vera_cail_train_secret
+      POSTGRES_DB: vera_cail_train
+    ports:
+      - "5463:5432"
+    volumes:
+      - cail_train_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_cail_train -d vera_cail_train"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  cail-model-training-service:
+    build: .
+    ports:
+      - "3031:3031"
+    environment:
+      NODE_ENV: production
+      PORT: 3031
+      DATABASE_URL: postgresql://vera_cail_train:vera_cail_train_secret@cail-train-db:5432/vera_cail_train?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+    depends_on:
+      cail-train-db:
+        condition: service_healthy
+
+volumes:
+  cail_train_pg_data:

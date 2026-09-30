@@ -1,0 +1,76 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum OfflineSyncStatus {
+  pending_sync
+  syncing
+  synced
+  conflict
+  resolved
+  failed
+}
+
+model OfflineDevice {
+  id           String   @id @map("device_id")
+  companyId    String   @map("company_id") @db.Uuid
+  userId       String   @map("user_id") @db.Uuid
+  registeredAt DateTime @default(now()) @map("registered_at")
+  lastSyncAt   DateTime? @map("last_sync_at")
+
+  @@index([companyId])
+  @@map("offline_devices")
+}
+
+model OfflineCache {
+  id           String            @id @default(uuid()) @db.Uuid
+  deviceId     String            @map("device_id")
+  companyId    String            @map("company_id") @db.Uuid
+  moduleType   String            @map("module_type")
+  recordId     String            @map("record_id")
+  payload      Json              @db.JsonB
+  lastModified DateTime          @map("last_modified")
+  syncStatus   OfflineSyncStatus @map("sync_status")
+  clientVersion Int?             @map("client_version")
+  errorMessage String?           @map("error_message")
+
+  @@unique([deviceId, moduleType, recordId])
+  @@index([deviceId, syncStatus])
+  @@index([companyId, lastModified(sort: Desc)])
+  @@map("offline_cache")
+}
+
+model OfflineConflict {
+  id            String    @id @default(uuid()) @db.Uuid
+  deviceId      String    @map("device_id")
+  companyId     String    @map("company_id") @db.Uuid
+  recordId      String    @map("record_id")
+  moduleType    String    @map("module_type")
+  localValue    Json      @map("local_value") @db.JsonB
+  serverValue   Json      @map("server_value") @db.JsonB
+  resolvedValue Json?     @map("resolved_value") @db.JsonB
+  resolvedBy    String?   @map("resolved_by") @db.Uuid
+  resolvedAt    DateTime? @map("resolved_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  @@index([deviceId, resolvedAt])
+  @@index([companyId, moduleType])
+  @@map("offline_conflicts")
+}
+
+model OfflineAudit {
+  id        String   @id @default(uuid()) @db.Uuid
+  deviceId  String   @map("device_id")
+  companyId String?  @map("company_id") @db.Uuid
+  eventType String   @map("event_type")
+  eventData Json     @map("event_data") @db.JsonB
+  timestamp DateTime @default(now())
+
+  @@index([deviceId, timestamp(sort: Desc)])
+  @@map("offline_audit")
+}

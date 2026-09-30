@@ -1,0 +1,1 @@
+{"version":3,"file":"energy-wheel.d.ts","sourceRoot":"","sources":["../../src/engines/energy-wheel.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAc,mBAAmB,EAAE,kBAAkB,EAAE,MAAM,UAAU,CAAC;AA2BpF,qBAAa,iBAAiB;IAC5B,OAAO,CAAC,GAAG,EAAE,kBAAkB,GAAG,mBAAmB;CAmDtD"}

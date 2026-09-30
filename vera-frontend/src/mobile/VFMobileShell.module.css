@@ -1,0 +1,113 @@
+.shell {
+  composes: tokens from "./shared.module.css";
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  max-width: 32rem;
+  background-color: var(--vf-iron-black);
+  background-image: var(--vf-metallic);
+  background-attachment: fixed;
+  color: var(--vf-safety-white);
+  font-family: var(--vf-font-body);
+  border-radius: 0;
+}
+
+.shellFull {
+  max-width: none;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  border-bottom: 1px solid var(--vf-steel-grey);
+  background-image: var(--vf-metallic);
+  background-color: var(--vf-iron-black);
+  padding: 12px 16px;
+  border-radius: 0;
+}
+
+.topbarRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.brand {
+  min-width: 0;
+  flex: 1;
+}
+
+.brandTitle {
+  margin: 0;
+  font-family: var(--vf-font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vf-safety-white);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.brandSub {
+  margin: 2px 0 0;
+  font-family: var(--vf-font-body);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #9f9f9f;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.alertBtn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--vf-steel-grey);
+  background: var(--vf-iron-black);
+  color: #bdbdbd;
+  text-decoration: none;
+  border-radius: 0;
+}
+
+.alertBtnActive {
+  border-color: var(--vf-forge-red);
+  box-shadow: var(--vf-glow);
+  color: var(--vf-forge-red);
+}
+
+.badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 16px;
+  height: 16px;
+  display: grid;
+  place-items: center;
+  padding: 0 4px;
+  background: var(--vf-forge-red);
+  color: white;
+  font-family: var(--vf-font-heading);
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 0;
+}
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  padding-bottom: 112px;
+}
+
+.mainBare {
+  padding-bottom: 16px;
+}

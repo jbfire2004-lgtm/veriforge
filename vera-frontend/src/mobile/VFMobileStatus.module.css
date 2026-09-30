@@ -1,0 +1,90 @@
+.chip {
+  composes: tokens from "./shared.module.css";
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid var(--vf-steel-grey);
+  background: #1f1f1f;
+  color: #d0d0d0;
+  padding: 4px 8px;
+  font-family: var(--vf-font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  border-radius: 0;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 0;
+  background: var(--vf-steel-grey);
+  flex-shrink: 0;
+}
+
+.pass {
+  border-color: #4a654a;
+  background: rgba(74, 101, 74, 0.2);
+  color: #b8e0b8;
+}
+
+.pass .dot {
+  background: var(--vf-pass);
+  animation: vf-mobile-pass-pulse 1.2s ease-in-out infinite;
+}
+
+.fail,
+.critical {
+  border-color: var(--vf-forge-red);
+  background: rgba(198, 40, 40, 0.22);
+  color: #ffc9c9;
+  box-shadow: var(--vf-glow);
+}
+
+.fail .dot,
+.critical .dot {
+  background: var(--vf-forge-red);
+}
+
+.pending {
+  border-color: var(--vf-steel-grey);
+  background: #1a1a1a;
+  color: #d0d0d0;
+}
+
+.pending .dot {
+  background: linear-gradient(90deg, #2e2e2e, #707070, #2e2e2e);
+  background-size: 200% 100%;
+  animation: vf-mobile-steel-shimmer 1.4s linear infinite;
+}
+
+.neutral {
+  border-color: var(--vf-steel-grey);
+}
+
+@keyframes vf-mobile-pass-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 rgba(111, 175, 111, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 10px rgba(111, 175, 111, 0.75);
+  }
+}
+
+@keyframes vf-mobile-steel-shimmer {
+  0% {
+    background-position: 0% 50%;
+  }
+  100% {
+    background-position: 200% 50%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pass .dot,
+  .pending .dot {
+    animation: none !important;
+  }
+}

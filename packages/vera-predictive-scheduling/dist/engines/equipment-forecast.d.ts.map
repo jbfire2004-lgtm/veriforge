@@ -1,0 +1,1 @@
+{"version":3,"file":"equipment-forecast.d.ts","sourceRoot":"","sources":["../../src/engines/equipment-forecast.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,iBAAiB,EAAE,MAAM,UAAU,CAAC;AAE1E,qBAAa,0BAA0B;IACrC,OAAO,CAAC,GAAG,EAAE,sBAAsB,GAAG,iBAAiB;CAkDxD"}

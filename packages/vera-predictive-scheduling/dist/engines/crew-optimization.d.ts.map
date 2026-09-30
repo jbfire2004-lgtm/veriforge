@@ -1,0 +1,1 @@
+{"version":3,"file":"crew-optimization.d.ts","sourceRoot":"","sources":["../../src/engines/crew-optimization.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,gBAAgB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAEzE,qBAAa,sBAAsB;IACjC,OAAO,CAAC,GAAG,EAAE,sBAAsB,GAAG,gBAAgB;CAiCvD"}

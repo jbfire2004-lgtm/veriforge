@@ -1,0 +1,1 @@
+{"version":3,"file":"automation-events.d.ts","sourceRoot":"","sources":["../../src/engines/automation-events.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAEvD,qBAAa,qBAAqB;IAChC,UAAU,CACR,GAAG,EAAE,sBAAsB,EAC3B,KAAK,EAAE,MAAM,EACb,IAAI,CAAC,EAAE,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,GAC7B,sBAAsB;CAgC1B"}

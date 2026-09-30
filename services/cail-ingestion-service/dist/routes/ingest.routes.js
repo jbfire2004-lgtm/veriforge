@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.ingestRouter = void 0;
+const express_1 = require("express");
+const ingest_controller_1 = require("../controllers/ingest.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const ingest_validators_1 = require("../validators/ingest.validators");
+exports.ingestRouter = (0, express_1.Router)();
+exports.ingestRouter.use(auth_middleware_1.requireAuth);
+exports.ingestRouter.post('/manual', ingest_validators_1.manualValidators, error_handler_1.handleValidation, ingest_controller_1.ingestController.manual);
+exports.ingestRouter.get('/stats', ingest_validators_1.statsValidators, error_handler_1.handleValidation, ingest_controller_1.ingestController.stats);
+exports.ingestRouter.post('/events', ingest_validators_1.eventValidators, error_handler_1.handleValidation, ingest_controller_1.ingestController.event);

@@ -1,0 +1,1 @@
+{"version":3,"file":"brain-events.d.ts","sourceRoot":"","sources":["../../src/engines/brain-events.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,iBAAiB,EAAE,MAAM,UAAU,CAAC;AAElD,qBAAa,gBAAgB;IAC3B,UAAU,CACR,GAAG,EAAE,iBAAiB,EACtB,KAAK,EAAE,MAAM,EACb,IAAI,CAAC,EAAE,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,GAC7B,iBAAiB;CAuBrB"}

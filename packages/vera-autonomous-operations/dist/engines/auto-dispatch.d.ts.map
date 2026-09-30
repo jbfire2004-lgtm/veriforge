@@ -1,0 +1,1 @@
+{"version":3,"file":"auto-dispatch.d.ts","sourceRoot":"","sources":["../../src/engines/auto-dispatch.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,kBAAkB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAG3E,qBAAa,kBAAkB;IAC7B,GAAG,CAAC,GAAG,EAAE,sBAAsB,GAAG,kBAAkB;CAsHrD"}

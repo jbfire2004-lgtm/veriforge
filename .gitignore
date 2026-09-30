@@ -1,0 +1,11 @@
+node_modules
+simulation-reports/
+packages/vera-workflow-sim/simulation-reports/
+# Keep environment variables out of version control
+.env
+
+/src/generated/prisma
+
+# Local VeriForge tenant/ledger JSON stores
+backend/data/
+data/

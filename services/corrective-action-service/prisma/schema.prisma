@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum CorrectiveActionStatus {
+  draft
+  open
+  assigned
+  in_progress
+  pending_verification
+  verified
+  closed
+  cancelled
+}
+
+model CorrectiveAction {
+  id          String                 @id @default(uuid()) @db.Uuid
+  companyId   String                 @map("company_id") @db.Uuid
+  projectId   String                 @map("project_id") @db.Uuid
+  sourceType  String                 @map("source_type")
+  sourceId    String                 @map("source_id")
+  actionType  String                 @map("action_type")
+  title       String
+  description String?                @db.Text
+  severity    String
+  priority    String
+  hazardId    String?                @map("hazard_id") @db.Uuid
+  controlId   String?                @map("control_id") @db.Uuid
+  equipmentId String?                @map("equipment_id") @db.Uuid
+  workerId    String?                @map("worker_id") @db.Uuid
+  dueDate     DateTime?              @map("due_date")
+  status      CorrectiveActionStatus @default(draft)
+  escalationLevel Int                @default(0) @map("escalation_level")
+  createdBy   String                 @map("created_by") @db.Uuid
+  createdAt   DateTime               @default(now()) @map("created_at")
+  updatedAt   DateTime               @updatedAt @map("updated_at")
+
+  assignments   CorrectiveActionAssignment[]
+  escalations   CorrectiveActionEscalation[]
+  verifications CorrectiveActionVerification[]
+  attachments   CorrectiveActionAttachment[]
+  moduleLinks   CorrectiveActionModuleLink[]
+
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@index([companyId, status])
+  @@index([sourceType, sourceId])
+  @@index([dueDate, status])
+  @@map("corrective_actions")
+}
+
+model CorrectiveActionAssignment {
+  id                 String   @id @default(uuid()) @db.Uuid
+  correctiveActionId String   @map("corrective_action_id") @db.Uuid
+  assigneeId         String   @map("assignee_id") @db.Uuid
+  assignedBy         String   @map("assigned_by") @db.Uuid
+  assignedAt         DateTime @default(now()) @map("assigned_at")
+
+  correctiveAction CorrectiveAction @relation(fields: [correctiveActionId], references: [id], onDelete: Cascade)
+
+  @@index([correctiveActionId])
+  @@index([assigneeId])
+  @@map("corrective_action_assignments")
+}
+
+model CorrectiveActionEscalation {
+  id                 String   @id @default(uuid()) @db.Uuid
+  correctiveActionId String   @map("corrective_action_id") @db.Uuid
+  level              Int
+  reason             String?
+  triggeredAt        DateTime @default(now()) @map("triggered_at")
+
+  correctiveAction CorrectiveAction @relation(fields: [correctiveActionId], references: [id], onDelete: Cascade)
+
+  @@index([correctiveActionId, level])
+  @@map("corrective_action_escalations")
+}
+
+model CorrectiveActionVerification {
+  id                 String   @id @default(uuid()) @db.Uuid
+  correctiveActionId String   @map("corrective_action_id") @db.Uuid
+  verifiedBy         String   @map("verified_by") @db.Uuid
+  verifiedAt         DateTime @default(now()) @map("verified_at")
+  notes              String?  @db.Text
+  outcome            String   @default("approved")
+
+  correctiveAction CorrectiveAction @relation(fields: [correctiveActionId], references: [id], onDelete: Cascade)
+
+  @@index([correctiveActionId])
+  @@map("corrective_action_verifications")
+}
+
+model CorrectiveActionAttachment {
+  id                 String   @id @default(uuid()) @db.Uuid
+  correctiveActionId String   @map("corrective_action_id") @db.Uuid
+  fileName           String?  @map("file_name")
+  mimeType           String?  @map("mime_type")
+  storageKey         String?  @map("storage_key")
+  dataUrl            String?  @map("data_url") @db.Text
+  phase              String   @default("evidence")
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  correctiveAction CorrectiveAction @relation(fields: [correctiveActionId], references: [id], onDelete: Cascade)
+
+  @@index([correctiveActionId])
+  @@map("corrective_action_attachments")
+}
+
+model CorrectiveActionModuleLink {
+  id                 String   @id @default(uuid()) @db.Uuid
+  correctiveActionId String   @map("corrective_action_id") @db.Uuid
+  moduleType         String   @map("module_type")
+  linkedId           String   @map("linked_id") @db.Uuid
+  metadata           Json     @default("{}") @db.JsonB
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  correctiveAction CorrectiveAction @relation(fields: [correctiveActionId], references: [id], onDelete: Cascade)
+
+  @@unique([correctiveActionId, moduleType, linkedId])
+  @@index([moduleType, linkedId])
+  @@map("corrective_action_module_links")
+}
+
+model CorrectiveActionOfflineSync {
+  id           String    @id @default(uuid()) @db.Uuid
+  companyId    String    @map("company_id") @db.Uuid
+  deviceId     String    @map("device_id")
+  clientSyncId String    @map("client_sync_id")
+  action       String
+  payload      Json      @db.JsonB
+  status       String    @default("pending")
+  result       Json?     @db.JsonB
+  createdAt    DateTime  @default(now()) @map("created_at")
+  syncedAt     DateTime? @map("synced_at")
+
+  @@unique([deviceId, clientSyncId])
+  @@index([companyId])
+  @@index([deviceId])
+  @@map("corrective_action_offline_sync")
+}

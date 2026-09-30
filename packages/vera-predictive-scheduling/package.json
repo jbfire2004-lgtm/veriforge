@@ -1,0 +1,19 @@
+{
+  "name": "@vera/predictive-scheduling",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vera Predictive Scheduling Engine (VPSE) — workforce, equipment, dispatch optimization",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

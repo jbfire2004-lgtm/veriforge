@@ -1,0 +1,28 @@
+{
+  "version": 1,
+  "rateLimit": {
+    "windowMs": 60000,
+    "perTenant": 120,
+    "perUser": 60,
+    "perIp": 180
+  },
+  "abuse": {
+    "windowMs": 300000,
+    "maxDeniedPerWindow": 8,
+    "maxValidationFailuresPerWindow": 15,
+    "maxImageProbePerWindow": 5,
+    "blockDurationMs": 600000,
+    "flagOnly": false
+  },
+  "tenantOverrides": {
+    "1001": {
+      "rateLimit": {
+        "perTenant": 300,
+        "perUser": 120
+      },
+      "abuse": {
+        "maxDeniedPerWindow": 12
+      }
+    }
+  }
+}

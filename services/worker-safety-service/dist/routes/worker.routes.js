@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.workerRouter = void 0;
+const express_1 = require("express");
+const worker_controller_1 = require("../controllers/worker.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const worker_validators_1 = require("../validators/worker.validators");
+exports.workerRouter = (0, express_1.Router)();
+exports.workerRouter.use(auth_middleware_1.requireAuth);
+exports.workerRouter.post('/profile', worker_validators_1.profileValidators, error_handler_1.handleValidation, worker_controller_1.workerController.profile);
+exports.workerRouter.post('/training', worker_validators_1.trainingValidators, error_handler_1.handleValidation, worker_controller_1.workerController.training);
+exports.workerRouter.post('/authorization', worker_validators_1.authorizationValidators, error_handler_1.handleValidation, worker_controller_1.workerController.authorization);
+exports.workerRouter.post('/restriction', worker_validators_1.restrictionValidators, error_handler_1.handleValidation, worker_controller_1.workerController.restriction);
+exports.workerRouter.post('/exposure', worker_validators_1.exposureValidators, error_handler_1.handleValidation, worker_controller_1.workerController.exposure);
+exports.workerRouter.post('/corrective', worker_validators_1.correctiveValidators, error_handler_1.handleValidation, worker_controller_1.workerController.corrective);
+exports.workerRouter.get('/:id/score', worker_validators_1.scoreValidators, error_handler_1.handleValidation, worker_controller_1.workerController.score);

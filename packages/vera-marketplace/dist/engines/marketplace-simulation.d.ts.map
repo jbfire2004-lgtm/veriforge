@@ -1,0 +1,1 @@
+{"version":3,"file":"marketplace-simulation.d.ts","sourceRoot":"","sources":["../../src/engines/marketplace-simulation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,qBAAqB,EAAE,MAAM,UAAU,CAAC;AAI3E,qBAAa,2BAA2B;IACtC,GAAG,CAAC,UAAU,EAAE,mBAAmB,EAAE,GAAG,qBAAqB,EAAE;CAYhE"}

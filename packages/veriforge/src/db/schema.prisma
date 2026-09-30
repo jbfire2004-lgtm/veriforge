@@ -1,0 +1,854 @@
+/**
+ * VeriForge Prisma schema — Source of Record
+ *
+ * Location of truth for migrate/generate:
+ *   services/veriforge-saas-service/prisma/schema.prisma
+ *
+ * This file is the documented domain map aligned with that SoR.
+ * IDs use UUID (production). Sketch cuid() → uuid() mapped.
+ * Org-scoped RBAC uses OrgRole (JSON permissions) + system Role catalog.
+ */
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum OrgStatus {
+  active
+  suspended
+  closed
+}
+
+enum UserStatus {
+  invited
+  active
+  disabled
+}
+
+enum SystemRoleCode {
+  owner
+  admin
+  manager
+  user
+}
+
+enum ModuleCode {
+  vericore
+  veripm
+  verihub
+}
+
+enum ProductModuleCode {
+  core
+  pm
+  safety
+  compliance
+  wallet
+  training
+  audits
+  investigations
+  scorecards
+  hiring_client_tools
+}
+
+enum BillingCycle {
+  monthly
+  annual
+}
+
+enum SubscriptionPlan {
+  trial
+  starter
+  professional
+  enterprise
+}
+
+enum SubscriptionStatus {
+  trialing
+  active
+  past_due
+  canceled
+  incomplete
+  unpaid
+  paused
+}
+
+enum SubscriptionItemStatus {
+  active
+  trialing
+  canceled
+  incomplete
+}
+
+enum OnboardingStatus {
+  not_started
+  in_progress
+  completed
+}
+
+enum HiringClientStatus {
+  active
+  suspended
+}
+
+enum HiringClientRole {
+  ClientAdmin
+  Reviewer
+}
+
+enum ContractAwardStatus {
+  pending
+  awarded
+  declined
+  withdrawn
+}
+
+enum DeveloperRole {
+  SystemAdmin
+  ModuleArchitect
+  SupportEngineer
+  BillingAdmin
+}
+
+enum DeveloperStatus {
+  active
+  disabled
+}
+
+enum ComplianceArtifactType {
+  insurance
+  wcb
+  cor
+  scsa
+  custom
+}
+
+enum ComplianceArtifactStatus {
+  valid
+  expired
+  pending_review
+  rejected
+}
+
+enum ComplianceNotificationKind {
+  expiry_warning
+  expired
+  review_pending
+  approved
+  rejected
+}
+
+enum TrialNotificationKind {
+  welcome
+  trial_ending_soon
+  trial_ended
+  founder_new_trial
+}
+
+// ─── Organization tenant ─────────────────────────────────────────────────────
+
+/// Contractor / company tenant. Isolation key for org-scoped tables.
+model Organization {
+  id                  String       @id @default(uuid()) @db.Uuid
+  name                String
+  slug                String       @unique
+  status              OrgStatus    @default(active)
+  industry            String?
+  address             String?      @db.Text
+  contactEmail        String?      @map("contact_email")
+  contactPhone        String?      @map("contact_phone")
+  /// Denormalized legacy cache (array of ModuleCode). Prefer SubscriptionProfile.
+  modulesEnabled      Json         @default("[]") @map("modules_enabled")
+  subscriptionProfile Json?        @map("subscription_profile")
+  trialStart          DateTime?    @map("trial_start")
+  trialEnd            DateTime?    @map("trial_end")
+  isTrialActive       Boolean      @default(false) @map("is_trial_active")
+  externalCustomerId  String?      @unique @map("external_customer_id")
+  billingEmail        String?      @map("billing_email")
+  defaultBillingCycle BillingCycle @default(monthly) @map("default_billing_cycle")
+  timezone            String       @default("UTC")
+  onboardingNotes     String?      @map("onboarding_notes") @db.Text
+  onboardingChecklist Json?        @map("onboarding_checklist")
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
+
+  users                     User[]
+  userRoles                 UserRole[]
+  orgRoles                  OrgRole[]
+  organizationModules       OrganizationModule[]
+  subscriptions             Subscription[]
+  subscriptionItems         SubscriptionItem[]
+  onboarding                Onboarding?
+  onboardingEvents          OnboardingEvent[]
+  trialNotifications        TrialNotificationLog[]
+  complianceArtifacts       ComplianceArtifact[]
+  scorecards                Scorecard[]
+  complianceNotifications   ComplianceNotificationLog[]
+  subscriptionProfileRecord SubscriptionProfile?
+  notifications             Notification[]
+  moduleUsageMetrics        ModuleUsageMetric[]
+
+  @@index([status])
+  @@map("organizations")
+}
+
+model User {
+  id              String     @id @default(uuid()) @db.Uuid
+  orgId           String     @map("org_id") @db.Uuid
+  email           String
+  passwordHash    String?    @map("password_hash")
+  fullName        String     @map("full_name")
+  firstName       String?    @map("first_name")
+  lastName        String?    @map("last_name")
+  fullNameEnc     String?    @map("full_name_enc")
+  status          UserStatus @default(invited)
+  emailVerifiedAt DateTime?  @map("email_verified_at")
+  lastLoginAt     DateTime?  @map("last_login_at")
+  mfaEnabled      Boolean    @default(false) @map("mfa_enabled")
+  mfaSecretEnc    String?    @map("mfa_secret_enc")
+  createdAt       DateTime   @default(now()) @map("created_at")
+  updatedAt       DateTime   @updatedAt @map("updated_at")
+
+  organization                  Organization       @relation(fields: [orgId], references: [id], onDelete: Restrict)
+  roles                         UserRole[]         @relation("UserRoleUser")
+  assignedRoles                 UserRole[]         @relation("UserRoleAssigner")
+  orgRoleLinks                  OrgRoleUser[]      @relation("OrgRoleUserLink")
+  refreshTokens                 RefreshToken[]
+  uploadedComplianceArtifacts   ComplianceArtifact[] @relation("ComplianceUploader")
+
+  @@unique([orgId, email])
+  @@index([orgId])
+  @@map("users")
+}
+
+/// Org-scoped Role (Owner / Admin / Manager / Worker + custom). Sketch `Role`.
+model OrgRole {
+  id          String          @id @default(uuid()) @db.Uuid
+  orgId       String          @map("org_id") @db.Uuid
+  name        String
+  description String?
+  permissions Json            @default("[]")
+  systemCode  SystemRoleCode? @map("system_code")
+  createdAt   DateTime        @default(now()) @map("created_at")
+  updatedAt   DateTime        @updatedAt @map("updated_at")
+
+  organization Organization  @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  users        OrgRoleUser[]
+
+  @@unique([orgId, name])
+  @@index([orgId])
+  @@map("org_roles")
+}
+
+model OrgRoleUser {
+  id        String   @id @default(uuid()) @db.Uuid
+  orgRoleId String   @map("org_role_id") @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at")
+
+  orgRole OrgRole @relation(fields: [orgRoleId], references: [id], onDelete: Cascade)
+  user    User    @relation("OrgRoleUserLink", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([orgRoleId, userId])
+  @@map("org_role_users")
+}
+
+/// Platform system role catalog (cross-tenant RBAC).
+model Role {
+  id          String         @id @default(uuid()) @db.Uuid
+  code        SystemRoleCode @unique
+  name        String
+  description String?
+  isSystem    Boolean        @default(true) @map("is_system")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  rolePermissions RolePermission[]
+  userRoles       UserRole[]
+
+  @@map("roles")
+}
+
+model Permission {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  rolePermissions   RolePermission[]
+  modulePermissions ModulePermission[]
+
+  @@map("permissions")
+}
+
+model RolePermission {
+  roleId       String @map("role_id") @db.Uuid
+  permissionId String @map("permission_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  role       Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("role_permissions")
+}
+
+model UserRole {
+  id         String    @id @default(uuid()) @db.Uuid
+  orgId      String    @map("org_id") @db.Uuid
+  userId     String    @map("user_id") @db.Uuid
+  roleId     String    @map("role_id") @db.Uuid
+  assignedAt DateTime  @default(now()) @map("assigned_at")
+  assignedBy String?   @map("assigned_by") @db.Uuid
+  revokedAt  DateTime? @map("revoked_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  user         User         @relation("UserRoleUser", fields: [userId], references: [id], onDelete: Cascade)
+  role         Role         @relation(fields: [roleId], references: [id], onDelete: Restrict)
+  assigner     User?        @relation("UserRoleAssigner", fields: [assignedBy], references: [id], onDelete: SetNull)
+
+  @@index([orgId, userId])
+  @@map("user_roles")
+}
+
+// ─── Subscription engine ─────────────────────────────────────────────────────
+
+model SubscriptionProfile {
+  id             String             @id @default(uuid()) @db.Uuid
+  orgId          String             @unique @map("org_id") @db.Uuid
+  modulesEnabled Json               @default("{}") @map("modules_enabled")
+  billingPlan    SubscriptionPlan   @default(trial) @map("billing_plan")
+  billingStatus  SubscriptionStatus @default(trialing) @map("billing_status")
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([billingStatus])
+  @@map("subscription_profiles")
+}
+
+model Module {
+  id          String     @id @default(uuid()) @db.Uuid
+  code        ModuleCode @unique
+  name        String
+  description String?
+  isActive    Boolean    @default(true) @map("is_active")
+  sortOrder   Int        @default(0) @map("sort_order")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @updatedAt @map("updated_at")
+
+  prices              ModulePrice[]
+  organizationModules OrganizationModule[]
+  modulePermissions   ModulePermission[]
+  subscriptionItems   SubscriptionItem[]
+
+  @@map("modules")
+}
+
+model ModulePrice {
+  id              String       @id @default(uuid()) @db.Uuid
+  moduleId        String       @map("module_id") @db.Uuid
+  billingCycle    BillingCycle @map("billing_cycle")
+  currency        String       @default("USD") @db.Char(3)
+  unitAmountCents Int          @map("unit_amount_cents")
+  externalPriceId String?      @map("external_price_id")
+  effectiveFrom   DateTime     @default(now()) @map("effective_from")
+  effectiveTo     DateTime?    @map("effective_to")
+  createdAt       DateTime     @default(now()) @map("created_at")
+  updatedAt       DateTime     @updatedAt @map("updated_at")
+
+  module Module @relation(fields: [moduleId], references: [id], onDelete: Restrict)
+
+  @@map("module_prices")
+}
+
+model ModulePermission {
+  moduleId     String @map("module_id") @db.Uuid
+  permissionId String @map("permission_id") @db.Uuid
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  module     Module     @relation(fields: [moduleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([moduleId, permissionId])
+  @@map("module_permissions")
+}
+
+model OrganizationModule {
+  id            String    @id @default(uuid()) @db.Uuid
+  orgId         String    @map("org_id") @db.Uuid
+  moduleId      String    @map("module_id") @db.Uuid
+  enabled       Boolean   @default(true)
+  effectiveFrom DateTime  @default(now()) @map("effective_from")
+  effectiveTo   DateTime? @map("effective_to")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  module       Module       @relation(fields: [moduleId], references: [id], onDelete: Restrict)
+
+  @@index([orgId, effectiveTo, enabled])
+  @@map("organization_modules")
+}
+
+model Subscription {
+  id                     String             @id @default(uuid()) @db.Uuid
+  orgId                  String             @map("org_id") @db.Uuid
+  status                 SubscriptionStatus @default(trialing)
+  billingCycle           BillingCycle       @default(monthly) @map("billing_cycle")
+  currency               String             @default("USD") @db.Char(3)
+  trialStart             DateTime?          @map("trial_start")
+  trialEnd               DateTime?          @map("trial_end")
+  currentPeriodStart     DateTime?          @map("current_period_start")
+  currentPeriodEnd       DateTime?          @map("current_period_end")
+  cancelAtPeriodEnd      Boolean            @default(false) @map("cancel_at_period_end")
+  canceledAt             DateTime?          @map("canceled_at")
+  externalCustomerId     String?            @map("external_customer_id")
+  externalSubscriptionId String?            @unique @map("external_subscription_id")
+  createdAt              DateTime           @default(now()) @map("created_at")
+  updatedAt              DateTime           @updatedAt @map("updated_at")
+
+  organization Organization       @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  items        SubscriptionItem[]
+
+  @@index([orgId])
+  @@map("subscriptions")
+}
+
+model SubscriptionItem {
+  id                         String                 @id @default(uuid()) @db.Uuid
+  subscriptionId             String                 @map("subscription_id") @db.Uuid
+  orgId                      String                 @map("org_id") @db.Uuid
+  moduleId                   String                 @map("module_id") @db.Uuid
+  status                     SubscriptionItemStatus @default(active)
+  billingCycle               BillingCycle           @map("billing_cycle")
+  quantity                   Int                    @default(1)
+  unitAmountCents            Int                    @map("unit_amount_cents")
+  currency                   String                 @default("USD") @db.Char(3)
+  externalSubscriptionItemId String?                @unique @map("external_subscription_item_id")
+  externalPriceId            String?                @map("external_price_id")
+  createdAt                  DateTime               @default(now()) @map("created_at")
+  updatedAt                  DateTime               @updatedAt @map("updated_at")
+
+  subscription Subscription @relation(fields: [subscriptionId], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  module       Module       @relation(fields: [moduleId], references: [id], onDelete: Restrict)
+
+  @@map("subscription_items")
+}
+
+// ─── Hiring client tenant ────────────────────────────────────────────────────
+
+model HiringClient {
+  id           String             @id @default(uuid()) @db.Uuid
+  companyName  String             @map("company_name")
+  contactName  String             @map("contact_name")
+  contactEmail String             @map("contact_email")
+  contactPhone String?            @map("contact_phone")
+  status       HiringClientStatus @default(active)
+  createdAt    DateTime           @default(now()) @map("created_at")
+  updatedAt    DateTime           @updatedAt @map("updated_at")
+
+  users  HiringClientUser[]
+  awards ContractAward[]
+
+  @@index([contactEmail])
+  @@map("hiring_clients")
+}
+
+model HiringClientUser {
+  id             String           @id @default(uuid()) @db.Uuid
+  hiringClientId String           @map("hiring_client_id") @db.Uuid
+  email          String
+  passwordHash   String           @map("password_hash")
+  role           HiringClientRole @default(Reviewer)
+  permissions    Json             @default("[]")
+  fullName       String?          @map("full_name")
+  status         UserStatus       @default(active)
+  lastLoginAt    DateTime?        @map("last_login_at")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+
+  hiringClient      HiringClient               @relation(fields: [hiringClientId], references: [id], onDelete: Cascade)
+  refreshTokens     HiringClientRefreshToken[]
+  awards            ContractAward[]            @relation("AwardActor")
+  reviewedArtifacts ComplianceArtifact[]       @relation("ComplianceReviewer")
+
+  @@unique([hiringClientId, email])
+  @@index([email])
+  @@map("hiring_client_users")
+}
+
+model HiringClientRefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user HiringClientUser @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("hiring_client_refresh_tokens")
+}
+
+model ContractAward {
+  id              String              @id @default(uuid()) @db.Uuid
+  hiringClientId  String              @map("hiring_client_id") @db.Uuid
+  contractorOrgId String              @map("contractor_org_id") @db.Uuid
+  awardedByUserId String?             @map("awarded_by_user_id") @db.Uuid
+  status          ContractAwardStatus @default(awarded)
+  projectName     String?             @map("project_name")
+  notes           String?             @db.Text
+  awardedAt       DateTime            @default(now()) @map("awarded_at")
+  createdAt       DateTime            @default(now()) @map("created_at")
+  updatedAt       DateTime            @updatedAt @map("updated_at")
+
+  hiringClient HiringClient      @relation(fields: [hiringClientId], references: [id], onDelete: Cascade)
+  awardedBy    HiringClientUser? @relation("AwardActor", fields: [awardedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([contractorOrgId])
+  @@map("contract_awards")
+}
+
+// ─── Developer tenant ────────────────────────────────────────────────────────
+
+model Developer {
+  id           String          @id @default(uuid()) @db.Uuid
+  email        String          @unique
+  passwordHash String          @map("password_hash")
+  role         DeveloperRole
+  permissions  Json            @default("[]")
+  fullName     String?         @map("full_name")
+  status       DeveloperStatus @default(active)
+  lastLoginAt  DateTime?       @map("last_login_at")
+  createdAt    DateTime        @default(now()) @map("created_at")
+  updatedAt    DateTime        @updatedAt @map("updated_at")
+
+  refreshTokens         DeveloperRefreshToken[]
+  apiKeys               DeveloperApiKey[]
+  actionLogs            DeveloperActionLog[]
+  impersonationSessions ImpersonationSession[]
+
+  @@map("developers")
+}
+
+model DeveloperRefreshToken {
+  id          String    @id @default(uuid()) @db.Uuid
+  developerId String    @map("developer_id") @db.Uuid
+  tokenHash   String    @unique @map("token_hash")
+  expiresAt   DateTime  @map("expires_at")
+  revokedAt   DateTime? @map("revoked_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  developer Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+
+  @@map("developer_refresh_tokens")
+}
+
+model DeveloperApiKey {
+  id          String    @id @default(uuid()) @db.Uuid
+  developerId String    @map("developer_id") @db.Uuid
+  name        String
+  keyPrefix   String    @map("key_prefix")
+  keyHash     String    @unique @map("key_hash")
+  scopes      Json      @default("[]")
+  lastUsedAt  DateTime? @map("last_used_at")
+  revokedAt   DateTime? @map("revoked_at")
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  developer Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+
+  @@map("developer_api_keys")
+}
+
+model FeatureFlag {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique
+  description String?
+  enabled     Boolean  @default(false)
+  payload     Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("feature_flags")
+}
+
+model ImpersonationSession {
+  id          String    @id @default(uuid()) @db.Uuid
+  developerId String    @map("developer_id") @db.Uuid
+  targetOrgId String    @map("target_org_id") @db.Uuid
+  reason      String?
+  startedAt   DateTime  @default(now()) @map("started_at")
+  endedAt     DateTime? @map("ended_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  developer Developer @relation(fields: [developerId], references: [id], onDelete: Cascade)
+
+  @@map("impersonation_sessions")
+}
+
+model DeveloperActionLog {
+  id          String   @id @default(uuid()) @db.Uuid
+  developerId String?  @map("developer_id") @db.Uuid
+  action      String
+  resource    String?
+  resourceId  String?  @map("resource_id")
+  ip          String?
+  userAgent   String?  @map("user_agent")
+  meta        Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  developer Developer? @relation(fields: [developerId], references: [id], onDelete: SetNull)
+
+  @@map("developer_action_logs")
+}
+
+// ─── Compliance + scorecard ──────────────────────────────────────────────────
+
+model ComplianceArtifact {
+  id           String                   @id @default(uuid()) @db.Uuid
+  orgId        String                   @map("org_id") @db.Uuid
+  type         ComplianceArtifactType
+  label        String?
+  fileUrl      String                   @map("file_url")
+  expiryDate   DateTime?                @map("expiry_date")
+  status       ComplianceArtifactStatus @default(pending_review)
+  reviewerId   String?                  @map("reviewer_id") @db.Uuid
+  uploadedById String?                  @map("uploaded_by_id") @db.Uuid
+  reviewNotes  String?                  @map("review_notes") @db.Text
+  reviewedAt   DateTime?                @map("reviewed_at")
+  createdAt    DateTime                 @default(now()) @map("created_at")
+  updatedAt    DateTime                 @updatedAt @map("updated_at")
+
+  organization Organization      @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  reviewer     HiringClientUser? @relation("ComplianceReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  uploadedBy   User?             @relation("ComplianceUploader", fields: [uploadedById], references: [id], onDelete: SetNull)
+
+  @@index([orgId, type])
+  @@index([orgId, status])
+  @@map("compliance_artifacts")
+}
+
+/// Safety scorecard — sketch `Scorecard`. Table: org_compliance_scorecards.
+model Scorecard {
+  id                  String   @id @default(uuid()) @db.Uuid
+  orgId               String   @map("org_id") @db.Uuid
+  globalScore         Int      @default(0) @map("global_score")
+  overallScore        Int      @default(0) @map("overall_score")
+  complianceScore     Int      @default(0) @map("compliance_score")
+  complianceBreakdown Json     @default("{}") @map("compliance_breakdown")
+  projectScores       Json     @default("[]") @map("project_scores")
+  calculatedAt        DateTime @default(now()) @map("calculated_at")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId])
+  @@map("org_compliance_scorecards")
+}
+
+model ComplianceNotificationLog {
+  id             String                     @id @default(uuid()) @db.Uuid
+  orgId          String                     @map("org_id") @db.Uuid
+  artifactId     String?                    @map("artifact_id") @db.Uuid
+  kind           ComplianceNotificationKind
+  recipientEmail String                     @map("recipient_email")
+  sentAt         DateTime                   @default(now()) @map("sent_at")
+  meta           Json?
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, artifactId, kind])
+  @@map("compliance_notification_logs")
+}
+
+enum NotificationChannel {
+  email
+  in_app
+}
+
+enum NotificationDeliveryStatus {
+  queued
+  sent
+  failed
+}
+
+model Notification {
+  id             String                     @id @default(uuid()) @db.Uuid
+  orgId          String?                    @map("org_id") @db.Uuid
+  userId         String?                    @map("user_id") @db.Uuid
+  type           String                     @default("system_alert")
+  title          String                     @default("")
+  body           String                     @db.Text
+  read           Boolean                    @default(false)
+  channel        NotificationChannel        @default(in_app)
+  status         NotificationDeliveryStatus @default(queued)
+  subject        String?
+  recipientEmail String?                    @map("recipient_email")
+  dedupeKey      String?                    @unique @map("dedupe_key")
+  meta           Json?
+  error          String?                    @db.Text
+  queuedAt       DateTime                   @default(now()) @map("queued_at")
+  sentAt         DateTime?                  @map("sent_at")
+  createdAt      DateTime                   @default(now()) @map("created_at")
+  updatedAt      DateTime                   @updatedAt @map("updated_at")
+
+  organization Organization? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@index([status, queuedAt])
+  @@index([userId, read, createdAt])
+  @@map("notifications")
+}
+
+model EmailQueue {
+  id        String    @id @default(uuid()) @db.Uuid
+  to        String
+  subject   String
+  body      String    @db.Text
+  status    String    @default("pending")
+  orgId     String?   @map("org_id") @db.Uuid
+  dedupeKey String?   @unique @map("dedupe_key")
+  error     String?   @db.Text
+  sentAt    DateTime? @map("sent_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@index([status, createdAt])
+  @@map("email_queue")
+}
+
+model ModuleUsageMetric {
+  id          String   @id @default(uuid()) @db.Uuid
+  orgId       String   @map("org_id") @db.Uuid
+  moduleCode  String   @map("module_code")
+  periodStart DateTime @map("period_start")
+  periodEnd   DateTime @map("period_end")
+  eventCount  Int      @default(0) @map("event_count")
+  activeUsers Int      @default(0) @map("active_users")
+  meta        Json?
+  recordedAt  DateTime @default(now()) @map("recorded_at")
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, moduleCode, periodStart])
+  @@map("module_usage_metrics")
+}
+
+// ─── Platform / auth support ─────────────────────────────────────────────────
+
+model RefreshToken {
+  id        String    @id @default(uuid()) @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  tokenHash String    @unique @map("token_hash")
+  expiresAt DateTime  @map("expires_at")
+  revokedAt DateTime? @map("revoked_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("refresh_tokens")
+}
+
+model AuditLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  orgId      String?  @map("org_id") @db.Uuid
+  actorId    String?  @map("actor_id") @db.Uuid
+  action     String
+  resource   String?
+  resourceId String?  @map("resource_id")
+  ip         String?
+  userAgent  String?  @map("user_agent")
+  meta       Json?
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  @@index([orgId, createdAt])
+  @@map("audit_logs")
+}
+
+model Onboarding {
+  id          String           @id @default(uuid()) @db.Uuid
+  orgId       String           @unique @map("org_id") @db.Uuid
+  status      OnboardingStatus @default(not_started)
+  notes       String?          @db.Text
+  checklist   Json?
+  assignedTo  String?          @map("assigned_to")
+  startedAt   DateTime?        @map("started_at")
+  completedAt DateTime?        @map("completed_at")
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@map("onboardings")
+}
+
+model OnboardingEvent {
+  id        String   @id @default(uuid()) @db.Uuid
+  orgId     String   @map("org_id") @db.Uuid
+  type      String
+  meta      Json?
+  createdAt DateTime @default(now()) @map("created_at")
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@map("onboarding_events")
+}
+
+model TrialNotificationLog {
+  id             String                @id @default(uuid()) @db.Uuid
+  orgId          String                @map("org_id") @db.Uuid
+  kind           TrialNotificationKind
+  recipientEmail String                @map("recipient_email")
+  sentAt         DateTime              @default(now()) @map("sent_at")
+  meta           Json?
+
+  organization Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+
+  @@unique([orgId, kind])
+  @@map("trial_notification_logs")
+}
+
+model PlatformSetting {
+  key       String   @id
+  value     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("platform_settings")
+}
+
+model StripeWebhookEvent {
+  id          String   @id @default(uuid()) @db.Uuid
+  eventId     String   @unique @map("event_id")
+  type        String
+  processedAt DateTime @default(now()) @map("processed_at")
+  payloadHash String?  @map("payload_hash")
+
+  @@map("stripe_webhook_events")
+}
+
+model SchemaRelease {
+  id            String   @id @default(uuid()) @db.Uuid
+  releaseTag    String   @unique @map("release_tag")
+  migrationName String   @map("migration_name")
+  appliedAt     DateTime @default(now()) @map("applied_at")
+  notes         String?
+
+  @@map("schema_releases")
+}

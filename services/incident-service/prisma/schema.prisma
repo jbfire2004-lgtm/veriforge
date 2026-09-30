@@ -1,0 +1,147 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum IncidentStatus {
+  reported
+  under_investigation
+  investigated
+  closed
+}
+
+enum IncidentSeverity {
+  low
+  medium
+  high
+  critical
+}
+
+model Incident {
+  id                String           @id @default(uuid()) @db.Uuid
+  companyId         String           @map("company_id") @db.Uuid
+  projectId         String           @map("project_id") @db.Uuid
+  incidentNumber    String           @map("incident_number")
+  incidentType      String           @map("incident_type")
+  title             String
+  description       String?          @db.Text
+  severity          IncidentSeverity
+  status            IncidentStatus   @default(reported)
+  location          String?
+  occurredAt        DateTime         @map("occurred_at")
+  latitude          Float?
+  longitude         Float?
+  workerId          String?          @map("worker_id") @db.Uuid
+  equipmentId       String?          @map("equipment_id") @db.Uuid
+  severityLevel     Int              @map("severity_level")
+  likelihoodLevel   Int              @map("likelihood_level")
+  riskScore         Int?             @map("risk_score")
+  sifScore          Int?             @map("sif_score")
+  sifPotential      Boolean          @default(false) @map("sif_potential")
+  hecaCategory      String?          @map("heca_category")
+  safetyGatePassed  Boolean?         @map("safety_gate_passed")
+  safetyGateReason  String?          @map("safety_gate_reason") @db.Text
+  reportedBy        String           @map("reported_by") @db.Uuid
+  investigatedBy    String?          @map("investigated_by") @db.Uuid
+  closedBy          String?          @map("closed_by") @db.Uuid
+  investigatedAt    DateTime?        @map("investigated_at")
+  closedAt          DateTime?        @map("closed_at")
+  closeNotes        String?          @map("close_notes") @db.Text
+  metadata          Json             @default("{}") @db.JsonB
+  createdBy         String           @map("created_by") @db.Uuid
+  updatedBy         String?          @map("updated_by") @db.Uuid
+  createdAt         DateTime         @default(now()) @map("created_at")
+  updatedAt         DateTime         @updatedAt @map("updated_at")
+  deletedAt         DateTime?        @map("deleted_at")
+
+  witnesses              IncidentWitness[]
+  investigations         IncidentInvestigation[]
+  correctiveActionLinks  IncidentCorrectiveActionLink[]
+
+  @@unique([companyId, incidentNumber])
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@index([companyId, status])
+  @@index([companyId, severity])
+  @@index([deletedAt])
+  @@map("incidents")
+}
+
+model IncidentWitness {
+  id            String    @id @default(uuid()) @db.Uuid
+  incidentId    String    @map("incident_id") @db.Uuid
+  name          String?
+  contact       String?
+  workerId      String?   @map("worker_id") @db.Uuid
+  statement     String?   @db.Text
+  interviewedAt DateTime? @map("interviewed_at")
+  interviewedBy String?   @map("interviewed_by") @db.Uuid
+  createdBy     String    @map("created_by") @db.Uuid
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+  deletedAt     DateTime? @map("deleted_at")
+
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@index([incidentId])
+  @@index([deletedAt])
+  @@map("incident_witnesses")
+}
+
+model IncidentInvestigation {
+  id              String    @id @default(uuid()) @db.Uuid
+  incidentId      String    @map("incident_id") @db.Uuid
+  investigatedBy  String    @map("investigated_by") @db.Uuid
+  findings        String    @db.Text
+  rootCause       String?   @map("root_cause") @db.Text
+  method          String?
+  recommendations String?   @db.Text
+  metadata        Json      @default("{}") @db.JsonB
+  createdBy       String    @map("created_by") @db.Uuid
+  updatedBy       String?   @map("updated_by") @db.Uuid
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@index([incidentId])
+  @@index([deletedAt])
+  @@map("incident_investigations")
+}
+
+model IncidentCorrectiveActionLink {
+  id                 String   @id @default(uuid()) @db.Uuid
+  incidentId         String   @map("incident_id") @db.Uuid
+  correctiveActionId String   @map("corrective_action_id") @db.Uuid
+  linkedBy           String   @map("linked_by") @db.Uuid
+  createdAt          DateTime @default(now()) @map("created_at")
+
+  incident Incident @relation(fields: [incidentId], references: [id], onDelete: Cascade)
+
+  @@unique([incidentId, correctiveActionId])
+  @@index([correctiveActionId])
+  @@map("incident_corrective_action_links")
+}
+
+model IncidentOfflineSync {
+  id           String    @id @default(uuid()) @db.Uuid
+  companyId    String    @map("company_id") @db.Uuid
+  deviceId     String    @map("device_id")
+  clientSyncId String    @map("client_sync_id")
+  action       String
+  payload      Json      @db.JsonB
+  status       String    @default("pending")
+  result       Json?     @db.JsonB
+  createdAt    DateTime  @default(now()) @map("created_at")
+  syncedAt     DateTime? @map("synced_at")
+
+  @@unique([deviceId, clientSyncId])
+  @@index([companyId])
+  @@index([deviceId])
+  @@map("incident_offline_sync")
+}

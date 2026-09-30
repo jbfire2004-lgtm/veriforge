@@ -1,8 +1,20 @@
 {
-  "devDependencies": {
-    "prisma": "^7.7.0"
-  },
-  "dependencies": {
-    "@prisma/client": "^7.7.0"
+  "name": "vera-monorepo",
+  "private": true,
+  "type": "module",
+  "description": "Vera / VeriForge monorepo — Nest+Next workspace + VeriForge SaaS",
+  "scripts": {
+    "migrate": "node scripts/migrate.mjs",
+    "seed": "node scripts/seed.mjs",
+    "dev:backend": "npm run start:dev --prefix backend",
+    "dev:frontend": "npm run dev --prefix vera-frontend",
+    "dev:parallel": "node scripts/dev-parallel.mjs",
+    "dev:veriforge": "node scripts/dev-veriforge.mjs",
+    "dev:bootstrap": "node scripts/dev-bootstrap.mjs",
+    "build": "npm run build --prefix backend && npm run build --prefix vera-frontend",
+    "test:ci:backend": "npm run test:ci --prefix backend",
+    "go-live:checklist": "node scripts/go-live-checklist.mjs",
+    "simulate:workflows": "npm run build --prefix packages/vera-workflow-sim && npm run simulate --prefix packages/vera-workflow-sim",
+    "test:workflow-sim": "npm run build --prefix packages/vera-workflow-sim && npm run test:workflow-sim --prefix backend && npm run test:workflow-sim --prefix vera-frontend"
   }
 }

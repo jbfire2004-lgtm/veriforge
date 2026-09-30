@@ -1,0 +1,1 @@
+{"version":3,"file":"auto-assignment.d.ts","sourceRoot":"","sources":["../../src/engines/auto-assignment.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,oBAAoB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAG7E,qBAAa,oBAAoB;IAC/B,GAAG,CAAC,GAAG,EAAE,sBAAsB,GAAG,oBAAoB;CAwHvD"}

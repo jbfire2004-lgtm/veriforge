@@ -1,0 +1,13 @@
+{
+  "expo": {
+    "name": "Vera Worker Wallet",
+    "slug": "vera-worker-wallet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "verawallet",
+    "userInterfaceStyle": "light",
+    "platforms": ["ios", "android"],
+    "ios": { "bundleIdentifier": "com.vera.workerwallet" },
+    "android": { "package": "com.vera.workerwallet" }
+  }
+}

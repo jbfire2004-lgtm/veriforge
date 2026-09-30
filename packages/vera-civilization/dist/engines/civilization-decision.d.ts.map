@@ -1,0 +1,1 @@
+{"version":3,"file":"civilization-decision.d.ts","sourceRoot":"","sources":["../../src/engines/civilization-decision.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,oBAAoB,EAAE,kBAAkB,EAAE,qBAAqB,EAAE,MAAM,UAAU,CAAC;AAI1H,qBAAa,0BAA0B;IACrC,MAAM,CACJ,GAAG,EAAE,wBAAwB,EAC7B,MAAM,EAAE,kBAAkB,EAC1B,SAAS,EAAE,qBAAqB,GAC/B,oBAAoB,EAAE;CA2B1B"}

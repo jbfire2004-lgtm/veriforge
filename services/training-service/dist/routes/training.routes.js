@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.trainingRouter = void 0;
+const express_1 = require("express");
+const training_controller_1 = require("../controllers/training.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const training_validators_1 = require("../validators/training.validators");
+exports.trainingRouter = (0, express_1.Router)();
+exports.trainingRouter.use(auth_middleware_1.requireAuth);
+exports.trainingRouter.post('/course', training_validators_1.courseValidators, error_handler_1.handleValidation, training_controller_1.trainingController.course);
+exports.trainingRouter.post('/matrix', training_validators_1.matrixValidators, error_handler_1.handleValidation, training_controller_1.trainingController.matrix);
+exports.trainingRouter.post('/assign', training_validators_1.assignValidators, error_handler_1.handleValidation, training_controller_1.trainingController.assign);
+exports.trainingRouter.post('/complete', training_validators_1.completeValidators, error_handler_1.handleValidation, training_controller_1.trainingController.complete);
+exports.trainingRouter.post('/verify', auth_middleware_1.requireVerifier, training_validators_1.verifyValidators, error_handler_1.handleValidation, training_controller_1.trainingController.verify);
+exports.trainingRouter.get('/worker/:id', training_validators_1.workerValidators, error_handler_1.handleValidation, training_controller_1.trainingController.getWorker);

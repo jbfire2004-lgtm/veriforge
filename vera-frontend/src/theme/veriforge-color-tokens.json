@@ -1,0 +1,180 @@
+{
+  "meta": {
+    "name": "VeriForge Industrial Safety Color Tokens",
+    "version": "3.0.0",
+    "products": ["Hub", "Core", "PM", "Wallet"],
+    "type": "color"
+  },
+  "color": {
+    "palette": {
+      "slate": "#2A2E33",
+      "graphite": "#3B3F45",
+      "iron": "#1C1F24",
+      "panel": "#23272C",
+      "steel": "#5A6169",
+      "white": "#F4F6F8",
+      "safetyBlue": "#1E6FB8",
+      "safetyBlueDark": "#174F86",
+      "safetyBlueHover": "#1A63A6",
+      "inspectionTeal": "#2F8F8C",
+      "mutedAmber": "#C89F3D",
+      "mutedAmberDark": "#A8842F",
+      "softGreen": "#4FAF6F",
+      "softGreenDark": "#3D8F58",
+      "controlledRed": "#B33A3A",
+      "controlledRedDark": "#8F2E2E"
+    },
+    "surface": {
+      "primary": "#2A2E33",
+      "secondary": "#3B3F45",
+      "tertiary": "#23272C",
+      "inverse": "#F4F6F8",
+      "overlay": "rgba(28, 31, 36, 0.75)",
+      "warning": "#2A2820",
+      "success": "#1F2A24",
+      "critical": "#2A2224",
+      "info": "rgba(30, 111, 184, 0.16)"
+    },
+    "text": {
+      "primary": "#F4F6F8",
+      "secondary": "#D5DBE0",
+      "muted": "#A8B0B8",
+      "quiet": "#8A9199",
+      "inverse": "#2A2E33",
+      "onAccent": "#F4F6F8",
+      "onSuccess": "#0F1A12",
+      "onWarning": "#1C1A10",
+      "link": "#1E6FB8",
+      "critical": "#B33A3A"
+    },
+    "border": {
+      "default": "#5A6169",
+      "subtle": "rgba(90, 97, 105, 0.7)",
+      "strong": "#2A2E33",
+      "inverse": "rgba(42, 46, 51, 0.14)",
+      "focus": "#1E6FB8",
+      "warning": "rgba(200, 159, 61, 0.7)",
+      "success": "rgba(79, 175, 111, 0.6)",
+      "critical": "rgba(179, 58, 58, 0.7)",
+      "info": "#174F86"
+    },
+    "accent": {
+      "blue": "#1E6FB8",
+      "blueDark": "#174F86",
+      "blueHover": "#1A63A6",
+      "blueMuted": "rgba(30, 111, 184, 0.16)",
+      "blueMutedStrong": "rgba(30, 111, 184, 0.2)",
+      "teal": "#2F8F8C",
+      "tealMuted": "rgba(47, 143, 140, 0.16)"
+    },
+    "status": {
+      "success": "#4FAF6F",
+      "successBorder": "#3D8F58",
+      "successForeground": "#0F1A12",
+      "warning": "#C89F3D",
+      "warningBorder": "#A8842F",
+      "warningForeground": "#1C1A10",
+      "critical": "#B33A3A",
+      "criticalBorder": "#8F2E2E",
+      "criticalForeground": "#F4F6F8",
+      "info": "#1E6FB8",
+      "infoBorder": "#174F86",
+      "infoForeground": "#F4F6F8"
+    },
+    "background": {
+      "page": "#1C1F24",
+      "pageLight": "#F4F6F8",
+      "card": "#2A2E33",
+      "cardElevated": "#3B3F45",
+      "cardLight": "#FFFFFF",
+      "panel": "#23272C",
+      "panelElevated": "#2A2E33",
+      "tableHeader": "#3B3F45",
+      "tableRow": "#2A2E33",
+      "tableRowAlt": "#23272C",
+      "tableRowHover": "#32363C",
+      "tableRowSelected": "rgba(30, 111, 184, 0.16)",
+      "tableRowCritical": "rgba(179, 58, 58, 0.14)",
+      "tableRowLight": "#FFFFFF",
+      "tableRowAltLight": "#F0F2F4",
+      "tableRowHoverLight": "#E8F1F8",
+      "input": "#23272C",
+      "inputDisabled": "#2A2E33",
+      "topBar": "#2A2E33",
+      "moduleBar": "#3B3F45",
+      "sidebar": "#3B3F45",
+      "modal": "#2A2E33",
+      "menu": "#3B3F45"
+    },
+    "focus": {
+      "ring": "#1E6FB8",
+      "ringOffset": "#1C1F24",
+      "glow": "rgba(30, 111, 184, 0.28)",
+      "glowStrong": "rgba(30, 111, 184, 0.35)",
+      "rail": "#1E6FB8",
+      "railCritical": "#B33A3A"
+    },
+    "hover": {
+      "surfacePrimary": "#343940",
+      "surfaceSecondary": "#454A51",
+      "surfaceTertiary": "#32363C",
+      "accentBlue": "#1A63A6",
+      "accentTeal": "#287A78",
+      "statusSuccess": "#45A064",
+      "statusWarning": "#B89136",
+      "statusCritical": "#A33434",
+      "navItem": "rgba(30, 111, 184, 0.16)",
+      "ghost": "rgba(59, 63, 69, 0.4)",
+      "link": "#2F85CC"
+    },
+    "disabled": {
+      "surface": "#353A40",
+      "border": "#454A51",
+      "text": "#8A9199"
+    },
+    "button": {
+      "primary": {
+        "background": "#2A2E33",
+        "border": "#1F2328",
+        "text": "#F4F6F8",
+        "hoverBackground": "#343940",
+        "activeBackground": "#23272C"
+      },
+      "secondary": {
+        "background": "#3B3F45",
+        "border": "#2A2E33",
+        "text": "#F4F6F8",
+        "hoverBackground": "#454A51",
+        "activeBackground": "#32363C"
+      },
+      "action": {
+        "background": "#1E6FB8",
+        "border": "#174F86",
+        "text": "#F4F6F8",
+        "hoverBackground": "#1A63A6",
+        "activeBackground": "#174F86"
+      },
+      "success": {
+        "background": "#4FAF6F",
+        "border": "#3D8F58",
+        "text": "#0F1A12",
+        "hoverBackground": "#45A064",
+        "activeBackground": "#3D8F58"
+      },
+      "warning": {
+        "background": "#C89F3D",
+        "border": "#A8842F",
+        "text": "#1C1A10",
+        "hoverBackground": "#B89136",
+        "activeBackground": "#A8842F"
+      },
+      "critical": {
+        "background": "#B33A3A",
+        "border": "#8F2E2E",
+        "text": "#F4F6F8",
+        "hoverBackground": "#A33434",
+        "activeBackground": "#8F2E2E"
+      }
+    }
+  }
+}

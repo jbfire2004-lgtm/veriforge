@@ -1,0 +1,1 @@
+{"version":3,"file":"auto-restriction.d.ts","sourceRoot":"","sources":["../../src/engines/auto-restriction.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,qBAAqB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAG9E,qBAAa,qBAAqB;IAChC,GAAG,CAAC,GAAG,EAAE,sBAAsB,GAAG,qBAAqB;CA8DxD"}

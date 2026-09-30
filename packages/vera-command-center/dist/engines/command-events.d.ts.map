@@ -1,0 +1,1 @@
+{"version":3,"file":"command-events.d.ts","sourceRoot":"","sources":["../../src/engines/command-events.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,MAAM,UAAU,CAAC;AAEpD,qBAAa,kBAAkB;IAC7B,UAAU,CACR,GAAG,EAAE,mBAAmB,EACxB,KAAK,EAAE,MAAM,EACb,IAAI,CAAC,EAAE,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,GAC7B,mBAAmB;CAqCvB"}

@@ -1,0 +1,7 @@
+.shell {
+  composes: shell from "./shared.module.css";
+}
+
+.body {
+  composes: body from "./shared.module.css";
+}

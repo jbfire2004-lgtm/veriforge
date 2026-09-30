@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2017",
+    "strict": false,
+    "esModuleInterop": true
+  },
+  "include": ["prisma/**/*.ts", "src/config/env.ts"]
+}
+  
+  

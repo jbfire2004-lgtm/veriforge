@@ -1,0 +1,356 @@
+:root {
+  /* ── Brand base ───────────────────────────────────────────────────────── */
+  --slate: #2a2e33;
+  --graphite: #3b3f45;
+  --iron: #1c1f24;
+  --panel: #23272c;
+  --steel: #5a6169;
+  --white: #f4f6f8;
+  --safety-blue: #1e6fb8;
+  --safety-blue-dark: #174f86;
+  --safety-blue-hover: #1a63a6;
+  --inspection-teal: #2f8f8c;
+  --amber: #c89f3d;
+  --amber-dark: #a8842f;
+  --green: #4faf6f;
+  --green-dark: #3d8f58;
+  --critical-red: #b33a3a;
+  --critical-red-dark: #8f2e2e;
+
+  /* ── Colors · surface ─────────────────────────────────────────────────── */
+  --color-surface-primary: var(--slate);
+  --color-surface-secondary: var(--graphite);
+  --color-surface-tertiary: var(--panel);
+  --color-surface-inverse: var(--white);
+  --color-surface-overlay: rgba(28, 31, 36, 0.75);
+  --color-surface-warning: #2a2820;
+  --color-surface-success: #1f2a24;
+  --color-surface-critical: #2a2224;
+  --color-surface-info: rgba(30, 111, 184, 0.16);
+  --color-surface-disabled: #353a40;
+
+  /* ── Colors · text ────────────────────────────────────────────────────── */
+  --color-text-primary: var(--white);
+  --color-text-secondary: #d5dbe0;
+  --color-text-muted: #a8b0b8;
+  --color-text-quiet: #8a9199;
+  --color-text-inverse: var(--slate);
+  --color-text-on-accent: var(--white);
+  --color-text-on-success: #0f1a12;
+  --color-text-on-warning: #1c1a10;
+  --color-text-link: var(--safety-blue);
+  --color-text-critical: var(--critical-red);
+  --color-text-disabled: #8a9199;
+
+  /* ── Colors · border ──────────────────────────────────────────────────── */
+  --color-border-default: var(--steel);
+  --color-border-subtle: rgba(90, 97, 105, 0.7);
+  --color-border-strong: var(--slate);
+  --color-border-inverse: rgba(42, 46, 51, 0.14);
+  --color-border-focus: var(--safety-blue);
+  --color-border-warning: rgba(200, 159, 61, 0.7);
+  --color-border-success: rgba(79, 175, 111, 0.6);
+  --color-border-critical: rgba(179, 58, 58, 0.7);
+  --color-border-info: var(--safety-blue-dark);
+  --color-border-disabled: #454a51;
+
+  /* ── Colors · accent ──────────────────────────────────────────────────── */
+  --color-accent-blue: var(--safety-blue);
+  --color-accent-blue-dark: var(--safety-blue-dark);
+  --color-accent-blue-hover: var(--safety-blue-hover);
+  --color-accent-blue-muted: rgba(30, 111, 184, 0.16);
+  --color-accent-blue-muted-strong: rgba(30, 111, 184, 0.2);
+  --color-accent-teal: var(--inspection-teal);
+  --color-accent-teal-hover: #287a78;
+  --color-accent-teal-muted: rgba(47, 143, 140, 0.16);
+
+  /* ── Colors · status ──────────────────────────────────────────────────── */
+  --color-status-success: var(--green);
+  --color-status-success-border: var(--green-dark);
+  --color-status-success-foreground: #0f1a12;
+  --color-status-warning: var(--amber);
+  --color-status-warning-border: var(--amber-dark);
+  --color-status-warning-foreground: #1c1a10;
+  --color-status-critical: var(--critical-red);
+  --color-status-critical-border: var(--critical-red-dark);
+  --color-status-critical-foreground: var(--white);
+  --color-status-info: var(--safety-blue);
+  --color-status-info-border: var(--safety-blue-dark);
+  --color-status-info-foreground: var(--white);
+
+  /* ── Colors · background ──────────────────────────────────────────────── */
+  --color-bg-page: var(--iron);
+  --color-bg-page-light: var(--white);
+  --color-bg-card: var(--slate);
+  --color-bg-card-elevated: var(--graphite);
+  --color-bg-card-light: #ffffff;
+  --color-bg-panel: var(--panel);
+  --color-bg-table-header: var(--graphite);
+  --color-bg-table-row: var(--slate);
+  --color-bg-table-row-alt: var(--panel);
+  --color-bg-table-row-hover: #32363c;
+  --color-bg-table-row-selected: rgba(30, 111, 184, 0.16);
+  --color-bg-table-row-critical: rgba(179, 58, 58, 0.14);
+  --color-bg-input: var(--panel);
+  --color-bg-topbar: var(--slate);
+  --color-bg-modulebar: var(--graphite);
+  --color-bg-sidebar: var(--graphite);
+  --color-bg-modal: var(--slate);
+  --color-bg-menu: var(--graphite);
+  --color-bg-overlay: rgba(28, 31, 36, 0.75);
+
+  /* ── Colors · focus / hover ───────────────────────────────────────────── */
+  --color-focus-ring: var(--safety-blue);
+  --color-focus-ring-offset: var(--iron);
+  --color-focus-glow: rgba(30, 111, 184, 0.28);
+  --color-focus-glow-strong: rgba(30, 111, 184, 0.35);
+  --color-focus-rail: var(--safety-blue);
+  --color-focus-rail-critical: var(--critical-red);
+
+  --color-hover-surface-primary: #343940;
+  --color-hover-surface-secondary: #454a51;
+  --color-hover-surface-tertiary: #32363c;
+  --color-hover-accent-blue: var(--safety-blue-hover);
+  --color-hover-accent-teal: #287a78;
+  --color-hover-nav: rgba(30, 111, 184, 0.16);
+  --color-hover-ghost: rgba(59, 63, 69, 0.4);
+  --color-hover-link: #2f85cc;
+
+  /* ── Typography ───────────────────────────────────────────────────────── */
+  --font-family-sans: Inter, Roboto, "Segoe UI", system-ui, sans-serif;
+  --font-family-mono: "Roboto Mono", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --font-family-heading: var(--font-family-sans);
+  --font-family-body: var(--font-family-sans);
+
+  --font-size-10: 0.625rem;
+  --font-size-11: 0.6875rem;
+  --font-size-12: 0.75rem;
+  --font-size-13: 0.8125rem;
+  --font-size-14: 0.875rem;
+  --font-size-16: 1rem;
+  --font-size-18: 1.125rem;
+  --font-size-20: 1.25rem;
+  --font-size-24: 1.5rem;
+  --font-size-28: 1.75rem;
+  --font-size-32: 2rem;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  --line-height-tight: 1.2;
+  --line-height-snug: 1.3;
+  --line-height-normal: 1.4;
+  --line-height-relaxed: 1.5;
+
+  --letter-spacing-tight: -0.01em;
+  --letter-spacing-normal: 0;
+  --letter-spacing-wide: 0.02em;
+  --letter-spacing-label: 0.06em;
+  --letter-spacing-eyebrow: 0.08em;
+  --letter-spacing-brand: 0.12em;
+
+  /* ── Spacing scale ────────────────────────────────────────────────────── */
+  --space-0: 0;
+  --space-2: 0.125rem;
+  --space-4: 0.25rem;
+  --space-8: 0.5rem;
+  --space-12: 0.75rem;
+  --space-16: 1rem;
+  --space-20: 1.25rem;
+  --space-24: 1.5rem;
+  --space-32: 2rem;
+  --space-40: 2.5rem;
+  --space-48: 3rem;
+  --space-64: 4rem;
+
+  /* ── Radius scale ─────────────────────────────────────────────────────── */
+  --radius-0: 0;
+  --radius-2: 2px;
+  --radius-3: 3px;
+  --radius-4: 4px;
+  --radius-6: 6px;
+  --radius-8: 8px;
+  --radius-control: var(--radius-3);
+  --radius-card: var(--radius-3);
+  --radius-card-light: var(--radius-6);
+
+  /* ── Shadows (matte / industrial — keep subtle) ───────────────────────── */
+  --shadow-none: none;
+  --shadow-subtle: 0 1px 2px rgba(28, 31, 36, 0.2);
+  --shadow-medium: 0 1px 2px rgba(28, 31, 36, 0.35);
+  --shadow-strong: 0 2px 6px rgba(28, 31, 36, 0.45);
+  --shadow-focus: 0 0 0 2px var(--color-focus-glow);
+  --shadow-focus-ring: 0 0 0 2px var(--color-focus-ring);
+  --shadow-rail-blue: inset 3px 0 0 var(--color-focus-rail);
+  --shadow-rail-critical: inset 3px 0 0 var(--color-focus-rail-critical);
+
+  /* ── Motion ───────────────────────────────────────────────────────────── */
+  --motion-fast: 120ms;
+  --motion-medium: 150ms;
+  --motion-slow: 240ms;
+  --ease-industrial: cubic-bezier(0.33, 0, 0.2, 1);
+
+  /* ── Component · button ───────────────────────────────────────────────── */
+  --button-height-sm: 2.25rem;
+  --button-height-md: 2.5rem;
+  --button-height-lg: 2.75rem;
+  --button-padding-x-sm: var(--space-12);
+  --button-padding-x-md: var(--space-16);
+  --button-padding-x-lg: var(--space-20);
+  --button-radius: var(--radius-control);
+  --button-font-size-sm: var(--font-size-12);
+  --button-font-size-md: var(--font-size-13);
+  --button-font-size-lg: var(--font-size-14);
+  --button-font-weight: var(--font-weight-medium);
+  --button-gap: var(--space-8);
+  --button-border-width: 1px;
+
+  --button-primary-bg: var(--color-surface-primary);
+  --button-primary-border: #1f2328;
+  --button-primary-text: var(--color-text-primary);
+  --button-primary-hover-bg: var(--color-hover-surface-primary);
+
+  --button-secondary-bg: var(--color-surface-secondary);
+  --button-secondary-border: var(--color-surface-primary);
+  --button-secondary-text: var(--color-text-primary);
+  --button-secondary-hover-bg: var(--color-hover-surface-secondary);
+
+  --button-action-bg: var(--color-accent-blue);
+  --button-action-border: var(--color-accent-blue-dark);
+  --button-action-text: var(--color-text-on-accent);
+  --button-action-hover-bg: var(--color-accent-blue-hover);
+
+  --button-success-bg: var(--color-status-success);
+  --button-success-border: var(--color-status-success-border);
+  --button-success-text: var(--color-status-success-foreground);
+
+  --button-warning-bg: var(--color-status-warning);
+  --button-warning-border: var(--color-status-warning-border);
+  --button-warning-text: var(--color-status-warning-foreground);
+
+  --button-critical-bg: var(--color-status-critical);
+  --button-critical-border: var(--color-status-critical-border);
+  --button-critical-text: var(--color-status-critical-foreground);
+
+  --button-disabled-bg: var(--color-surface-disabled);
+  --button-disabled-border: var(--color-border-disabled);
+  --button-disabled-text: var(--color-text-disabled);
+  --button-disabled-opacity: 0.7;
+
+  /* ── Component · card / panel ─────────────────────────────────────────── */
+  --card-bg: var(--color-bg-card);
+  --card-bg-elevated: var(--color-bg-card-elevated);
+  --card-bg-inset: var(--color-bg-panel);
+  --card-border-color: var(--color-border-default);
+  --card-border-width: 1px;
+  --card-radius: var(--radius-card);
+  --card-padding: var(--space-16);
+  --card-padding-lg: var(--space-20);
+  --card-gap: var(--space-16);
+  --card-header-gap: var(--space-12);
+  --card-header-border: var(--color-border-subtle);
+  --card-shadow: var(--shadow-none);
+  --card-icon-tile-size: 2rem;
+  --card-icon-tile-bg: var(--color-bg-panel);
+  --card-icon-tile-border: var(--color-border-default);
+  --card-icon-color: var(--color-accent-blue);
+
+  /* ── Component · table ────────────────────────────────────────────────── */
+  --table-border-color: var(--color-border-default);
+  --table-radius: var(--radius-control);
+  --table-header-bg: var(--color-bg-table-header);
+  --table-header-text: #c5ccd3;
+  --table-header-font-size: var(--font-size-11);
+  --table-header-font-weight: var(--font-weight-semibold);
+  --table-header-letter-spacing: var(--letter-spacing-label);
+  --table-row-bg: var(--color-bg-table-row);
+  --table-row-bg-alt: var(--color-bg-table-row-alt);
+  --table-row-bg-hover: var(--color-bg-table-row-hover);
+  --table-row-bg-selected: var(--color-bg-table-row-selected);
+  --table-row-bg-critical: var(--color-bg-table-row-critical);
+  --table-row-height: 2.5rem;
+  --table-cell-padding-x: var(--space-12);
+  --table-cell-padding-y: 0.625rem;
+  --table-cell-text: var(--color-text-secondary);
+  --table-cell-font-size: var(--font-size-14);
+  --table-rail-selected: var(--shadow-rail-blue);
+  --table-rail-critical: var(--shadow-rail-critical);
+
+  /* ── Component · input ────────────────────────────────────────────────── */
+  --input-height: 2.5rem;
+  --input-padding-x: var(--space-12);
+  --input-radius: var(--radius-control);
+  --input-bg: var(--color-bg-input);
+  --input-border-color: var(--color-border-default);
+  --input-border-width: 1px;
+  --input-text: var(--color-text-primary);
+  --input-placeholder: var(--color-text-quiet);
+  --input-font-size: var(--font-size-14);
+  --input-font-weight: var(--font-weight-medium);
+  --input-label-color: var(--color-text-muted);
+  --input-label-size: var(--font-size-11);
+  --input-label-weight: var(--font-weight-semibold);
+  --input-label-letter-spacing: var(--letter-spacing-label);
+  --input-label-gap: 0.375rem;
+  --input-hint-color: var(--color-text-quiet);
+  --input-hint-size: var(--font-size-12);
+  --input-focus-border: var(--color-border-focus);
+  --input-focus-shadow: var(--shadow-focus);
+  --input-error-border: var(--color-status-warning);
+  --input-error-text: var(--color-status-warning);
+  --input-disabled-bg: var(--color-surface-primary);
+  --input-disabled-border: var(--color-border-disabled);
+  --input-disabled-text: var(--color-text-disabled);
+  --input-textarea-min-height: 6rem;
+
+  /* ── Component · modal ────────────────────────────────────────────────── */
+  --modal-overlay-bg: var(--color-bg-overlay);
+  --modal-bg: var(--color-bg-modal);
+  --modal-border-color: var(--color-border-default);
+  --modal-border-width: 1px;
+  --modal-radius: var(--radius-control);
+  --modal-shadow: var(--shadow-none);
+  --modal-padding: var(--space-20);
+  --modal-max-width: 36rem;
+  --modal-header-gap: var(--space-12);
+  --modal-divider-color: var(--color-border-default);
+  --modal-footer-gap: var(--space-8);
+  --modal-z-index: 90;
+
+  /* ── Component · nav ──────────────────────────────────────────────────── */
+  --nav-topbar-bg: var(--color-bg-topbar);
+  --nav-topbar-border: #1f2328;
+  --nav-topbar-height: 3.5rem;
+  --nav-topbar-height-lg: 4rem;
+  --nav-topbar-padding-x: var(--space-16);
+  --nav-topbar-padding-x-lg: var(--space-24);
+  --nav-topbar-text: var(--color-text-primary);
+  --nav-topbar-max-width: 100rem;
+
+  --nav-modulebar-bg: var(--color-bg-modulebar);
+  --nav-modulebar-border: var(--color-surface-primary);
+  --nav-modulebar-padding-y: 0.625rem;
+  --nav-modulebar-icon: var(--color-accent-blue);
+
+  --nav-sidebar-bg: var(--color-bg-sidebar);
+  --nav-sidebar-border: var(--color-border-default);
+  --nav-sidebar-width: 16rem;
+  --nav-sidebar-section-color: var(--color-accent-teal);
+  --nav-sidebar-section-size: var(--font-size-10);
+  --nav-item-padding-x: var(--space-12);
+  --nav-item-padding-y: var(--space-8);
+  --nav-item-gap: var(--space-12);
+  --nav-item-radius: var(--radius-control);
+  --nav-item-text: var(--color-text-secondary);
+  --nav-item-text-active: var(--color-text-primary);
+  --nav-item-hover-bg: var(--color-hover-nav);
+  --nav-item-active-bg: var(--color-accent-blue-muted-strong);
+  --nav-item-active-rail: var(--shadow-rail-blue);
+  --nav-item-critical-text: #f0dada;
+  --nav-menu-bg: var(--color-bg-menu);
+  --nav-menu-border: var(--color-border-default);
+  --nav-menu-radius: var(--radius-control);
+  --nav-menu-max-height: 30rem;
+}

@@ -1,0 +1,177 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PublishStatus {
+  draft
+  published
+}
+
+model ProjectSafetyProfile {
+  id                            String        @id @default(uuid()) @db.Uuid
+  companyId                     String        @map("company_id") @db.Uuid
+  projectId                     String        @unique @map("project_id") @db.Uuid
+  riskLevel                     String        @default("medium") @map("risk_level")
+  requiredJhaTypes              Json          @default("[]") @map("required_jha_types") @db.JsonB
+  requiredInspections           Json          @default("[]") @map("required_inspections") @db.JsonB
+  requiredTraining              Json          @default("[]") @map("required_training") @db.JsonB
+  requiredEquipmentCertifications Json        @default("[]") @map("required_equipment_certifications") @db.JsonB
+  requiredPpe                   Json          @default("[]") @map("required_ppe") @db.JsonB
+  requiredEmergencyPlans        Json          @default("[]") @map("required_emergency_plans") @db.JsonB
+  version                       Int           @default(1)
+  status                        PublishStatus @default(draft)
+  publishedAt                   DateTime?     @map("published_at")
+  createdAt                     DateTime      @default(now()) @map("created_at")
+  updatedAt                     DateTime      @updatedAt @map("updated_at")
+
+  versions ProjectSafetyProfileVersion[]
+
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@map("project_safety_profiles")
+}
+
+model ProjectSafetyProfileVersion {
+  id        String   @id @default(uuid()) @db.Uuid
+  profileId String   @map("profile_id") @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  projectId String   @map("project_id") @db.Uuid
+  version   Int
+  snapshot  Json     @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at")
+
+  profile ProjectSafetyProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, version])
+  @@index([projectId])
+  @@map("project_safety_profile_versions")
+}
+
+model ProjectHazardLibrary {
+  id               String        @id @default(uuid()) @db.Uuid
+  companyId        String        @map("company_id") @db.Uuid
+  projectId        String        @map("project_id") @db.Uuid
+  hazardId         String        @map("hazard_id") @db.Uuid
+  title            String?
+  severity         Int
+  likelihood       Int
+  sifPotential     Boolean       @default(false) @map("sif_potential")
+  hecaCategory     String        @default("routine") @map("heca_category")
+  requiredControls Json          @default("[]") @map("required_controls") @db.JsonB
+  version          Int           @default(1)
+  status           PublishStatus @default(draft)
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  @@unique([projectId, hazardId])
+  @@index([companyId, projectId])
+  @@map("project_hazard_library")
+}
+
+model ProjectControlLibrary {
+  id                String        @id @default(uuid()) @db.Uuid
+  companyId         String        @map("company_id") @db.Uuid
+  projectId         String        @map("project_id") @db.Uuid
+  controlId         String        @map("control_id") @db.Uuid
+  title             String?
+  controlStrength   Int           @map("control_strength")
+  verificationSteps Json          @default("[]") @map("verification_steps") @db.JsonB
+  version           Int           @default(1)
+  status            PublishStatus @default(draft)
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  @@unique([projectId, controlId])
+  @@index([companyId, projectId])
+  @@map("project_control_library")
+}
+
+model ProjectZone {
+  id        String   @id @default(uuid()) @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  projectId String   @map("project_id") @db.Uuid
+  name      String
+  type      String
+  location  String?
+  riskLevel String   @default("medium") @map("risk_level")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  rules ProjectZoneRule[]
+
+  @@index([projectId])
+  @@index([companyId, projectId])
+  @@map("project_zones")
+}
+
+model ProjectZoneRule {
+  id                            String @id @default(uuid()) @db.Uuid
+  zoneId                        String @map("zone_id") @db.Uuid
+  requiredTraining              Json   @default("[]") @map("required_training") @db.JsonB
+  requiredPpe                   Json   @default("[]") @map("required_ppe") @db.JsonB
+  requiredJha                   Json   @default("[]") @map("required_jha") @db.JsonB
+  requiredPermits               Json   @default("[]") @map("required_permits") @db.JsonB
+  requiredEquipmentAuthorization Json  @default("[]") @map("required_equipment_authorization") @db.JsonB
+  requiredSds                   Json   @default("[]") @map("required_sds") @db.JsonB
+  version                       Int    @default(1)
+  createdAt                     DateTime @default(now()) @map("created_at")
+  updatedAt                     DateTime @updatedAt @map("updated_at")
+
+  zone ProjectZone @relation(fields: [zoneId], references: [id], onDelete: Cascade)
+
+  @@index([zoneId])
+  @@map("project_zone_rules")
+}
+
+model ProjectEquipmentRule {
+  id                  String   @id @default(uuid()) @db.Uuid
+  companyId           String   @map("company_id") @db.Uuid
+  projectId           String   @map("project_id") @db.Uuid
+  ruleKey             String   @map("rule_key")
+  requiredInspections Json     @default("[]") @map("required_inspections") @db.JsonB
+  requiredCerts       Json     @default("[]") @map("required_certs") @db.JsonB
+  requiredControls    Json     @default("[]") @map("required_controls") @db.JsonB
+  version             Int      @default(1)
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@unique([projectId, ruleKey])
+  @@index([companyId, projectId])
+  @@map("project_equipment_rules")
+}
+
+model ProjectTrainingRequirement {
+  id               String   @id @default(uuid()) @db.Uuid
+  companyId        String   @map("company_id") @db.Uuid
+  projectId        String   @map("project_id") @db.Uuid
+  role             String
+  requiredCourses Json    @default("[]") @map("required_courses") @db.JsonB
+  version          Int      @default(1)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@unique([projectId, role])
+  @@index([companyId, projectId])
+  @@map("project_training_requirements")
+}
+
+model ProjectEmergencyRequirement {
+  id        String        @id @default(uuid()) @db.Uuid
+  companyId String        @map("company_id") @db.Uuid
+  projectId String        @map("project_id") @db.Uuid
+  planType  String        @map("plan_type")
+  title     String
+  content   Json          @default("{}") @db.JsonB
+  version   Int           @default(1)
+  status    PublishStatus @default(draft)
+  createdAt DateTime      @default(now()) @map("created_at")
+  updatedAt DateTime      @updatedAt @map("updated_at")
+
+  @@index([companyId, projectId])
+  @@map("project_emergency_requirements")
+}

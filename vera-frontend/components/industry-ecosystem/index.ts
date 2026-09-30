@@ -1,0 +1,1 @@
+export { IndustryEcosystemSection } from "./IndustryEcosystemSection";

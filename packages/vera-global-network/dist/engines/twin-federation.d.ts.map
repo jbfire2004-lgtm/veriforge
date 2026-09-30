@@ -1,0 +1,1 @@
+{"version":3,"file":"twin-federation.d.ts","sourceRoot":"","sources":["../../src/engines/twin-federation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,oBAAoB,EAAE,MAAM,UAAU,CAAC;AAE1E,qBAAa,oBAAoB;IAC/B,QAAQ,CAAC,GAAG,EAAE,mBAAmB,GAAG,oBAAoB,EAAE;CA8C3D"}

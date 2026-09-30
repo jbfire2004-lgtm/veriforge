@@ -1,0 +1,66 @@
+name: Telcoin mint soak
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 6 * * 1"
+
+permissions:
+  contents: read
+
+jobs:
+  local-soak:
+    name: Local AccessControl soak (Hardhat)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/wle-contracts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci || npm install
+      - run: npx hardhat test
+      - run: npx hardhat run scripts/soak-local.ts
+
+  testnet-soak:
+    name: Telcoin testnet soak
+    runs-on: ubuntu-latest
+    needs: [local-soak]
+    defaults:
+      run:
+        working-directory: apps/wle-contracts
+    env:
+      TELCOIN_TESTNET_RPC_URL: ${{ secrets.TELCOIN_TESTNET_RPC_URL }}
+      TELCOIN_SOAK_REQUIRED: ${{ vars.TELCOIN_SOAK_REQUIRED }}
+      TELCOIN_TESTNET_CHAIN_ID: ${{ vars.TELCOIN_TESTNET_CHAIN_ID || '2018' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci || npm install
+      - name: Ping Telcoin testnet or skip
+        run: |
+          set -euo pipefail
+          if [ -z "${TELCOIN_TESTNET_RPC_URL}" ]; then
+            if [ "${TELCOIN_SOAK_REQUIRED}" = "true" ]; then
+              echo "TELCOIN_SOAK_REQUIRED=true but TELCOIN_TESTNET_RPC_URL is unset" >&2
+              exit 1
+            fi
+            echo "Live testnet soak not configured. Local Hardhat soak already passed. Axelar is out of scope."
+            exit 0
+          fi
+          node -e "
+            const { JsonRpcProvider } = require('ethers');
+            (async () => {
+              const p = new JsonRpcProvider(process.env.TELCOIN_TESTNET_RPC_URL);
+              const net = await p.getNetwork();
+              const expected = Number(process.env.TELCOIN_TESTNET_CHAIN_ID || 2018);
+              console.log('chainId', Number(net.chainId));
+              if (Number(net.chainId) !== expected) {
+                throw new Error('chainId mismatch — not Telcoin testnet');
+              }
+            })().catch((e) => { console.error(e); process.exit(1); });
+          "

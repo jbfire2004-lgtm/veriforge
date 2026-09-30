@@ -1,0 +1,34 @@
+---
+description: Official Vera unified navigation and page layout — enforce on every UI change
+globs: vera-frontend/**/*.{tsx,ts}
+alwaysApply: true
+---
+
+# Vera Navigation (non-negotiable)
+
+Every authenticated Vera page MUST use the unified navigation system.
+
+## Required structure
+
+1. **Global header** — `Header` (`VeraGlobalHeader`) with `GlobalNav` in the same position on every signed-in page
+2. **Module bar** — `ModuleHeader` (`VeraModuleBar`) with `ModuleNav` when the route belongs to a module
+3. **Content** — `ContentContainer` for the main region; `PageLayout` (`VeraPageLayout`) for title, filters, actions
+
+## Shells
+
+- Full workspace: `WorkspaceShell` / `VeraAppShell` (`/pm`, `/admin`, `/core`, …)
+- Lightweight signed-in: `SignedInVeraLayout` / `VeraSignedInShell` (`/welcome`, `/hub`, `/weather`, …)
+
+## Forbidden
+
+- Sidebars for module switching
+- Horizontal tab nav for modules or features (`AcpNav`, `HubModuleNav`, `HubNavigateDropdown`, duplicate PM links)
+- Inline "← back to module" links — use module dropdown instead
+- Hiding global modules based on role or context
+- Module-specific header layouts
+
+## Config
+
+Add modules/features only in `lib/navigation/vera-nav-config.ts`.
+
+See `docs/VERA-NAVIGATION-ARCHITECTURE.md`.

@@ -1,0 +1,61 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model SdsDocument {
+  id                  String    @id @default(uuid()) @db.Uuid
+  companyId           String    @map("company_id") @db.Uuid
+  productName         String    @map("product_name")
+  manufacturer        String?
+  casNumber           String?   @map("cas_number")
+  whmisClassification String?   @map("whmis_classification")
+  ppeRequirements     Json      @default("[]") @map("ppe_requirements") @db.JsonB
+  firstAid            Json      @default("{}") @map("first_aid") @db.JsonB
+  handlingStorage     Json      @default("{}") @map("handling_storage") @db.JsonB
+  extractedHazards    Json      @default("[]") @map("extracted_hazards") @db.JsonB
+  extractedControls   Json      @default("[]") @map("extracted_controls") @db.JsonB
+  expiryDate          DateTime? @map("expiry_date")
+  version             Int       @default(1)
+  filePath            String?   @map("file_path")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  acknowledgments SdsAcknowledgment[]
+
+  @@index([companyId])
+  @@index([companyId, productName])
+  @@index([expiryDate])
+  @@map("sds_documents")
+}
+
+model SdsAcknowledgment {
+  id             String   @id @default(uuid()) @db.Uuid
+  sdsId          String   @map("sds_id") @db.Uuid
+  workerId       String   @map("worker_id") @db.Uuid
+  acknowledgedAt DateTime @default(now()) @map("acknowledged_at")
+
+  sds SdsDocument @relation(fields: [sdsId], references: [id], onDelete: Cascade)
+
+  @@unique([sdsId, workerId])
+  @@index([workerId])
+  @@index([sdsId])
+  @@map("sds_acknowledgments")
+}
+
+model ZoneSdsRule {
+  id            String   @id @default(uuid()) @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
+  zoneId        String   @map("zone_id") @db.Uuid
+  requiredSdsIds Json    @default("[]") @map("required_sds_ids") @db.JsonB
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, zoneId])
+  @@index([companyId])
+  @@map("zone_sds_rules")
+}

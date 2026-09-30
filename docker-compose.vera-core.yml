@@ -1,0 +1,75 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: vera-core-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: vera
+    ports:
+      - "5432:5432"
+    volumes:
+      - vera_core_pg:/var/lib/postgresql/data
+      - ./backend/docker/init-db.sql:/docker-entrypoint-initdb.d/02-vera-shadow.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d vera"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  nats:
+    image: nats:2.10-alpine
+    container_name: vera-core-nats
+    restart: unless-stopped
+    ports:
+      - "4222:4222"
+    command: ["-js", "-m", "8222"]
+
+  backend:
+    image: ${VERA_BACKEND_IMAGE:-vera-core-backend:local}
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: vera-core-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/vera?schema=public
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@postgres:5432/vera_shadow?schema=public
+      JWT_SECRET: ${JWT_SECRET:-vera-dev-jwt-secret-change-in-production}
+      PORT: 3000
+      CORS_ORIGIN: http://localhost:3001
+      NATS_URL: nats://nats:4222
+      VERA_EVENT_OUTBOX: "1"
+      NODE_ENV: production
+      SMS_MONITORING_ENABLED: "1"
+      SMS_AI_DECISION_LOGGING: "1"
+      SMS_LLM_ENABLED: "0"
+      SMS_ALERT_WEBHOOK_URL: ${SMS_ALERT_WEBHOOK_URL:-}
+    ports:
+      - "3000:3000"
+    command: >
+      sh -c "npx prisma migrate deploy && node dist/main.js"
+
+  frontend:
+    image: ${VERA_FRONTEND_IMAGE:-vera-core-frontend:local}
+    build:
+      context: ./vera-frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3000
+    container_name: vera-core-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3000
+      PORT: 3001
+    ports:
+      - "3001:3001"
+
+volumes:
+  vera_core_pg:

@@ -1,0 +1,13 @@
+.tokens {
+  --vf-iron-black: #0d0d0d;
+  --vf-steel-grey: #424242;
+  --vf-forge-red: #c62828;
+  --vf-safety-white: #fafafa;
+  --vf-ledger: #1a1a1a;
+  --vf-metallic: linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 50%, #424242 100%);
+  --vf-font-heading: var(--font-orbitron, "Orbitron", sans-serif);
+  --vf-font-body: var(--font-exo-2, "Exo 2", sans-serif);
+  --vf-glow: 0px 0px 12px rgba(198, 40, 40, 0.35);
+  --vf-steel-glow: 0px 0px 8px rgba(255, 255, 255, 0.08);
+  border-radius: 0;
+}

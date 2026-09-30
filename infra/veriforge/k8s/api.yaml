@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veriforge-api
+  namespace: veriforge
+  labels:
+    app.kubernetes.io/name: veriforge-api
+spec:
+  replicas: 2
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: veriforge-api
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: veriforge-api
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3020"
+        prometheus.io/path: "/metrics"
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: api
+          image: ghcr.io/OWNER/veriforge-api:latest
+          # CD pins tag@digest; Always avoids stale :latest on manual applies
+          imagePullPolicy: Always
+          command: ["node", "dist/index.js"]
+          ports:
+            - name: http
+              containerPort: 3020
+          envFrom:
+            - configMapRef:
+                name: veriforge-config
+            - secretRef:
+                name: veriforge-secrets
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: http
+            initialDelaySeconds: 15
+            periodSeconds: 10
+            failureThreshold: 6
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: http
+            initialDelaySeconds: 30
+            periodSeconds: 20
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: veriforge-api
+  namespace: veriforge
+spec:
+  selector:
+    app.kubernetes.io/name: veriforge-api
+  ports:
+    - name: http
+      port: 3020
+      targetPort: http
+---
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: veriforge-api
+  namespace: veriforge
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: veriforge-api
+  minReplicas: 2
+  maxReplicas: 10
+  metrics:
+    - type: Resource
+      resource:
+        name: cpu
+        target:
+          type: Utilization
+          averageUtilization: 70
+---
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: veriforge-api
+  namespace: veriforge
+spec:
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: veriforge-api

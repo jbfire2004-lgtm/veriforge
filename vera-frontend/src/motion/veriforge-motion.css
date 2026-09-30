@@ -1,0 +1,324 @@
+/**
+ * VeriForge forged-metal motion stylesheet
+ * Driven by src/motion/veriforge-motion.ts
+ */
+
+:root {
+  --vf-motion-fast: 120ms;
+  --vf-motion-medium: 240ms;
+  --vf-motion-heavy: 400ms;
+  --vf-ease-angular: cubic-bezier(0.2, 0, 0, 1);
+  --vf-ease-industrial: cubic-bezier(0.33, 0, 0.2, 1);
+  --vf-ease-rebound: cubic-bezier(0.34, 1.2, 0.64, 1);
+}
+
+/* —— PRIMITIVES —— */
+
+@keyframes vf-m-angular-slide-kf {
+  from {
+    transform: translateX(-24px) skewX(1.2deg);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0) skewX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes vf-m-metallic-fade-kf {
+  from {
+    opacity: 0;
+    filter: brightness(0.55);
+  }
+  to {
+    opacity: 1;
+    filter: brightness(1);
+  }
+}
+
+@keyframes vf-m-red-glow-pulse-kf {
+  0%,
+  100% {
+    box-shadow: 0 0 0 1px rgba(30, 111, 184, 0.4), 0 0 10px rgba(30, 111, 184, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 1px rgba(30, 111, 184, 0.95), 0 0 28px rgba(30, 111, 184, 0.75);
+  }
+}
+
+@keyframes vf-m-bevel-shift-kf {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes vf-m-industrial-drop-kf {
+  0% {
+    transform: translateY(-28px) skewY(-0.8deg);
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(3px) skewY(0.2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(0) skewY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes vf-m-angular-collapse-kf {
+  from {
+    transform: scaleY(1) skewX(0);
+    opacity: 1;
+  }
+  to {
+    transform: scaleY(0.12) skewX(1.5deg);
+    opacity: 0;
+  }
+}
+
+@keyframes vf-m-btn-press-kf {
+  0% {
+    transform: translateY(0) skewX(0) scale(1);
+  }
+  100% {
+    transform: translateY(2px) skewX(0.5deg) scale(0.97);
+  }
+}
+
+@keyframes vf-m-node-activate-kf {
+  0% {
+    transform: scale(0.9);
+    box-shadow: 0 0 0 rgba(30, 111, 184, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 16px rgba(30, 111, 184, 0.55);
+  }
+}
+
+@keyframes vf-m-node-shake-kf {
+  0%,
+  100% {
+    transform: translateX(0) skewX(0);
+  }
+  20% {
+    transform: translateX(-4px) skewX(1deg);
+  }
+  40% {
+    transform: translateX(4px) skewX(-1deg);
+  }
+  60% {
+    transform: translateX(-3px) skewX(0.6deg);
+  }
+  80% {
+    transform: translateX(2px) skewX(-0.4deg);
+  }
+}
+
+@keyframes vf-m-line-draw-kf {
+  from {
+    stroke-dashoffset: 160;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes vf-m-bar-rise-kf {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+
+@keyframes vf-m-connector-draw-kf {
+  from {
+    transform: scaleX(0);
+    opacity: 0.3;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+.vf-m-angular-slide {
+  animation: vf-m-angular-slide-kf var(--vf-motion-medium) var(--vf-ease-angular) both;
+}
+
+.vf-m-metallic-fade {
+  animation: vf-m-metallic-fade-kf var(--vf-motion-medium) var(--vf-ease-industrial) both;
+}
+
+.vf-m-red-glow-pulse {
+  animation: vf-m-red-glow-pulse-kf 1s var(--vf-ease-industrial) infinite;
+}
+
+.vf-m-bevel-shift {
+  background-size: 200% 100%;
+  background-image: linear-gradient(90deg, #1a1a1a 0%, #424242 45%, #1a1a1a 100%);
+  animation: vf-m-bevel-shift-kf var(--vf-motion-heavy) var(--vf-ease-industrial) infinite;
+}
+
+.vf-m-industrial-drop {
+  animation: vf-m-industrial-drop-kf var(--vf-motion-heavy) var(--vf-ease-angular) both;
+}
+
+/* —— BUTTONS —— */
+
+.vf-m-btn {
+  transition:
+    box-shadow var(--vf-motion-fast) var(--vf-ease-angular),
+    transform var(--vf-motion-fast) var(--vf-ease-rebound),
+    filter var(--vf-motion-fast) var(--vf-ease-angular),
+    background var(--vf-motion-fast) var(--vf-ease-angular),
+    border-color var(--vf-motion-fast) var(--vf-ease-angular);
+}
+
+.vf-m-btn:hover,
+.vf-m-btn-hover {
+  box-shadow: 0 0 0 1px rgba(30, 111, 184, 0.55), 0 0 28px rgba(30, 111, 184, 0.5);
+  filter: brightness(1.08);
+}
+
+.vf-m-btn:active,
+.vf-m-btn-press {
+  transform: translateY(2px) skewX(0.5deg) scale(0.97);
+  animation: vf-m-btn-press-kf var(--vf-motion-fast) var(--vf-ease-angular) forwards;
+}
+
+/* —— CARDS —— */
+
+.vf-m-card {
+  transition:
+    transform var(--vf-motion-medium) var(--vf-ease-angular),
+    box-shadow var(--vf-motion-medium) var(--vf-ease-industrial),
+    border-color var(--vf-motion-fast) var(--vf-ease-angular),
+    background var(--vf-motion-fast) var(--vf-ease-angular);
+}
+
+.vf-m-card:hover,
+.vf-m-card-hover {
+  transform: translateY(-4px) skewX(-0.3deg);
+  box-shadow: 0 8px 0 #2a2a2a, 0 0 22px rgba(66, 66, 66, 0.55);
+}
+
+.vf-m-card-active {
+  border-color: #1E6FB8 !important;
+  animation: vf-m-red-glow-pulse-kf 1s var(--vf-ease-industrial) infinite;
+}
+
+/* —— PANELS —— */
+
+.vf-m-panel-open {
+  animation:
+    vf-m-angular-slide-kf var(--vf-motion-medium) var(--vf-ease-angular) both,
+    vf-m-metallic-fade-kf var(--vf-motion-medium) var(--vf-ease-industrial) both;
+}
+
+.vf-m-panel-close {
+  animation: vf-m-angular-collapse-kf var(--vf-motion-medium) var(--vf-ease-angular) forwards;
+  transform-origin: top;
+}
+
+.vf-m-panel {
+  transition:
+    border-color var(--vf-motion-fast) var(--vf-ease-angular),
+    box-shadow var(--vf-motion-medium) var(--vf-ease-industrial);
+}
+
+/* —— MODALS —— */
+
+.vf-m-modal-drop-in {
+  animation:
+    vf-m-industrial-drop-kf var(--vf-motion-heavy) var(--vf-ease-angular) both,
+    vf-m-metallic-fade-kf var(--vf-motion-heavy) var(--vf-ease-industrial) both;
+}
+
+.vf-m-modal-collapse {
+  animation: vf-m-angular-collapse-kf var(--vf-motion-heavy) var(--vf-ease-angular) forwards;
+  transform-origin: top;
+}
+
+.vf-m-modal {
+  border-radius: 0;
+}
+
+/* —— WORKFLOW —— */
+
+.vf-m-node-activate {
+  animation: vf-m-node-activate-kf var(--vf-motion-fast) var(--vf-ease-angular) both;
+  border-color: #1E6FB8;
+  box-shadow: 0 0 16px rgba(30, 111, 184, 0.55);
+}
+
+.vf-m-node-error {
+  animation:
+    vf-m-node-shake-kf 400ms var(--vf-ease-angular),
+    vf-m-red-glow-pulse-kf 400ms var(--vf-ease-industrial);
+  border-color: #1E6FB8;
+}
+
+.vf-m-connector-draw {
+  height: 2px;
+  transform-origin: left;
+  background: linear-gradient(90deg, #424242, #1E6FB8);
+  animation: vf-m-connector-draw-kf var(--vf-motion-heavy) var(--vf-ease-angular) both;
+}
+
+/* —— CHARTS —— */
+
+.vf-m-chart-line {
+  stroke-dasharray: 160;
+  animation: vf-m-line-draw-kf var(--vf-motion-heavy) var(--vf-ease-angular) both;
+}
+
+.vf-m-chart-bar {
+  transform-origin: bottom;
+  animation: vf-m-bar-rise-kf var(--vf-motion-heavy) var(--vf-ease-angular) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vf-m-angular-slide,
+  .vf-m-metallic-fade,
+  .vf-m-red-glow-pulse,
+  .vf-m-bevel-shift,
+  .vf-m-industrial-drop,
+  .vf-m-btn:active,
+  .vf-m-btn-press,
+  .vf-m-card-active,
+  .vf-m-panel-open,
+  .vf-m-panel-close,
+  .vf-m-modal-drop-in,
+  .vf-m-modal-collapse,
+  .vf-m-node-activate,
+  .vf-m-node-error,
+  .vf-m-connector-draw,
+  .vf-m-chart-line,
+  .vf-m-chart-bar {
+    animation: none !important;
+  }
+
+  .vf-m-btn,
+  .vf-m-card,
+  .vf-m-panel {
+    transition: none !important;
+  }
+
+  .vf-m-card:hover,
+  .vf-m-card-hover,
+  .vf-m-btn:active,
+  .vf-m-btn-press {
+    transform: none !important;
+  }
+}

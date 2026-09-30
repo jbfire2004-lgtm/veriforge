@@ -1,0 +1,49 @@
+/* Shared industrial safety token vars for layout modules */
+.tokens {
+  --vf-iron-black: #1c1f24;
+  --vf-steel-grey: #5a6169;
+  --vf-forge-red: #1e6fb8;
+  --vf-safety-blue: #1e6fb8;
+  --vf-inspection-teal: #2f8f8c;
+  --vf-safety-white: #f4f6f8;
+  --vf-ledger: #23272c;
+  --vf-metallic: none;
+  --vf-font-heading: var(--font-inter, Inter), Roboto, "Segoe UI", system-ui, sans-serif;
+  --vf-font-body: var(--font-inter, Inter), Roboto, "Segoe UI", system-ui, sans-serif;
+  --vf-glow: none;
+  border-radius: 3px;
+}
+
+.shell {
+  composes: tokens;
+  min-height: 100vh;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+  background-color: #1c1f24;
+  background-image: none;
+  color: #f4f6f8;
+  font-family: var(--vf-font-body);
+  font-weight: 500;
+}
+
+.body {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+}
+
+@media (max-width: 899px) {
+  .body {
+    grid-template-columns: 1fr;
+  }
+}
+
+.accentLine {
+  height: 2px;
+  width: 100%;
+  background: #1e6fb8;
+  box-shadow: none;
+  border-radius: 0;
+}

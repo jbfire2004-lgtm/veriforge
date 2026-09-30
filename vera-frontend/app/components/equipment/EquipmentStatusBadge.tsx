@@ -1,0 +1,11 @@
+export function EquipmentStatusBadge({ isSafe }: { isSafe: boolean }) {
+  return (
+    <span
+      className={`px-3 py-1 rounded text-white text-sm font-semibold ${
+        isSafe ? "bg-green-600" : "bg-red-600"
+      }`}
+    >
+      {isSafe ? "Safe" : "Unsafe"}
+    </span>
+  );
+}

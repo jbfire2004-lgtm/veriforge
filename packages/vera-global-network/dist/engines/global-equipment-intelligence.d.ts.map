@@ -1,0 +1,1 @@
+{"version":3,"file":"global-equipment-intelligence.d.ts","sourceRoot":"","sources":["../../src/engines/global-equipment-intelligence.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,2BAA2B,EAAE,mBAAmB,EAAE,MAAM,UAAU,CAAC;AAGjF,qBAAa,iCAAiC;IAC5C,OAAO,CAAC,GAAG,EAAE,mBAAmB,GAAG,2BAA2B;CAoB/D"}

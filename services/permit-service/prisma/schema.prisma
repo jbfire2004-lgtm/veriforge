@@ -1,0 +1,108 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PermitType {
+  hot_work
+  confined_space
+  excavation
+  electrical
+  general
+}
+
+enum WorkPermitStatus {
+  draft
+  pending_approval
+  approved
+  active
+  suspended
+  closed
+  expired
+}
+
+model WorkPermit {
+  id            String           @id @default(uuid()) @db.Uuid
+  companyId     String           @map("company_id") @db.Uuid
+  projectId     String           @map("project_id") @db.Uuid
+  workPackageId String?          @map("work_package_id") @db.Uuid
+  pmTaskId      String?          @map("pm_task_id") @db.Uuid
+  permitType    PermitType       @map("permit_type")
+  title         String
+  description   String?          @db.Text
+  location      String?
+  status        WorkPermitStatus @default(draft)
+  requestedBy   String           @map("requested_by") @db.Uuid
+  workerId      String?          @map("worker_id") @db.Uuid
+  jhaId         String?          @map("jha_id") @db.Uuid
+  hazardId      String?          @map("hazard_id") @db.Uuid
+  controlId     String?          @map("control_id") @db.Uuid
+  equipmentId   String?          @map("equipment_id") @db.Uuid
+  validFrom     DateTime?        @map("valid_from")
+  validTo       DateTime?        @map("valid_to")
+  createdAt     DateTime         @default(now()) @map("created_at")
+  updatedAt     DateTime         @updatedAt @map("updated_at")
+
+  approvals           PermitApproval[]
+  safetyRequirements  PermitSafetyRequirement[]
+
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@index([companyId, status])
+  @@index([permitType, status])
+  @@index([pmTaskId])
+  @@map("work_permits")
+}
+
+model PermitApproval {
+  id         String   @id @default(uuid()) @db.Uuid
+  permitId   String   @map("permit_id") @db.Uuid
+  approvedBy String   @map("approved_by") @db.Uuid
+  role       String
+  outcome    String   @default("approved")
+  notes      String?  @db.Text
+  approvedAt DateTime @default(now()) @map("approved_at")
+
+  permit WorkPermit @relation(fields: [permitId], references: [id], onDelete: Cascade)
+
+  @@index([permitId])
+  @@map("permit_approvals")
+}
+
+model PermitSafetyRequirement {
+  id              String   @id @default(uuid()) @db.Uuid
+  permitId        String   @map("permit_id") @db.Uuid
+  requirementType String   @map("requirement_type")
+  linkedId        String?  @map("linked_id") @db.Uuid
+  satisfied       Boolean  @default(false)
+  metadata        Json     @default("{}") @db.JsonB
+  checkedAt       DateTime @default(now()) @map("checked_at")
+
+  permit WorkPermit @relation(fields: [permitId], references: [id], onDelete: Cascade)
+
+  @@unique([permitId, requirementType])
+  @@index([permitId])
+  @@map("permit_safety_requirements")
+}
+
+model PermitOfflineSync {
+  id           String    @id @default(uuid()) @db.Uuid
+  companyId    String    @map("company_id") @db.Uuid
+  deviceId     String    @map("device_id")
+  clientSyncId String    @map("client_sync_id")
+  action       String
+  payload      Json      @db.JsonB
+  status       String    @default("pending")
+  result       Json?     @db.JsonB
+  createdAt    DateTime  @default(now()) @map("created_at")
+  syncedAt     DateTime? @map("synced_at")
+
+  @@unique([deviceId, clientSyncId])
+  @@index([companyId])
+  @@index([deviceId])
+  @@map("permit_offline_sync")
+}

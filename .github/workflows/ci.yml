@@ -1,0 +1,203 @@
+name: VeriForge CI
+
+# Lint, typecheck, test, build, Prisma validate for VeriForge.
+on:
+  push:
+    branches: [main, master, develop]
+    paths:
+      - "services/veriforge-saas-service/**"
+      - "apps/veriforge-frontend/**"
+      - "packages/veriforge/**"
+      - "vera-frontend/**"
+      - "infra/veriforge/**"
+      - "scripts/deploy.sh"
+      - "scripts/migrate.sh"
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/cd.yml"
+      - "pnpm-workspace.yaml"
+  pull_request:
+    paths:
+      - "services/veriforge-saas-service/**"
+      - "apps/veriforge-frontend/**"
+      - "packages/veriforge/**"
+      - "vera-frontend/**"
+      - "infra/veriforge/**"
+      - "scripts/deploy.sh"
+      - "scripts/migrate.sh"
+      - ".github/workflows/ci.yml"
+      - ".github/workflows/cd.yml"
+      - "pnpm-workspace.yaml"
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: veriforge-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: "20"
+  PNPM_VERSION: "9"
+
+jobs:
+  api:
+    name: SaaS API — lint, typecheck, test, Prisma
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/veriforge-saas-service
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: veriforge_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d veriforge_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: |
+            services/veriforge-saas-service/package.json
+            pnpm-lock.yaml
+
+      - name: Install dependencies
+        run: pnpm install --no-frozen-lockfile
+
+      - name: Prisma generate
+        run: pnpm exec prisma generate
+
+      - name: Validate Prisma schema
+        run: pnpm exec prisma validate
+
+      - name: Destructive migration check
+        run: pnpm run db:migrate:check
+
+      - name: Lint / typecheck
+        run: pnpm run lint
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Integration tests
+        env:
+          RUN_INTEGRATION: "1"
+          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/veriforge_test
+        run: |
+          pnpm exec prisma db push
+          pnpm run db:seed
+          pnpm run test:integration
+
+      - name: Build API
+        run: pnpm run build
+
+  platform:
+    name: @veriforge/platform — typecheck
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/veriforge
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: packages/veriforge/package.json
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm run typecheck
+
+  vite-frontend:
+    name: VeriForge Vite — lint + build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/veriforge-frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: apps/veriforge-frontend/package.json
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm run lint
+      - name: Build
+        env:
+          VITE_API_BASE_URL: /api
+        run: pnpm run build
+
+  next-frontend:
+    name: Next.js (vera-frontend) — lint, typecheck, build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: vera-frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: vera-frontend/package.json
+      - run: pnpm install --no-frozen-lockfile
+      - run: pnpm run lint
+      - run: pnpm run typecheck
+      - name: Build Next.js
+        env:
+          NEXT_TELEMETRY_DISABLED: "1"
+        run: pnpm run build
+
+  docker-smoke:
+    name: Docker multi-stage build smoke
+    runs-on: ubuntu-latest
+    needs: [api, vite-frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Build API image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./services/veriforge-saas-service
+          file: ./services/veriforge-saas-service/Dockerfile
+          push: false
+          load: true
+          tags: veriforge-api:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Build frontend image (no push)
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/veriforge-frontend
+          file: ./apps/veriforge-frontend/Dockerfile
+          push: false
+          load: true
+          build-args: |
+            VITE_API_BASE_URL=/api
+          tags: veriforge-frontend:ci
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

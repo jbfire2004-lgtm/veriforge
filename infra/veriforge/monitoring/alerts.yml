@@ -1,0 +1,72 @@
+groups:
+  - name: veriforge-slo
+    rules:
+      - alert: VeriForgeHighErrorRate
+        expr: |
+          sum(rate(veriforge_http_errors_total[5m]))
+          /
+          clamp_min(sum(rate(veriforge_http_requests_total[5m])), 0.001)
+          > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          service: veriforge-api
+        annotations:
+          summary: "VeriForge API error rate > 5%"
+          description: "HTTP 5xx rate is {{ $value | humanizePercentage }} over 5m."
+
+      - alert: VeriForgeHighLatencyP95
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum by (le) (rate(veriforge_http_request_duration_seconds_bucket[5m]))
+          ) > 1
+        for: 10m
+        labels:
+          severity: warning
+          service: veriforge-api
+        annotations:
+          summary: "VeriForge API p95 latency > 1s"
+          description: "p95 latency is {{ $value }}s."
+
+      - alert: VeriForgeTrialJobFailures
+        expr: |
+          increase(veriforge_worker_job_runs_total{worker_job=~"trial_.*",status="error"}[15m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+          service: veriforge-worker
+        annotations:
+          summary: "VeriForge trial job failures detected"
+          description: "Trial/expiry worker reported errors in the last 15m."
+
+      - alert: VeriForgeStripeWebhookFailures
+        expr: |
+          increase(veriforge_stripe_webhook_processed_total{result="error"}[10m]) > 2
+        for: 2m
+        labels:
+          severity: critical
+          service: veriforge-api
+        annotations:
+          summary: "Stripe webhook processing failures"
+          description: "{{ $value }} webhook errors in 10m."
+
+      - alert: VeriForgeDbNotReady
+        expr: veriforge_db_ready == 0
+        for: 2m
+        labels:
+          severity: critical
+          service: veriforge
+        annotations:
+          summary: "VeriForge database readiness failed"
+          description: "DB ready gauge is 0 — connection saturation or outage likely."
+
+      - alert: VeriForgeDbPoolSaturation
+        expr: veriforge_db_pool_saturation_ratio > 0.85
+        for: 5m
+        labels:
+          severity: warning
+          service: veriforge
+        annotations:
+          summary: "VeriForge DB pool saturation high"
+          description: "Pool saturation ratio {{ $value }} — scale pool or add PgBouncer."

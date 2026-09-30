@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: veriforge
+  labels:
+    app.kubernetes.io/part-of: veriforge
+    veriforge.io/environment: production

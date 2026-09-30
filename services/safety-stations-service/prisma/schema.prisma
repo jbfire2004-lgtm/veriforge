@@ -1,0 +1,114 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum StationStatus {
+  online
+  offline
+  degraded
+  emergency
+  maintenance
+}
+
+enum AccessLogResult {
+  granted
+  denied
+}
+
+enum EmergencyModeType {
+  muster
+  lockdown
+  evacuation
+  all_clear
+}
+
+enum OfflineSyncStatus {
+  pending
+  synced
+  failed
+}
+
+model SafetyStation {
+  id              String        @id @default(uuid()) @db.Uuid
+  companyId       String        @map("company_id") @db.Uuid
+  projectId       String?       @map("project_id") @db.Uuid
+  stationType     String        @map("station_type")
+  hardwareId      String        @map("hardware_id")
+  firmwareVersion String?       @map("firmware_version")
+  location        String?
+  zoneId          String?       @map("zone_id") @db.Uuid
+  status          StationStatus @default(offline)
+  lastHeartbeat   DateTime?     @map("last_heartbeat")
+  emergencyMode   EmergencyModeType? @map("emergency_mode")
+  createdAt       DateTime      @default(now()) @map("created_at")
+  updatedAt       DateTime      @updatedAt @map("updated_at")
+
+  accessLogs    SafetyStationAccessLog[]
+  musterCheckins MusterCheckin[]
+  offlineSyncs  StationOfflineSync[]
+
+  @@unique([companyId, hardwareId])
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@index([status])
+  @@map("safety_stations")
+}
+
+model SafetyStationAccessLog {
+  id          String          @id @default(uuid()) @db.Uuid
+  stationId   String          @map("station_id") @db.Uuid
+  workerId    String?         @map("worker_id") @db.Uuid
+  equipmentId String?         @map("equipment_id") @db.Uuid
+  timestamp   DateTime        @default(now())
+  result      AccessLogResult
+  reason      String?
+
+  station SafetyStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+  @@index([stationId])
+  @@index([workerId])
+  @@index([equipmentId])
+  @@index([stationId, timestamp])
+  @@map("safety_station_access_logs")
+}
+
+model MusterCheckin {
+  id          String   @id @default(uuid()) @db.Uuid
+  stationId   String   @map("station_id") @db.Uuid
+  workerId    String   @map("worker_id") @db.Uuid
+  musterPoint String   @map("muster_point")
+  checkedInAt DateTime @default(now()) @map("checked_in_at")
+  notes       String?
+
+  station SafetyStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+  @@index([stationId])
+  @@index([workerId])
+  @@index([stationId, checkedInAt])
+  @@map("muster_checkins")
+}
+
+model StationOfflineSync {
+  id           String            @id @default(uuid()) @db.Uuid
+  stationId    String            @map("station_id") @db.Uuid
+  companyId    String            @map("company_id") @db.Uuid
+  clientSyncId String            @map("client_sync_id")
+  action       String
+  payload      Json              @db.JsonB
+  status       OfflineSyncStatus @default(pending)
+  result       Json?             @db.JsonB
+  syncedAt     DateTime?         @map("synced_at")
+  createdAt    DateTime          @default(now()) @map("created_at")
+
+  station SafetyStation @relation(fields: [stationId], references: [id], onDelete: Cascade)
+
+  @@unique([stationId, clientSyncId])
+  @@index([companyId])
+  @@index([status])
+  @@map("station_offline_sync")
+}

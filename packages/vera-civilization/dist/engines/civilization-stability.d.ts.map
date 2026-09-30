@@ -1,0 +1,1 @@
+{"version":3,"file":"civilization-stability.d.ts","sourceRoot":"","sources":["../../src/engines/civilization-stability.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,qBAAqB,EAAE,MAAM,UAAU,CAAC;AAGhF,qBAAa,2BAA2B;IACtC,MAAM,CAAC,GAAG,EAAE,wBAAwB,GAAG,qBAAqB;CA2B7D"}

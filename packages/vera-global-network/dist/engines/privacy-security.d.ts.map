@@ -1,0 +1,1 @@
+{"version":3,"file":"privacy-security.d.ts","sourceRoot":"","sources":["../../src/engines/privacy-security.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,eAAe,EAAE,MAAM,UAAU,CAAC;AAErE,qBAAa,oBAAoB;IAC/B,QAAQ,CAAC,GAAG,EAAE,mBAAmB,GAAG,eAAe;IAUnD,mBAAmB,CAAC,CAAC,SAAS,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,EAAE,IAAI,EAAE,CAAC,GAAG,CAAC;CAOnE"}

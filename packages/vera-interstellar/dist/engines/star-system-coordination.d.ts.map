@@ -1,0 +1,1 @@
+{"version":3,"file":"star-system-coordination.d.ts","sourceRoot":"","sources":["../../src/engines/star-system-coordination.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,sBAAsB,EAAkB,MAAM,UAAU,CAAC;AAKjG,qBAAa,4BAA4B;IACvC,UAAU,CAAC,GAAG,EAAE,wBAAwB,GAAG,sBAAsB;CA2DlE"}

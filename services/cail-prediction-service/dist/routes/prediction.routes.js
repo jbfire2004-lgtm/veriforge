@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.predictionRouter = void 0;
+const express_1 = require("express");
+const prediction_controller_1 = require("../controllers/prediction.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const prediction_validators_1 = require("../validators/prediction.validators");
+exports.predictionRouter = (0, express_1.Router)();
+exports.predictionRouter.use(auth_middleware_1.requireAuth);
+exports.predictionRouter.post('/', prediction_validators_1.predictValidators, error_handler_1.handleValidation, prediction_controller_1.predictionController.predict);
+exports.predictionRouter.get('/:entity_type/:id', prediction_validators_1.getValidators, error_handler_1.handleValidation, prediction_controller_1.predictionController.getByEntity);

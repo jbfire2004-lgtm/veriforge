@@ -1,0 +1,182 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PublishStatus {
+  draft
+  published
+}
+
+model CompanySafetyProfile {
+  id                   String        @id @default(uuid()) @db.Uuid
+  companyId            String        @unique @map("company_id") @db.Uuid
+  corporateRiskLevel   String        @default("medium") @map("corporate_risk_level")
+  corporatePolicies    Json          @default("[]") @map("corporate_policies") @db.JsonB
+  corporatePpeStandards  Json          @default("[]") @map("corporate_ppe_standards") @db.JsonB
+  version              Int           @default(1)
+  status               PublishStatus @default(draft)
+  publishedAt          DateTime?     @map("published_at")
+  createdAt            DateTime      @default(now()) @map("created_at")
+  updatedAt            DateTime      @updatedAt @map("updated_at")
+
+  versions CompanySafetyProfileVersion[]
+
+  @@index([companyId])
+  @@map("company_safety_profiles")
+}
+
+model CompanySafetyProfileVersion {
+  id        String   @id @default(uuid()) @db.Uuid
+  profileId String   @map("profile_id") @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  version   Int
+  snapshot  Json     @db.JsonB
+  createdAt DateTime @default(now()) @map("created_at")
+
+  profile CompanySafetyProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+
+  @@unique([profileId, version])
+  @@index([companyId])
+  @@map("company_safety_profile_versions")
+}
+
+model CompanyHazardLibrary {
+  id               String        @id @default(uuid()) @db.Uuid
+  companyId        String        @map("company_id") @db.Uuid
+  hazardId         String        @map("hazard_id") @db.Uuid
+  title            String?
+  severity         Int
+  likelihood       Int
+  sifPotential     Boolean       @default(false) @map("sif_potential")
+  hecaCategory     String        @default("routine") @map("heca_category")
+  requiredControls Json          @default("[]") @map("required_controls") @db.JsonB
+  requiredTraining Json          @default("[]") @map("required_training") @db.JsonB
+  version          Int           @default(1)
+  status           PublishStatus @default(draft)
+  createdAt        DateTime      @default(now()) @map("created_at")
+  updatedAt        DateTime      @updatedAt @map("updated_at")
+
+  @@unique([companyId, hazardId])
+  @@index([companyId])
+  @@map("company_hazard_library")
+}
+
+model CompanyControlLibrary {
+  id                String        @id @default(uuid()) @db.Uuid
+  companyId         String        @map("company_id") @db.Uuid
+  controlId         String        @map("control_id") @db.Uuid
+  title             String?
+  controlStrength   Int           @map("control_strength")
+  verificationSteps Json          @default("[]") @map("verification_steps") @db.JsonB
+  requiredTraining  Json          @default("[]") @map("required_training") @db.JsonB
+  version           Int           @default(1)
+  status            PublishStatus @default(draft)
+  createdAt         DateTime      @default(now()) @map("created_at")
+  updatedAt         DateTime      @updatedAt @map("updated_at")
+
+  @@unique([companyId, controlId])
+  @@index([companyId])
+  @@map("company_control_library")
+}
+
+model CompanyTrainingMatrix {
+  id               String   @id @default(uuid()) @db.Uuid
+  companyId        String   @map("company_id") @db.Uuid
+  role             String
+  requiredCourses  Json     @default("[]") @map("required_courses") @db.JsonB
+  version          Int      @default(1)
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, role])
+  @@index([companyId])
+  @@map("company_training_matrix")
+}
+
+model CompanyPolicy {
+  id                   String        @id @default(uuid()) @db.Uuid
+  companyId            String        @map("company_id") @db.Uuid
+  policyType           String        @map("policy_type")
+  title                String
+  content              Json          @default("{}") @db.JsonB
+  requiresAckForAccess Boolean       @default(true) @map("requires_ack_for_access")
+  version              Int           @default(1)
+  status               PublishStatus @default(draft)
+  createdAt            DateTime      @default(now()) @map("created_at")
+  updatedAt            DateTime      @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@map("company_policies")
+}
+
+model CompanySdsLibrary {
+  id                   String        @id @default(uuid()) @db.Uuid
+  companyId            String        @map("company_id") @db.Uuid
+  productName          String        @map("product_name")
+  casNumber            String?       @map("cas_number")
+  whmisClassification  String?       @map("whmis_classification")
+  ppeRequirements      Json          @default("[]") @map("ppe_requirements") @db.JsonB
+  version              Int           @default(1)
+  filePath             String?       @map("file_path")
+  status               PublishStatus @default(draft)
+  createdAt            DateTime      @default(now()) @map("created_at")
+  updatedAt            DateTime      @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@map("company_sds_library")
+}
+
+model CompanyEmergencyPlan {
+  id          String        @id @default(uuid()) @db.Uuid
+  companyId   String        @map("company_id") @db.Uuid
+  planType    String        @map("plan_type")
+  title       String
+  content     Json          @default("{}") @db.JsonB
+  version     Int           @default(1)
+  status      PublishStatus @default(draft)
+  createdAt   DateTime      @default(now()) @map("created_at")
+  updatedAt   DateTime      @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@map("company_emergency_plans")
+}
+
+model CompanyEquipmentRule {
+  id                   String   @id @default(uuid()) @db.Uuid
+  companyId            String   @map("company_id") @db.Uuid
+  ruleKey              String   @map("rule_key")
+  requiredInspections  Json     @default("[]") @map("required_inspections") @db.JsonB
+  requiredCerts        Json     @default("[]") @map("required_certs") @db.JsonB
+  requiredControls     Json     @default("[]") @map("required_controls") @db.JsonB
+  version              Int      @default(1)
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, ruleKey])
+  @@index([companyId])
+  @@map("company_equipment_rules")
+}
+
+model CompanyZoneTemplate {
+  id                String   @id @default(uuid()) @db.Uuid
+  companyId         String   @map("company_id") @db.Uuid
+  templateCode      String   @map("template_code")
+  zoneType          String   @map("zone_type")
+  title             String
+  requiredTraining  Json     @default("[]") @map("required_training") @db.JsonB
+  requiredPpe       Json     @default("[]") @map("required_ppe") @db.JsonB
+  requiresJha       Boolean  @default(false) @map("requires_jha")
+  highRisk          Boolean  @default(false) @map("high_risk")
+  version           Int      @default(1)
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, templateCode])
+  @@index([companyId])
+  @@map("company_zone_templates")
+}

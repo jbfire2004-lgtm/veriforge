@@ -1,0 +1,1 @@
+{"version":3,"file":"safety-services-marketplace.d.ts","sourceRoot":"","sources":["../../src/engines/safety-services-marketplace.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,uBAAuB,EAAE,MAAM,UAAU,CAAC;AAG7E,qBAAa,+BAA+B;IAC1C,GAAG,CAAC,GAAG,EAAE,uBAAuB,GAAG,mBAAmB;CAQvD"}

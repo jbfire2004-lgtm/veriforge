@@ -1,0 +1,62 @@
+{
+  "id": "balanced",
+  "version": 1,
+  "description": "Balanced mode — slightly broader review roles and owner post-completion access; raw images still require override.",
+  "flha": {
+    "contractorPrivateStates": ["draft", "contractor_only"],
+    "reviewStates": ["in_review"],
+    "ownerVisibleStates": ["approved", "post_completion_release"],
+    "contractorRoles": [
+      "CONTRACTOR",
+      "SAFETY_LEAD",
+      "PROJECT_MANAGER",
+      "COMPANY_ADMIN",
+      "PLATFORM_ADMIN"
+    ],
+    "reviewRoles": [
+      "SAFETY_LEAD",
+      "CONTRACTOR",
+      "PROJECT_MANAGER",
+      "WORKER",
+      "PROJECT_OWNER",
+      "COMPANY_ADMIN",
+      "PLATFORM_ADMIN"
+    ],
+    "postCompletionRoles": [
+      "PROJECT_OWNER",
+      "PROJECT_MANAGER",
+      "SAFETY_LEAD",
+      "CONTRACTOR",
+      "WORKER",
+      "COMPANY_ADMIN",
+      "PLATFORM_ADMIN"
+    ],
+    "ownerActiveHazardAccess": "aggregate",
+    "reviewIndependentOfContractor": true,
+    "sealedBlocksAi": true,
+    "workerReviewAreaEntry": true
+  },
+  "image": {
+    "defaultAllowRawEgress": false,
+    "requireExplicitOverrideForRaw": true,
+    "describeRoles": [
+      "CONTRACTOR",
+      "SAFETY_LEAD",
+      "PROJECT_MANAGER",
+      "COMPANY_ADMIN",
+      "PLATFORM_ADMIN",
+      "WORKER"
+    ],
+    "denyRawRoles": ["PROJECT_OWNER"],
+    "allowedRawRoles": [
+      "SAFETY_LEAD",
+      "PROJECT_MANAGER",
+      "COMPANY_ADMIN",
+      "PLATFORM_ADMIN"
+    ]
+  },
+  "owner": {
+    "ongoingWorkTransform": "owner_safe",
+    "postCompletionTransform": "abstracted"
+  }
+}

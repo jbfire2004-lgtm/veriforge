@@ -1,0 +1,34 @@
+services:
+  sds-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_sds
+      POSTGRES_PASSWORD: vera_sds_secret
+      POSTGRES_DB: vera_sds
+    ports:
+      - "5448:5432"
+    volumes:
+      - sds_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_sds -d vera_sds"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  sds-service:
+    build: .
+    ports:
+      - "3016:3016"
+    environment:
+      NODE_ENV: production
+      PORT: 3016
+      DATABASE_URL: postgresql://vera_sds:vera_sds_secret@sds-db:5432/vera_sds?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      EXPIRY_WARNING_DAYS: 30
+    depends_on:
+      sds-db:
+        condition: service_healthy
+
+volumes:
+  sds_pg_data:

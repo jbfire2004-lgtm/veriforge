@@ -1,0 +1,1 @@
+{"version":3,"file":"twin-automation.d.ts","sourceRoot":"","sources":["../../src/engines/twin-automation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,qBAAqB,EAAE,qBAAqB,EAAE,MAAM,UAAU,CAAC;AAGrG,qBAAa,oBAAoB;IAC/B,GAAG,CAAC,GAAG,EAAE,sBAAsB,GAAG,qBAAqB,GAAG;QAAE,OAAO,EAAE,qBAAqB,CAAA;KAAE;CA4C7F"}

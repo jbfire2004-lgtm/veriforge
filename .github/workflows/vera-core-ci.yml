@@ -1,0 +1,132 @@
+name: Vera Core CI
+
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "backend/**"
+      - "vera-frontend/**"
+      - "docker-compose.vera-core.yml"
+      - ".github/workflows/vera-core-ci.yml"
+  pull_request:
+    paths:
+      - "backend/**"
+      - "vera-frontend/**"
+      - "docker-compose.vera-core.yml"
+      - ".github/workflows/vera-core-ci.yml"
+
+jobs:
+  backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vera
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d vera"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vera?schema=public
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vera_shadow?schema=public
+      JWT_SECRET: ci-test-jwt-secret-minimum-32-characters-long
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci --legacy-peer-deps
+      - name: Backend lint and typecheck
+        working-directory: backend
+        run: npm run lint:check && npm run typecheck
+      - name: Prisma validate
+        working-directory: backend
+        run: npx prisma validate
+      - name: Create shadow database
+        run: psql "postgresql://postgres:postgres@localhost:5432/postgres" -c "CREATE DATABASE vera_shadow;"
+      - name: Prisma schema drift check
+        working-directory: backend
+        run: npx prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --shadow-database-url "$SHADOW_DATABASE_URL" --exit-code
+      - name: Prisma migrate
+        working-directory: backend
+        run: npx prisma migrate deploy
+      - name: Prisma generate
+        working-directory: backend
+        run: npx prisma generate
+      - name: Seed DB
+        working-directory: backend
+        run: npm run prisma:seed
+      - name: Vera Core unit tests
+        working-directory: backend
+        run: npx jest src/modules/vera-event-bus src/health --runInBand
+      - name: Vera Core pipeline integration
+        working-directory: backend
+        run: npx jest --config test/ci/jest-ci.config.cjs --runInBand --testPathPattern=vera-core-pipeline
+      - name: Backend CI suite
+        working-directory: backend
+        run: npm run test:ci
+
+  frontend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: vera-frontend/package-lock.json
+      - name: Install frontend deps
+        working-directory: vera-frontend
+        run: npm ci --legacy-peer-deps
+      - name: Frontend lint and typecheck
+        working-directory: vera-frontend
+        run: npm run lint && npm run typecheck
+      - name: Frontend build
+        working-directory: vera-frontend
+        run: npm run build
+      - name: Nav route smoke
+        working-directory: vera-frontend
+        run: npm run test:nav-routes
+      - name: Frontend smoke suite
+        working-directory: vera-frontend
+        run: npm run test:smoke
+      - name: Frontend component tests
+        working-directory: vera-frontend
+        run: npm run test:component
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: [backend, frontend]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build backend image
+        run: docker build -t vera-core-backend:ci ./backend
+      - name: Build frontend image
+        run: docker build -t vera-core-frontend:ci ./vera-frontend
+      - name: Compose smoke (health + ready)
+        run: |
+          docker compose -f docker-compose.vera-core.yml up -d --build
+          for i in {1..40}; do
+            if curl -sf http://localhost:3000/health >/dev/null && curl -sf http://localhost:3000/ready >/dev/null; then
+              echo "Core stack healthy"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "Core stack did not become healthy in time"
+          docker compose -f docker-compose.vera-core.yml logs
+          exit 1
+      - name: Compose teardown
+        if: always()
+        run: docker compose -f docker-compose.vera-core.yml down -v

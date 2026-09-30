@@ -1,0 +1,53 @@
+.panel {
+  composes: tokens from "./shared.module.css";
+  border: 1px solid var(--vf-steel-grey);
+  background: var(--vf-iron-black);
+  border-radius: 0;
+  overflow: hidden;
+  box-shadow: var(--vf-steel-glow);
+  color: var(--vf-safety-white);
+}
+
+.header {
+  background-image: var(--vf-metallic);
+  border-bottom: 1px solid var(--vf-steel-grey);
+  padding: 12px 14px;
+  position: relative;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--vf-forge-red);
+  box-shadow: var(--vf-glow);
+}
+
+.kicker {
+  margin: 0 0 4px;
+  font-family: var(--vf-font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffc9c9;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--vf-font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vf-safety-white);
+}
+
+.body {
+  padding: 14px;
+  font-family: var(--vf-font-body);
+  font-size: 13px;
+}

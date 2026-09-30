@@ -1,0 +1,1 @@
+{"version":3,"file":"civilization-coordination.d.ts","sourceRoot":"","sources":["../../src/engines/civilization-coordination.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,wBAAwB,EAAE,MAAM,UAAU,CAAC;AAEnF,qBAAa,8BAA8B;IACzC,UAAU,CAAC,GAAG,EAAE,wBAAwB,GAAG,wBAAwB;CAYpE"}

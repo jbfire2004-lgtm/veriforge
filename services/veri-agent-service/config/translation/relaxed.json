@@ -1,0 +1,25 @@
+{
+  "id": "relaxed",
+  "version": 1,
+  "description": "Richer abstracted summaries while still stripping identifiers.",
+  "flha": {
+    "maxHazardSummaryChars": 240,
+    "maxHazards": 40,
+    "maxMitigationTypes": 6,
+    "maxTaskTypes": 12,
+    "allowNarrativeSentences": true,
+    "maxNarrativeSentences": 5,
+    "preferCategoryOnlySummary": false
+  },
+  "image": {
+    "maxDescriptionChars": 500,
+    "maxLabels": 20,
+    "hashObjectKeys": true,
+    "dropPeopleReferences": true
+  },
+  "project": {
+    "includeTrade": true,
+    "maxConditions": 10,
+    "dropNamesAndAddresses": true
+  }
+}

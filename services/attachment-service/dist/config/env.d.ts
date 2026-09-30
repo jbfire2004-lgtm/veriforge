@@ -1,0 +1,24 @@
+export declare const env: {
+    nodeEnv: string;
+    port: number;
+    databaseUrl: string;
+    jwtAccessSecret: string;
+    authValidateUrl: string | undefined;
+    storageDriver: "local" | "s3";
+    localStoragePath: string;
+    s3Endpoint: string | undefined;
+    s3Region: string;
+    s3Bucket: string;
+    s3AccessKeyId: string | undefined;
+    s3SecretAccessKey: string | undefined;
+    s3ForcePathStyle: boolean;
+    maxFileSizeBytes: number;
+    presignedUrlTtlSec: number;
+    thumbnailMaxWidth: number;
+    thumbnailMaxHeight: number;
+    virusScanUrl: string | undefined;
+    virusScanTimeoutMs: number;
+    attachmentServiceKey: string | undefined;
+    logLevel: string;
+    corsOrigin: string;
+};

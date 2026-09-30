@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: veri-agent-config
+  namespace: veri-agent
+  labels:
+    app.kubernetes.io/name: veri-agent
+data:
+  NODE_ENV: "production"
+  PORT: "3040"
+  HOST: "0.0.0.0"
+  LOG_LEVEL: "info"
+  VERA_AGENT_REGION: "ca-central-1"
+  VERA_AGENT_PRIVACY_MODE: "strict"
+  VERA_AGENT_LLM_ENABLED: "true"
+  VERA_AGENT_ALLOW_IMAGE_EGRESS: "false"
+  REDIS_ENABLED: "true"
+  RATE_LIMIT_PER_MINUTE: "120"
+  JWT_ISSUER: "veriforge"
+  JWT_AUDIENCE: "veri-agent"
+  AUTH_DEV_BYPASS: "false"
+  OTEL_SERVICE_NAME: "veri-agent-service"
+  OTEL_METRICS_ENABLED: "true"
+  OTEL_TRACING_ENABLED: "true"
+  # Paths inside the container image
+  VERA_AGENT_REDACTION_RULES_PATH: "/app/config/redaction-rules.json"
+  VERA_AGENT_POLICIES_DIR: "/app/config/policies"
+  VERA_AGENT_TENANT_POLICY_MAP: "/app/config/policies/tenant-overrides.json"
+  VERA_AGENT_ORCHESTRATION_CONFIG: "/app/config/orchestration.json"
+  VERA_AGENT_SECURITY_CONFIG: "/app/config/security.json"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: veri-agent-tenant-overrides
+  namespace: veri-agent
+  labels:
+    app.kubernetes.io/name: veri-agent
+data:
+  tenant-overrides.json: |
+    {
+      "defaultProfile": "strict",
+      "tenants": {
+        "1001": "balanced"
+      }
+    }

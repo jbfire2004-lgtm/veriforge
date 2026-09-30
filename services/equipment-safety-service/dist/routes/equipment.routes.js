@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.equipmentRouter = void 0;
+const express_1 = require("express");
+const equipment_controller_1 = require("../controllers/equipment.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const equipment_validators_1 = require("../validators/equipment.validators");
+exports.equipmentRouter = (0, express_1.Router)();
+exports.equipmentRouter.use(auth_middleware_1.requireAuth);
+exports.equipmentRouter.post('/', equipment_validators_1.registerValidators, error_handler_1.handleValidation, equipment_controller_1.equipmentController.register);
+exports.equipmentRouter.post('/:id/inspection', equipment_validators_1.inspectionValidators, error_handler_1.handleValidation, equipment_controller_1.equipmentController.inspection);
+exports.equipmentRouter.post('/:id/certification', equipment_validators_1.certificationValidators, error_handler_1.handleValidation, equipment_controller_1.equipmentController.certification);
+exports.equipmentRouter.post('/:id/authorize', auth_middleware_1.requireSupervisor, equipment_validators_1.authorizeValidators, error_handler_1.handleValidation, equipment_controller_1.equipmentController.authorize);
+exports.equipmentRouter.post('/:id/lockout', equipment_validators_1.lockoutValidators, error_handler_1.handleValidation, equipment_controller_1.equipmentController.lockout);
+exports.equipmentRouter.post('/:id/unlock', auth_middleware_1.requireSupervisor, equipment_validators_1.unlockValidators, error_handler_1.handleValidation, equipment_controller_1.equipmentController.unlock);
+exports.equipmentRouter.get('/:id/score', equipment_validators_1.scoreValidators, error_handler_1.handleValidation, equipment_controller_1.equipmentController.score);

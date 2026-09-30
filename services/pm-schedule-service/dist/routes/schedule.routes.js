@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.scheduleRouter = void 0;
+const express_1 = require("express");
+const schedule_controller_1 = require("../controllers/schedule.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const schedule_validators_1 = require("../validators/schedule.validators");
+exports.scheduleRouter = (0, express_1.Router)();
+exports.scheduleRouter.use(auth_middleware_1.requireAuth);
+exports.scheduleRouter.post('/', schedule_validators_1.createValidators, error_handler_1.handleValidation, schedule_controller_1.scheduleController.create);
+exports.scheduleRouter.post('/conflicts', schedule_validators_1.conflictsValidators, error_handler_1.handleValidation, schedule_controller_1.scheduleController.detectConflicts);
+exports.scheduleRouter.get('/project/:project_id', schedule_validators_1.getProjectValidators, error_handler_1.handleValidation, schedule_controller_1.scheduleController.getByProject);
+exports.scheduleRouter.post('/:id/update', schedule_validators_1.updateValidators, error_handler_1.handleValidation, schedule_controller_1.scheduleController.update);

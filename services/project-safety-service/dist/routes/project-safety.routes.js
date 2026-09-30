@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.projectSafetyRouter = void 0;
+const express_1 = require("express");
+const project_safety_controller_1 = require("../controllers/project-safety.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const project_safety_validators_1 = require("../validators/project-safety.validators");
+exports.projectSafetyRouter = (0, express_1.Router)();
+exports.projectSafetyRouter.use(auth_middleware_1.requireAuth);
+exports.projectSafetyRouter.post('/profile', project_safety_validators_1.profileValidators, error_handler_1.handleValidation, project_safety_controller_1.projectSafetyController.profile);
+exports.projectSafetyRouter.post('/hazards', project_safety_validators_1.hazardValidators, error_handler_1.handleValidation, project_safety_controller_1.projectSafetyController.hazards);
+exports.projectSafetyRouter.post('/controls', project_safety_validators_1.controlValidators, error_handler_1.handleValidation, project_safety_controller_1.projectSafetyController.controls);
+exports.projectSafetyRouter.post('/zones', project_safety_validators_1.zoneValidators, error_handler_1.handleValidation, project_safety_controller_1.projectSafetyController.zones);
+exports.projectSafetyRouter.post('/equipment', project_safety_validators_1.equipmentValidators, error_handler_1.handleValidation, project_safety_controller_1.projectSafetyController.equipment);
+exports.projectSafetyRouter.post('/training', project_safety_validators_1.trainingValidators, error_handler_1.handleValidation, project_safety_controller_1.projectSafetyController.training);
+exports.projectSafetyRouter.post('/emergency', project_safety_validators_1.emergencyValidators, error_handler_1.handleValidation, project_safety_controller_1.projectSafetyController.emergency);
+exports.projectSafetyRouter.get('/:project_id/score', project_safety_validators_1.scoreValidators, error_handler_1.handleValidation, project_safety_controller_1.projectSafetyController.score);

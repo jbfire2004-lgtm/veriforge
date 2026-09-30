@@ -1,0 +1,1 @@
+{"version":3,"file":"workforce-marketplace.d.ts","sourceRoot":"","sources":["../../src/engines/workforce-marketplace.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,uBAAuB,EAAE,MAAM,UAAU,CAAC;AAG7E,qBAAa,0BAA0B;IACrC,GAAG,CAAC,GAAG,EAAE,uBAAuB,GAAG,mBAAmB;CAavD"}

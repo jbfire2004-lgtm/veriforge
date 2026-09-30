@@ -1,0 +1,1 @@
+{"version":3,"file":"global-safety-intelligence.d.ts","sourceRoot":"","sources":["../../src/engines/global-safety-intelligence.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,mBAAmB,EAAE,MAAM,UAAU,CAAC;AAG9E,qBAAa,8BAA8B;IACzC,OAAO,CAAC,GAAG,EAAE,mBAAmB,GAAG,wBAAwB;CA4B5D"}

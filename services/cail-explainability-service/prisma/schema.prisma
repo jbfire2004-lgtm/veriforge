@@ -1,0 +1,23 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CailExplainability {
+  id               String   @id @default(uuid()) @db.Uuid
+  companyId        String   @map("company_id") @db.Uuid
+  predictionId     String?  @map("prediction_id") @db.Uuid
+  explanationText  String   @map("explanation_text")
+  contributingData Json     @map("contributing_data") @db.JsonB
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@index([companyId])
+  @@index([predictionId])
+  @@index([companyId, predictionId])
+  @@index([createdAt])
+  @@map("cail_explainability")
+}

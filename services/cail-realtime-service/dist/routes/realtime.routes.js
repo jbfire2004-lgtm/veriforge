@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.realtimeRouter = void 0;
+const express_1 = require("express");
+const realtime_controller_1 = require("../controllers/realtime.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const realtime_validators_1 = require("../validators/realtime.validators");
+exports.realtimeRouter = (0, express_1.Router)();
+exports.realtimeRouter.use(auth_middleware_1.requireAuth);
+exports.realtimeRouter.post('/predict', realtime_validators_1.predictValidators, error_handler_1.handleValidation, realtime_controller_1.realtimeController.predict);
+exports.realtimeRouter.post('/score', realtime_validators_1.scoreValidators, error_handler_1.handleValidation, realtime_controller_1.realtimeController.score);
+exports.realtimeRouter.post('/gate', realtime_validators_1.gateValidators, error_handler_1.handleValidation, realtime_controller_1.realtimeController.gate);

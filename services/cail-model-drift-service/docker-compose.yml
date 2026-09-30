@@ -1,0 +1,33 @@
+services:
+  cail-drift-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_cail_drift
+      POSTGRES_PASSWORD: vera_cail_drift_secret
+      POSTGRES_DB: vera_cail_drift
+    ports:
+      - "5465:5432"
+    volumes:
+      - cail_drift_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_cail_drift -d vera_cail_drift"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  cail-model-drift-service:
+    build: .
+    ports:
+      - "3033:3033"
+    environment:
+      NODE_ENV: production
+      PORT: 3033
+      DATABASE_URL: postgresql://vera_cail_drift:vera_cail_drift_secret@cail-drift-db:5432/vera_cail_drift?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+    depends_on:
+      cail-drift-db:
+        condition: service_healthy
+
+volumes:
+  cail_drift_pg_data:

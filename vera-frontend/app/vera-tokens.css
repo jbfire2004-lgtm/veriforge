@@ -1,0 +1,434 @@
+/* ===========================================================
+   VERA PLATFORM — Industrial safety design tokens
+   Unified Hub · VeriCore · VeriPM · VeriForge aesthetic
+   Light: :root / [data-theme="light"]
+   Dark:  [data-theme="dark"]
+   =========================================================== */
+
+:root,
+[data-theme="light"] {
+  color-scheme: light;
+
+  /* Primary — safety blue */
+  --color-primary: #1e6fb8;
+  --color-primary-light: #2f85cc;
+  --color-primary-dark: #174f86;
+
+  /* Neutrals — slate / graphite foundation */
+  --color-gray-50: #f4f6f8;
+  --color-gray-100: #e8ecf0;
+  --color-gray-200: #d5dbe0;
+  --color-gray-300: #b8c0c8;
+  --color-gray-400: #8a9199;
+  --color-gray-500: #5a6169;
+  --color-gray-600: #3b3f45;
+  --color-gray-700: #2a2e33;
+  --color-gray-800: #23272c;
+  --color-gray-900: #1c1f24;
+
+  /* Status — muted, compliance-safe */
+  --color-success: #4faf6f;
+  --color-warning: #c89f3d;
+  --color-danger: #b33a3a;
+  --color-info: #1e6fb8;
+  --color-inspection-teal: #2f8f8c;
+
+  /* Surfaces */
+  --color-surface: #ffffff;
+  --color-surface-alt: #f4f6f8;
+  --color-border: #d5dbe0;
+
+  /* Semantic aliases (app shell) */
+  --background: #f4f6f8;
+  --foreground: #2a2e33;
+  --muted: #e8ecf0;
+  --muted-foreground: #5a6169;
+  --surface: var(--color-surface);
+  --surface-alt: var(--color-surface-alt);
+  --border: var(--color-border);
+  --ring: var(--color-primary);
+  --ring-offset: var(--color-surface);
+
+  /* Component tokens — industrial buttons (critical red = alerts only) */
+  --btn-radius: 3px;
+  --btn-primary-bg: #2a2e33;
+  --btn-primary-bg-hover: #343940;
+  --btn-primary-border: #1f2328;
+  --btn-primary-fg: #f4f6f8;
+  --btn-secondary-bg: #3b3f45;
+  --btn-secondary-bg-hover: #454a51;
+  --btn-secondary-border: #2a2e33;
+  --btn-secondary-fg: #f4f6f8;
+  --btn-action-bg: #1e6fb8;
+  --btn-action-bg-hover: #1a63a6;
+  --btn-action-border: #174f86;
+  --btn-action-fg: #f4f6f8;
+  --btn-success-bg: #4faf6f;
+  --btn-success-bg-hover: #45a064;
+  --btn-success-border: #3d8f58;
+  --btn-success-fg: #0f1a12;
+  --btn-warning-bg: #c89f3d;
+  --btn-warning-bg-hover: #b89136;
+  --btn-warning-border: #a8842f;
+  --btn-warning-fg: #1c1a10;
+  --btn-critical-bg: #b33a3a;
+  --btn-critical-bg-hover: #a33434;
+  --btn-critical-border: #8f2e2e;
+  --btn-critical-fg: #f4f6f8;
+  /* Legacy aliases */
+  --btn-danger-bg: var(--btn-warning-bg);
+  --btn-danger-fg: var(--btn-warning-fg);
+
+  /* Inputs — graphite border, safety-blue focus */
+  --input-bg: #ffffff;
+  --input-border: #5a6169;
+  --input-border-focus: #1e6fb8;
+  --input-focus-ring: rgba(30, 111, 184, 0.28);
+  --input-radius: 3px;
+
+  /* Cards & panels — matte, thin border */
+  --card-bg: #ffffff;
+  --card-bg-muted: #f4f6f8;
+  --card-border: rgba(42, 46, 51, 0.14);
+  --card-shadow: none;
+  --card-radius: 6px;
+  --panel-header-border: rgba(42, 46, 51, 0.12);
+  --panel-icon-bg: #e8ecf0;
+  --panel-icon-fg: #1e6fb8;
+
+  /* Tables — high contrast, soft blue selected, critical red only for failures */
+  --table-header-bg: #e8ecf0;
+  --table-header-fg: #2a2e33;
+  --table-row-even: #ffffff;
+  --table-row-odd: #f4f6f8;
+  --table-row-hover: #eef2f6;
+  --table-row-selected: rgba(30, 111, 184, 0.12);
+  --table-row-selected-rail: #1e6fb8;
+  --table-row-critical: rgba(179, 58, 58, 0.1);
+  --table-row-critical-rail: #b33a3a;
+  --table-border: rgba(42, 46, 51, 0.12);
+
+  /* Badges */
+  --badge-success-bg: #e8f6ec;
+  --badge-success-fg: #1f5c38;
+  --badge-warning-bg: #f8f1dc;
+  --badge-warning-fg: #6b5420;
+  --badge-danger-bg: #f5e4e4;
+  --badge-danger-fg: #7a2828;
+  --badge-info-bg: #e4eef7;
+  --badge-info-fg: #174f86;
+
+  --danger: var(--color-danger);
+
+  /* Shell & hero — industrial calm */
+  --shell-bg: linear-gradient(180deg, #f4f6f8 0%, #eef2f5 55%, rgba(232, 236, 240, 0.9) 100%);
+  --hero-bg: linear-gradient(135deg, #2a2e33 0%, #3b3f45 48%, rgba(30, 111, 184, 0.92) 100%);
+  --hero-fg: #f4f6f8;
+  --hero-muted: rgba(244, 246, 248, 0.72);
+
+  /* Compliance palette */
+  --compliance-ok: #2f8f8c;
+  --compliance-ok-bg: #e4f3f2;
+  --compliance-ok-fg: #1a5553;
+  --compliance-risk: #c89f3d;
+  --compliance-risk-bg: #f8f1dc;
+  --compliance-risk-fg: #6b5420;
+  --compliance-bad: #b33a3a;
+  --compliance-bad-bg: #f5e4e4;
+  --compliance-bad-fg: #7a2828;
+  --compliance-pending: #1e6fb8;
+  --compliance-pending-bg: #e4eef7;
+  --compliance-pending-fg: #174f86;
+
+  /* Credential card */
+  --credential-radius: 8px;
+  --credential-shadow: 0 1px 2px rgba(28, 31, 36, 0.12);
+  --credential-shine: linear-gradient(135deg, rgba(255,255,255,0.2) 0%, transparent 48%);
+  --credential-ok: linear-gradient(145deg, #247a78 0%, #2f8f8c 48%, #3aa39f 100%);
+  --credential-risk: linear-gradient(145deg, #a8842f 0%, #c89f3d 48%, #d4b05a 100%);
+  --credential-bad: linear-gradient(145deg, #8f2e2e 0%, #b33a3a 48%, #c45a5a 100%);
+  --credential-pending: linear-gradient(145deg, #174f86 0%, #1e6fb8 48%, #2f85cc 100%);
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --color-dark-bg: #1c1f24;
+  --color-dark-surface: #2a2e33;
+  --color-dark-border: #3b3f45;
+  --color-dark-text: #f4f6f8;
+
+  --background: var(--color-dark-bg);
+  --foreground: var(--color-dark-text);
+  --muted: #23272c;
+  --muted-foreground: #8a9199;
+  --surface: var(--color-dark-surface);
+  --surface-alt: var(--color-dark-bg);
+  --border: var(--color-dark-border);
+  --ring: var(--color-primary-light);
+  --ring-offset: var(--color-dark-bg);
+
+  --btn-primary-bg: #3b3f45;
+  --btn-primary-bg-hover: #454a51;
+  --btn-primary-border: #2a2e33;
+  --btn-primary-fg: #f4f6f8;
+  --btn-secondary-bg: #5a6169;
+  --btn-secondary-bg-hover: #6b737c;
+  --btn-secondary-border: #3b3f45;
+  --btn-secondary-fg: #f4f6f8;
+  --btn-action-bg: #1e6fb8;
+  --btn-action-bg-hover: #2f85cc;
+  --btn-action-border: #174f86;
+  --btn-action-fg: #f4f6f8;
+  --btn-success-bg: #4faf6f;
+  --btn-success-bg-hover: #5bbf7d;
+  --btn-success-border: #3d8f58;
+  --btn-success-fg: #0f1a12;
+  --btn-warning-bg: #c89f3d;
+  --btn-warning-bg-hover: #d4b05a;
+  --btn-warning-border: #a8842f;
+  --btn-warning-fg: #1c1a10;
+  --btn-critical-bg: #b33a3a;
+  --btn-critical-bg-hover: #c45a5a;
+  --btn-critical-border: #8f2e2e;
+  --btn-critical-fg: #f4f6f8;
+  --btn-danger-bg: var(--btn-warning-bg);
+  --btn-danger-fg: var(--btn-warning-fg);
+
+  --input-bg: #23272c;
+  --input-border: #5a6169;
+  --input-border-focus: #2f85cc;
+  --input-focus-ring: rgba(47, 133, 204, 0.35);
+
+  --card-bg: var(--color-dark-surface);
+  --card-bg-muted: #23272c;
+  --card-border: rgba(244, 246, 248, 0.12);
+  --card-shadow: none;
+  --panel-header-border: rgba(244, 246, 248, 0.1);
+  --panel-icon-bg: #23272c;
+  --panel-icon-fg: #2f85cc;
+
+  --table-header-bg: #23272c;
+  --table-header-fg: #f4f6f8;
+  --table-row-even: #2a2e33;
+  --table-row-odd: #23272c;
+  --table-row-hover: #3b3f45;
+  --table-row-selected: rgba(30, 111, 184, 0.2);
+  --table-row-selected-rail: #1e6fb8;
+  --table-row-critical: rgba(179, 58, 58, 0.16);
+  --table-row-critical-rail: #b33a3a;
+  --table-border: rgba(244, 246, 248, 0.1);
+
+  --badge-success-bg: #1f3d2a;
+  --badge-success-fg: #8fd4a4;
+  --badge-warning-bg: #3d3420;
+  --badge-warning-fg: #e0c878;
+  --badge-danger-bg: #3d2222;
+  --badge-danger-fg: #e0a0a0;
+  --badge-info-bg: #1a3348;
+  --badge-info-fg: #8ab8e0;
+
+  --shell-bg: linear-gradient(180deg, #1c1f24 0%, #23272c 55%, #1c1f24 100%);
+  --hero-bg: linear-gradient(135deg, #1c1f24 0%, #2a2e33 48%, rgba(30, 111, 184, 0.75) 100%);
+  --hero-fg: #f4f6f8;
+  --hero-muted: rgba(244, 246, 248, 0.65);
+
+  --compliance-ok: #2f8f8c;
+  --compliance-ok-bg: #1a3332;
+  --compliance-ok-fg: #7ec9c6;
+  --compliance-risk-bg: #3d3420;
+  --compliance-risk-fg: #e0c878;
+  --compliance-bad-bg: #3d2222;
+  --compliance-bad-fg: #e0a0a0;
+  --compliance-pending-bg: #1a3348;
+  --compliance-pending-fg: #8ab8e0;
+
+  --credential-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --credential-shine: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, transparent 48%);
+}
+
+/* Shared primitives (both themes) */
+:root {
+  --font-sans: var(--font-inter-sans), "Inter", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "JetBrains Mono", monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  --leading-tight: 1.1;
+  --leading-normal: 1.4;
+  --leading-relaxed: 1.6;
+
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-full: 9999px;
+
+  --shadow-sm: none;
+  --shadow-md: 0 1px 2px rgba(28, 31, 36, 0.08);
+  --shadow-lg: 0 2px 8px rgba(28, 31, 36, 0.1);
+  --shadow-card: none;
+
+  --screen-sm: 640px;
+  --screen-md: 768px;
+  --screen-lg: 1024px;
+  --screen-xl: 1280px;
+
+  --transition-fast: 150ms;
+  --transition-normal: 250ms;
+  --transition-slow: 400ms;
+
+  /* Legacy VERA brand → industrial safety aliases */
+  --color-vera-deep: #2a2e33;
+  --color-vera-blue: #1e6fb8;
+  --color-vera-teal: #2f8f8c;
+  --color-vera-charcoal: var(--foreground);
+  --color-vera-slate: #3b3f45;
+  --color-vera-white: var(--surface);
+  --color-vera-surface: var(--muted);
+  --color-vera-muted: var(--muted-foreground);
+  --color-vera-primary: var(--color-primary);
+  --color-vera-primary-hover: var(--color-primary-dark);
+  --color-vera-success: var(--color-success);
+  --color-vera-warning: var(--color-warning);
+  --color-vera-danger: var(--color-danger);
+  --color-vera-bg: var(--background);
+  --color-vera-surface-core: var(--surface);
+  --color-vera-border: var(--border);
+
+  --color-safe: var(--color-success);
+  --color-danger-legacy: var(--color-danger);
+
+  --spacing-vera-1: var(--space-1);
+  --spacing-vera-2: 6px;
+  --spacing-vera-3: var(--space-2);
+  --spacing-vera-4: var(--space-3);
+  --spacing-vera-5: var(--space-4);
+  --spacing-vera-6: var(--space-6);
+  --spacing-vera-8: var(--space-8);
+
+  --shadow-vera: var(--shadow-md);
+
+  /* ── Cross-module shell contract (SmsUniversalLayout · ModuleHubLayout) ──
+     Typography, spacing, cards, icons, and status badges share these.
+     Module themes (.sf-theme, .vs-intel) MUST alias here — do not reintroduce
+     alternate hex stacks or rounded-full status pills on authenticated modules. */
+  --vera-icon-sm: 1rem; /* 16px */
+  --vera-icon-md: 1.25rem; /* 20px */
+  --vera-icon-lg: 1.5rem; /* 24px */
+  --vera-card-radius: var(--radius-md);
+  --vera-card-pad: var(--space-4);
+  --vera-card-gap: var(--space-4);
+  --vera-section-gap: var(--space-6);
+  --vera-badge-radius: var(--radius-sm);
+  --vera-badge-pad-y: 0.2rem;
+  --vera-badge-pad-x: 0.55rem;
+  --vera-type-eyebrow: 0.6875rem;
+  --vera-type-label: 0.6875rem;
+  --vera-type-body: var(--text-sm);
+  --vera-type-title: var(--text-2xl);
+}
+
+[data-theme="dark"] {
+  --color-vera-deep: var(--color-dark-bg);
+  --color-vera-charcoal: var(--color-dark-text);
+  --color-vera-white: var(--color-dark-text);
+  --color-vera-surface: var(--color-dark-surface);
+}
+
+/* Industrial status badge — shared by SF / SMS / VS shells (no pills) */
+.vera-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: var(--vera-badge-radius);
+  border: 1px solid var(--border);
+  padding: var(--vera-badge-pad-y) var(--vera-badge-pad-x);
+  font-family: var(--font-sans);
+  font-size: var(--vera-type-label);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.vera-status--neutral {
+  color: var(--muted-foreground);
+  background: var(--muted);
+}
+
+.vera-status--info {
+  color: var(--badge-info-fg);
+  background: var(--badge-info-bg);
+  border-color: color-mix(in srgb, var(--color-info) 35%, var(--border));
+}
+
+.vera-status--success {
+  color: var(--badge-success-fg);
+  background: var(--badge-success-bg);
+  border-color: color-mix(in srgb, var(--color-success) 35%, var(--border));
+}
+
+.vera-status--warning {
+  color: var(--badge-warning-fg);
+  background: var(--badge-warning-bg);
+  border-color: color-mix(in srgb, var(--color-warning) 35%, var(--border));
+}
+
+.vera-status--danger {
+  color: var(--badge-danger-fg);
+  background: var(--badge-danger-bg);
+  border-color: color-mix(in srgb, var(--color-danger) 35%, var(--border));
+}
+
+.vera-shell-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--vera-card-radius);
+  padding: var(--vera-card-pad);
+  box-shadow: var(--shadow-card);
+}
+
+.vera-icon-sm {
+  width: var(--vera-icon-sm);
+  height: var(--vera-icon-sm);
+  flex-shrink: 0;
+}
+
+.vera-icon-md {
+  width: var(--vera-icon-md);
+  height: var(--vera-icon-md);
+  flex-shrink: 0;
+}
+
+.vera-icon-lg {
+  width: var(--vera-icon-lg);
+  height: var(--vera-icon-lg);
+  flex-shrink: 0;
+}
+
+.vera-shell {
+  font-family: var(--font-sans);
+  color: var(--foreground);
+}

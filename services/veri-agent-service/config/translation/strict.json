@@ -1,0 +1,25 @@
+{
+  "id": "strict",
+  "version": 1,
+  "description": "Maximum abstraction — category/risk/mitigation types; minimal free text.",
+  "flha": {
+    "maxHazardSummaryChars": 120,
+    "maxHazards": 20,
+    "maxMitigationTypes": 4,
+    "maxTaskTypes": 8,
+    "allowNarrativeSentences": false,
+    "maxNarrativeSentences": 0,
+    "preferCategoryOnlySummary": true
+  },
+  "image": {
+    "maxDescriptionChars": 280,
+    "maxLabels": 12,
+    "hashObjectKeys": true,
+    "dropPeopleReferences": true
+  },
+  "project": {
+    "includeTrade": true,
+    "maxConditions": 6,
+    "dropNamesAndAddresses": true
+  }
+}

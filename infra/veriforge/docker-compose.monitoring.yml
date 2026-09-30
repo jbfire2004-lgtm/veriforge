@@ -1,0 +1,49 @@
+# Optional monitoring overlay
+# docker compose -f docker-compose.yml -f docker-compose.monitoring.yml --env-file .env up -d
+
+services:
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+      - --storage.tsdb.path=/prometheus
+      - --web.enable-lifecycle
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./monitoring/alerts.yml:/etc/prometheus/alerts.yml:ro
+      - veriforge_prom:/prometheus
+    ports:
+      - "9090:9090"
+    networks: [veriforge]
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    environment:
+      GF_SECURITY_ADMIN_USER: ${GRAFANA_ADMIN_USER:-admin}
+      GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin}
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - veriforge_grafana:/var/lib/grafana
+      - ./monitoring/grafana/datasources.yml:/etc/grafana/provisioning/datasources/datasources.yml:ro
+      - ./monitoring/grafana/dashboards/dashboards.yml:/etc/grafana/provisioning/dashboards/dashboards.yml:ro
+      - ./monitoring/grafana/dashboards/json:/etc/grafana/provisioning/dashboards/json:ro
+    ports:
+      - "3000:3000"
+    depends_on:
+      - prometheus
+    networks: [veriforge]
+
+  # Optional OTLP collector for traces (API/worker → collector → Tempo/Jaeger)
+  otel-collector:
+    image: otel/opentelemetry-collector-contrib:0.111.0
+    profiles: ["tracing"]
+    command: ["--config=/etc/otel-collector-config.yaml"]
+    volumes:
+      - ./monitoring/otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    ports:
+      - "4318:4318"
+    networks: [veriforge]
+
+volumes:
+  veriforge_prom:
+  veriforge_grafana:

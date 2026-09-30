@@ -1,0 +1,1 @@
+{"version":3,"file":"multi-entity-automation.d.ts","sourceRoot":"","sources":["../../src/engines/multi-entity-automation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,qBAAqB,EAAE,MAAM,UAAU,CAAC;AAG9E,qBAAa,2BAA2B;IACtC,GAAG,CAAC,GAAG,EAAE,sBAAsB,GAAG,qBAAqB;CAoDxD"}

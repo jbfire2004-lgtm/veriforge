@@ -1,0 +1,1 @@
+{"version":3,"file":"civilization-growth.d.ts","sourceRoot":"","sources":["../../src/engines/civilization-growth.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,kBAAkB,EAAE,MAAM,UAAU,CAAC;AAE7E,qBAAa,wBAAwB;IACnC,KAAK,CAAC,GAAG,EAAE,wBAAwB,GAAG,kBAAkB;CAoBzD"}

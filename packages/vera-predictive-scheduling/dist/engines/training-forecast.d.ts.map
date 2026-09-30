@@ -1,0 +1,1 @@
+{"version":3,"file":"training-forecast.d.ts","sourceRoot":"","sources":["../../src/engines/training-forecast.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,gBAAgB,EAAE,MAAM,UAAU,CAAC;AAEzE,qBAAa,yBAAyB;IACpC,OAAO,CAAC,GAAG,EAAE,sBAAsB,GAAG,gBAAgB;IA2CtD,OAAO,CAAC,SAAS;CAKlB"}

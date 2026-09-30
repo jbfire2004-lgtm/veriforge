@@ -1,0 +1,72 @@
+{
+  "version": 1,
+  "defaultPrivacyMode": "strict",
+  "defaultTimeoutMs": 20000,
+  "defaultMaxRetries": 2,
+  "retryBackoffMs": 150,
+  "preferHeuristicWhenDisabled": true,
+  "providers": [
+    {
+      "id": "openai_compatible",
+      "kind": "llm",
+      "enabled": true,
+      "endpoint": "",
+      "apiKeyEnv": "VERA_LLM_API_KEY",
+      "model": "gpt-4o-mini",
+      "fallbackModel": "gpt-4o-mini",
+      "regions": ["ca-central-1", "*"],
+      "taskTypes": [
+        "summarization",
+        "classification",
+        "recommendation",
+        "json_completion"
+      ],
+      "privacyModes": ["strict", "balanced"],
+      "timeoutMs": 20000,
+      "maxRetries": 2,
+      "noTraining": true,
+      "zeroRetention": true,
+      "priority": 10
+    },
+    {
+      "id": "openai_vision",
+      "kind": "vision",
+      "enabled": true,
+      "endpoint": "",
+      "apiKeyEnv": "VERA_LLM_API_KEY",
+      "model": "gpt-4o-mini",
+      "regions": ["ca-central-1", "*"],
+      "taskTypes": ["vision"],
+      "privacyModes": ["balanced"],
+      "timeoutMs": 30000,
+      "maxRetries": 1,
+      "noTraining": true,
+      "zeroRetention": true,
+      "priority": 20
+    },
+    {
+      "id": "heuristic",
+      "kind": "heuristic",
+      "enabled": true,
+      "model": "heuristic",
+      "regions": ["*"],
+      "taskTypes": [
+        "summarization",
+        "classification",
+        "recommendation",
+        "vision",
+        "json_completion"
+      ],
+      "privacyModes": ["strict", "balanced"],
+      "noTraining": true,
+      "zeroRetention": true,
+      "priority": 1000
+    }
+  ],
+  "tenantOverrides": {
+    "1001": {
+      "privacyMode": "balanced",
+      "allowedProviders": ["openai_compatible", "openai_vision", "heuristic"]
+    }
+  }
+}

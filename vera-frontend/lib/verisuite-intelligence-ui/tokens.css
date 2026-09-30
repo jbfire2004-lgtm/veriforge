@@ -1,0 +1,757 @@
+/* VeriSuite Intelligence — dark industrial tokens + dashboard chrome */
+
+/* Shared palette vars — usable outside .vs-intel (gallery chrome, etc.) */
+.vs-gallery-root,
+.vs-intel {
+  --vs-navy: #0d1b2a;
+  --vs-slate: #1b263b;
+  --vs-panel: #152033;
+  --vs-border: #2a3a52;
+  --vs-blue: #00a3ff;
+  --vs-orange: #ff7a00;
+  --vs-emerald: #00c98d;
+  --vs-white: #f5f7fa;
+  --vs-muted: #8b9bb4;
+  --vs-critical: #ff4d6a;
+  --vs-radius: var(--vera-card-radius, var(--radius-md, 6px));
+  --vs-badge-radius: var(--vera-badge-radius, var(--radius-sm, 3px));
+  --vs-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --vs-space-1: var(--space-1, 4px);
+  --vs-space-2: var(--space-2, 8px);
+  --vs-space-3: var(--space-3, 12px);
+  --vs-space-4: var(--space-4, 16px);
+  --vs-space-6: var(--space-6, 24px);
+}
+
+.vs-intel {
+  color: var(--vs-white);
+  background: var(--vs-navy);
+  font-family: var(--font-ibm-plex-sans), "IBM Plex Sans", "Segoe UI", system-ui,
+    sans-serif;
+  /* Bleed past ContentContainer padding for a full dark canvas */
+  width: calc(100% + 2rem);
+  margin: -1.5rem -1rem -2rem;
+  padding: 0.5rem 0 2rem;
+  min-height: calc(100vh - 8rem);
+}
+
+.vs-intel .font-mono,
+.vs-intel .tabular-nums {
+  font-variant-numeric: tabular-nums;
+}
+
+.vs-intel code,
+.vs-intel .vs-mono {
+  font-family: var(--font-ibm-plex-mono), "IBM Plex Mono", ui-monospace, monospace;
+}
+
+@media (min-width: 640px) {
+  .vs-intel {
+    width: calc(100% + 3rem);
+    margin-left: -1.5rem;
+    margin-right: -1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .vs-intel {
+    width: calc(100% + 4rem);
+    margin-left: -2rem;
+    margin-right: -2rem;
+  }
+}
+
+.vs-intel * {
+  box-sizing: border-box;
+}
+
+.vs-shell {
+  max-width: 72rem;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+@media (min-width: 768px) {
+  .vs-shell {
+    padding: 2.5rem 2rem 4rem;
+  }
+}
+
+.vs-shell-header {
+  border-bottom: 1px solid var(--vs-border);
+  padding-bottom: 1.25rem;
+  margin-bottom: 2rem;
+}
+
+.vs-shell-title {
+  margin-top: 0.35rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--vs-white);
+  line-height: 1.2;
+}
+
+.vs-shell-desc {
+  margin-top: 0.65rem;
+  max-width: 42rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--vs-muted);
+}
+
+.vs-shell-meta {
+  margin-top: 0.5rem;
+  font-size: 0.7rem;
+  color: var(--vs-muted);
+}
+
+.vs-panel {
+  background: var(--vs-slate);
+  border: 1px solid var(--vs-border);
+  border-radius: var(--vs-radius);
+  transition:
+    border-color 180ms var(--vs-ease),
+    transform 180ms var(--vs-ease),
+    background-color 180ms var(--vs-ease);
+}
+
+.vs-panel-interactive {
+  cursor: pointer;
+}
+
+.vs-panel-interactive:hover {
+  border-color: var(--vs-blue);
+  transform: translateY(-1px);
+}
+
+.vs-panel-interactive:focus-visible {
+  outline: 2px solid var(--vs-blue);
+  outline-offset: 2px;
+}
+
+.vs-panel-expanded {
+  border-color: var(--vs-blue);
+  box-shadow: inset 3px 0 0 var(--vs-blue);
+}
+
+/* Drill-down crumb + expand */
+.vs-drill-target {
+  cursor: pointer;
+  transition: color 140ms var(--vs-ease);
+}
+
+.vs-drill-target:hover {
+  color: var(--vs-blue);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.vs-bubble {
+  transition:
+    fill-opacity 180ms var(--vs-ease),
+    stroke-width 180ms var(--vs-ease),
+    transform 180ms var(--vs-ease);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.vs-bubble:hover {
+  fill-opacity: 0.9;
+  transform: scale(1.06);
+}
+
+.vs-expand-panel {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition:
+    max-height 280ms var(--vs-ease),
+    opacity 200ms var(--vs-ease),
+    margin 200ms var(--vs-ease);
+}
+
+.vs-expand-panel[data-open="true"] {
+  max-height: 640px;
+  opacity: 1;
+  margin-top: 0.75rem;
+}
+
+.vs-eyebrow {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--vs-blue);
+}
+
+.vs-muted {
+  color: var(--vs-muted);
+}
+
+/* Information hierarchy bands */
+.vs-band {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 2rem;
+  animation: vs-fade-up 320ms var(--vs-ease) both;
+}
+
+.vs-band:nth-child(2) {
+  animation-delay: 40ms;
+}
+.vs-band:nth-child(3) {
+  animation-delay: 80ms;
+}
+.vs-band:nth-child(4) {
+  animation-delay: 120ms;
+}
+.vs-band:nth-child(5) {
+  animation-delay: 160ms;
+}
+.vs-band:nth-child(6) {
+  animation-delay: 200ms;
+}
+
+
+.vs-band-label {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vs-muted);
+}
+
+/* SMS Core–aligned section chrome (shared across all VS hubs) */
+.vs-section-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.vs-section-header-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.625rem;
+  min-width: 0;
+}
+
+.vs-section-icon {
+  display: inline-flex;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--vs-badge-radius, var(--radius-sm, 3px));
+  border: 1px solid var(--vs-border);
+  background: var(--vs-panel);
+  color: var(--vs-blue);
+}
+
+.vs-section-title {
+  margin: 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--vs-white);
+  letter-spacing: 0.01em;
+}
+
+.vs-section-desc {
+  margin: 0.25rem 0 0;
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--vs-muted);
+}
+
+.vs-section-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.vs-status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  border-radius: var(--vs-badge-radius, var(--vera-badge-radius, var(--vs-radius)));
+  padding: var(--vera-badge-pad-y, 0.125rem) var(--vera-badge-pad-x, 0.5rem)
+    var(--vera-badge-pad-y, 0.125rem) 0.625rem;
+  font-size: var(--vera-type-label, 10px);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+.vs-band {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.vs-band-kpi {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+@media (min-width: 640px) {
+  .vs-band-kpi {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+}
+
+.vs-band-trend {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .vs-band-trend {
+    grid-template-columns: 1.4fr 1fr;
+  }
+}
+
+@media (min-width: 1024px) {
+  .vs-band-trend {
+    grid-template-columns: 2fr 1fr;
+  }
+}
+
+.vs-band-detail {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .vs-band-detail {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+/* Insight strip — first-viewport key signals */
+.vs-insight-strip {
+  margin-bottom: 1.25rem;
+}
+
+.vs-insight-chips {
+  display: grid;
+  gap: 0.5rem;
+  margin-top: 0.65rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .vs-insight-chips {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .vs-insight-chips {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.vs-insight-chip {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.65rem 0.75rem;
+  background: var(--vs-slate);
+  border: 1px solid var(--vs-border);
+  border-left-width: 3px;
+  border-radius: var(--vs-radius);
+  text-decoration: none;
+  color: inherit;
+  transition:
+    border-color 160ms var(--vs-ease),
+    transform 160ms var(--vs-ease);
+}
+
+a.vs-insight-chip:hover {
+  border-color: var(--vs-blue);
+  transform: translateY(-1px);
+}
+
+.vs-insight-chip-label {
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--vs-muted);
+}
+
+.vs-insight-chip-value {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.vs-compare-bars {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 100%;
+  max-width: 96px;
+}
+
+.vs-compare-bar {
+  height: 4px;
+  border-radius: 1px;
+  min-width: 2px;
+  transition: width 220ms var(--vs-ease);
+}
+
+.vs-shell {
+  max-width: 72rem;
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+  .vs-shell {
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+  }
+}
+
+.vs-band-narrative {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Form controls on dark */
+.vs-intel select,
+.vs-intel input[type="text"],
+.vs-intel input[type="checkbox"] {
+  accent-color: var(--vs-blue);
+}
+
+.vs-intel select {
+  height: 2.25rem;
+  border-radius: var(--vs-radius);
+  border: 1px solid var(--vs-border);
+  background: var(--vs-panel);
+  color: var(--vs-white);
+  padding: 0 0.5rem;
+  font-size: 0.875rem;
+  transition: border-color 160ms var(--vs-ease);
+}
+
+.vs-intel select:hover,
+.vs-intel select:focus {
+  border-color: var(--vs-blue);
+  outline: none;
+}
+
+.vs-intel label {
+  color: var(--vs-muted);
+  font-size: 0.875rem;
+}
+
+.vs-intel table {
+  width: 100%;
+  text-align: left;
+  font-size: 0.875rem;
+  border-collapse: collapse;
+}
+
+.vs-intel thead tr {
+  color: var(--vs-muted);
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  border-bottom: 1px solid var(--vs-border);
+}
+
+.vs-intel tbody tr {
+  border-bottom: 1px solid rgba(42, 58, 82, 0.65);
+  transition: background-color 140ms var(--vs-ease);
+}
+
+.vs-intel tbody tr:hover {
+  background: rgba(0, 163, 255, 0.06);
+}
+
+.vs-intel th,
+.vs-intel td {
+  padding: 0.5rem 0.35rem;
+}
+
+.vs-intel button.vs-chip {
+  border-radius: var(--vs-radius);
+  border: 1px solid var(--vs-border);
+  background: transparent;
+  color: var(--vs-white);
+  padding: 0.35rem 0.65rem;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition:
+    border-color 160ms var(--vs-ease),
+    color 160ms var(--vs-ease),
+    background-color 160ms var(--vs-ease);
+}
+
+.vs-intel button.vs-chip:hover:not(:disabled) {
+  border-color: var(--vs-blue);
+  color: var(--vs-blue);
+  background: rgba(0, 163, 255, 0.08);
+}
+
+.vs-intel button.vs-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.vs-intel button.vs-chip-active,
+.vs-intel button.vs-chip[data-active] {
+  border-color: var(--vs-blue);
+  color: var(--vs-blue);
+  background: rgba(0, 163, 255, 0.12);
+}
+
+.vs-intel a {
+  color: var(--vs-blue);
+  text-decoration: none;
+  transition: color 140ms var(--vs-ease);
+}
+
+.vs-intel a:hover {
+  color: var(--vs-white);
+}
+
+.vs-intel .vs-btn {
+  display: inline-flex;
+  align-items: center;
+  height: 2.25rem;
+  padding: 0 0.85rem;
+  border-radius: var(--vs-radius);
+  border: 1px solid var(--vs-border);
+  background: var(--vs-panel);
+  color: var(--vs-white);
+  font-size: 0.8125rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    border-color 160ms var(--vs-ease),
+    background-color 160ms var(--vs-ease),
+    transform 160ms var(--vs-ease);
+}
+
+.vs-intel .vs-btn:hover {
+  border-color: var(--vs-blue);
+  transform: translateY(-1px);
+}
+
+.vs-intel .vs-btn-primary {
+  background: var(--vs-blue);
+  border-color: var(--vs-blue);
+  color: var(--vs-navy);
+}
+
+.vs-intel .vs-btn-primary:hover {
+  background: #33b5ff;
+  border-color: #33b5ff;
+}
+
+.vs-drill-crumb {
+  color: var(--vs-muted);
+  font-size: 0.875rem;
+  transition: color 140ms var(--vs-ease);
+}
+
+.vs-drill-crumb:hover {
+  color: var(--vs-blue);
+}
+
+.vs-drill-crumb-active {
+  color: var(--vs-blue);
+  font-weight: 600;
+}
+
+@keyframes vs-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vs-trend-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.vs-trend-line {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 0;
+  animation: vs-trend-draw 900ms var(--vs-ease) both;
+}
+
+.vs-kpi-tile {
+  transition:
+    border-color 180ms var(--vs-ease),
+    transform 180ms var(--vs-ease);
+}
+
+.vs-kpi-tile.vs-panel-interactive:hover {
+  border-color: var(--vs-blue);
+  transform: translateY(-1px);
+}
+
+.vs-insight-card {
+  border-radius: var(--vs-radius);
+  border-left-width: 2px;
+  border-left-style: solid;
+  padding-left: 0.75rem;
+  cursor: default;
+  transition:
+    background-color 160ms var(--vs-ease),
+    padding 160ms var(--vs-ease);
+}
+
+.vs-insight-card[data-interactive="true"] {
+  cursor: pointer;
+}
+
+.vs-insight-card[data-interactive="true"]:hover {
+  background: rgba(0, 163, 255, 0.06);
+}
+
+.vs-insight-card[data-expanded="true"] {
+  background: rgba(0, 163, 255, 0.08);
+  padding-bottom: 0.35rem;
+}
+
+.vs-insight-card-body {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition:
+    max-height 240ms var(--vs-ease),
+    opacity 180ms var(--vs-ease),
+    margin 180ms var(--vs-ease);
+}
+
+.vs-insight-card[data-expanded="true"] .vs-insight-card-body {
+  max-height: 200px;
+  opacity: 1;
+  margin-top: 0.35rem;
+}
+
+.vs-region-chip {
+  border-radius: var(--vs-radius);
+  border: 1px solid var(--vs-border);
+  background: transparent;
+  color: var(--vs-white);
+  padding: 0.4rem 0.65rem;
+  font-size: 0.8125rem;
+  cursor: pointer;
+  min-height: 44px;
+  transition:
+    border-color 160ms var(--vs-ease),
+    background-color 160ms var(--vs-ease),
+    color 160ms var(--vs-ease);
+}
+
+.vs-region-chip:hover:not(:disabled) {
+  border-color: var(--vs-blue);
+  color: var(--vs-blue);
+  background: rgba(0, 163, 255, 0.08);
+}
+
+.vs-region-chip[data-active="true"] {
+  border-color: var(--vs-blue);
+  color: var(--vs-blue);
+  background: rgba(0, 163, 255, 0.14);
+}
+
+.vs-region-chip:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.vs-sparkline {
+  overflow: visible;
+}
+
+.vs-sparkline polyline {
+  stroke-dasharray: 200;
+  stroke-dashoffset: 200;
+  animation: vs-spark-draw 700ms var(--vs-ease) forwards;
+}
+
+@keyframes vs-spark-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-band,
+  .vs-panel,
+  .vs-intel .vs-btn,
+  .vs-intel button.vs-chip,
+  .vs-trend-line,
+  .vs-sparkline polyline,
+  .vs-insight-card,
+  .vs-insight-card-body,
+  .vs-expand-panel,
+  .vs-bubble {
+    animation: none !important;
+    transition: none !important;
+  }
+
+  .vs-sparkline polyline,
+  .vs-trend-line {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Light-mode parity — platform semantic colors (SMS Core dual-theme) */
+.vs-theme-light .vs-intel,
+html[data-theme="light"] .vs-theme-auto .vs-intel {
+  --vs-navy: var(--background);
+  --vs-slate: var(--surface);
+  --vs-panel: var(--muted);
+  --vs-border: var(--border);
+  --vs-blue: var(--color-primary);
+  --vs-orange: var(--color-warning);
+  --vs-emerald: var(--color-success);
+  --vs-white: var(--foreground);
+  --vs-muted: var(--muted-foreground);
+  --vs-critical: var(--color-danger);
+  color: var(--vs-white);
+  background: var(--vs-navy);
+  font-family: var(--font-sans);
+}
+
+.vs-theme-light .vs-intel .vs-shell-title,
+.vs-theme-light .vs-intel .vs-eyebrow,
+html[data-theme="light"] .vs-theme-auto .vs-intel .vs-shell-title,
+html[data-theme="light"] .vs-theme-auto .vs-intel .vs-eyebrow {
+  color: var(--vs-white);
+}
+
+.vs-theme-light .vs-intel .vs-panel,
+html[data-theme="light"] .vs-theme-auto .vs-intel .vs-panel {
+  background: var(--vs-slate);
+  border-color: var(--vs-border);
+}

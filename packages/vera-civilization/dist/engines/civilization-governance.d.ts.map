@@ -1,0 +1,1 @@
+{"version":3,"file":"civilization-governance.d.ts","sourceRoot":"","sources":["../../src/engines/civilization-governance.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,sBAAsB,EAAsB,MAAM,UAAU,CAAC;AAIrG,qBAAa,4BAA4B;IACvC,MAAM,CAAC,GAAG,EAAE,wBAAwB,GAAG,sBAAsB;CAuB9D"}

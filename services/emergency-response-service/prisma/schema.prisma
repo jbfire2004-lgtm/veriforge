@@ -1,0 +1,153 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EmergencyType {
+  fire
+  medical
+  hazmat
+  weather
+  security
+  evacuation
+  other
+}
+
+enum EmergencySeverity {
+  low
+  medium
+  high
+  critical
+}
+
+enum EmergencyStatus {
+  active
+  all_clear
+  closed
+}
+
+enum MusterSessionStatus {
+  open
+  closed
+}
+
+enum MusterAttendanceStatus {
+  present
+  absent
+  unknown
+  evacuated
+}
+
+enum NotificationStatus {
+  pending
+  sent
+  failed
+}
+
+model EmergencyEvent {
+  id          String            @id @default(uuid()) @db.Uuid
+  companyId   String            @map("company_id") @db.Uuid
+  projectId   String?           @map("project_id") @db.Uuid
+  type        EmergencyType
+  severity    EmergencySeverity @default(medium)
+  status      EmergencyStatus   @default(active)
+  description String?
+  triggeredBy String            @map("triggered_by") @db.Uuid
+  triggeredAt DateTime          @default(now()) @map("triggered_at")
+  allClearAt  DateTime?         @map("all_clear_at")
+  closedAt    DateTime?         @map("closed_at")
+  createdAt   DateTime          @default(now()) @map("created_at")
+  updatedAt   DateTime          @updatedAt @map("updated_at")
+
+  musterSessions MusterSession[]
+  notifications  EmergencyNotification[]
+
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@index([status])
+  @@map("emergency_events")
+}
+
+model MusterSession {
+  id          String              @id @default(uuid()) @db.Uuid
+  emergencyId String              @map("emergency_id") @db.Uuid
+  musterPoint String              @map("muster_point")
+  expectedRoster Json             @default("[]") @map("expected_roster") @db.JsonB
+  status      MusterSessionStatus @default(open)
+  startedAt   DateTime            @default(now()) @map("started_at")
+  endedAt     DateTime?           @map("ended_at")
+
+  emergency  EmergencyEvent     @relation(fields: [emergencyId], references: [id], onDelete: Cascade)
+  attendance MusterAttendance[]
+
+  @@index([emergencyId])
+  @@map("muster_sessions")
+}
+
+model MusterAttendance {
+  id          String                 @id @default(uuid()) @db.Uuid
+  sessionId   String                 @map("session_id") @db.Uuid
+  workerId    String                 @map("worker_id") @db.Uuid
+  status      MusterAttendanceStatus @default(present)
+  checkInTime DateTime               @default(now()) @map("check_in_time")
+
+  session MusterSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, workerId])
+  @@index([sessionId])
+  @@index([workerId])
+  @@map("muster_attendance")
+}
+
+model EmergencyPlan {
+  id        String   @id @default(uuid()) @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  projectId String?  @map("project_id") @db.Uuid
+  planType  String   @map("plan_type")
+  title     String
+  content   Json     @default("{}") @db.JsonB
+  filePath  String?  @map("file_path")
+  version   Int      @default(1)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@map("emergency_plans")
+}
+
+model EmergencyEquipment {
+  id            String    @id @default(uuid()) @db.Uuid
+  companyId     String    @map("company_id") @db.Uuid
+  projectId     String?   @map("project_id") @db.Uuid
+  equipmentType String    @map("equipment_type")
+  location      String?
+  status        String    @default("available")
+  lastInspected DateTime? @map("last_inspected")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@map("emergency_equipment")
+}
+
+model EmergencyNotification {
+  id          String             @id @default(uuid()) @db.Uuid
+  emergencyId String             @map("emergency_id") @db.Uuid
+  channel     String
+  recipient   String
+  message     String
+  status      NotificationStatus @default(pending)
+  sentAt      DateTime?          @map("sent_at")
+  createdAt   DateTime           @default(now()) @map("created_at")
+
+  emergency EmergencyEvent @relation(fields: [emergencyId], references: [id], onDelete: Cascade)
+
+  @@index([emergencyId])
+  @@map("emergency_notifications")
+}

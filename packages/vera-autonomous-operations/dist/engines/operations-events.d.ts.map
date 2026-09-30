@@ -1,0 +1,1 @@
+{"version":3,"file":"operations-events.d.ts","sourceRoot":"","sources":["../../src/engines/operations-events.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAEvD,qBAAa,qBAAqB;IAChC,UAAU,CACR,GAAG,EAAE,sBAAsB,EAC3B,KAAK,EAAE,MAAM,EACb,IAAI,CAAC,EAAE,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,GAC7B,sBAAsB;CA6D1B"}

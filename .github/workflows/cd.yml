@@ -1,0 +1,214 @@
+name: VeriForge CD
+
+# Build/push images → Prisma migrate → deploy (kustomize / SSH / webhook).
+on:
+  push:
+    branches: [main, master]
+    paths:
+      - "services/veriforge-saas-service/**"
+      - "apps/veriforge-frontend/**"
+      - "packages/veriforge/**"
+      - "infra/veriforge/**"
+      - "scripts/deploy.sh"
+      - "scripts/migrate.sh"
+      - ".github/workflows/cd.yml"
+      - ".github/workflows/ci.yml"
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: true
+        type: choice
+        options:
+          - staging
+          - production
+        default: staging
+      skip_migrate:
+        description: "Skip Prisma migrate deploy"
+        required: false
+        type: boolean
+        default: false
+  workflow_call:
+    inputs:
+      environment:
+        description: "Target environment"
+        required: false
+        type: string
+        default: staging
+      skip_migrate:
+        description: "Skip Prisma migrate deploy"
+        required: false
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+concurrency:
+  group: veriforge-cd-${{ github.event.inputs.environment || 'main' }}-${{ github.ref }}
+  cancel-in-progress: false
+
+env:
+  REGISTRY: ghcr.io
+  NODE_VERSION: "20"
+  PNPM_VERSION: "9"
+
+jobs:
+  ci-gate:
+    name: CI gate
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit
+
+  build-and-push:
+    name: Build & push Docker images
+    needs: [ci-gate]
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.meta.outputs.version }}
+      api_digest: ${{ steps.build-api.outputs.digest }}
+      web_digest: ${{ steps.build-web.outputs.digest }}
+      owner: ${{ steps.meta.outputs.owner }}
+      api_image: ${{ steps.meta.outputs.api_image }}
+      web_image: ${{ steps.meta.outputs.web_image }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Image metadata
+        id: meta
+        run: |
+          OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')
+          VER="sha-${GITHUB_SHA::12}"
+          echo "owner=${OWNER}" >> "$GITHUB_OUTPUT"
+          echo "version=${VER}" >> "$GITHUB_OUTPUT"
+          echo "api_image=ghcr.io/${OWNER}/veriforge-api" >> "$GITHUB_OUTPUT"
+          echo "web_image=ghcr.io/${OWNER}/veriforge-frontend" >> "$GITHUB_OUTPUT"
+
+      - uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build/push API (multi-stage)
+        id: build-api
+        uses: docker/build-push-action@v6
+        with:
+          context: ./services/veriforge-saas-service
+          file: ./services/veriforge-saas-service/Dockerfile
+          push: true
+          tags: |
+            ${{ steps.meta.outputs.api_image }}:${{ steps.meta.outputs.version }}
+            ${{ steps.meta.outputs.api_image }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build/push frontend (multi-stage)
+        id: build-web
+        uses: docker/build-push-action@v6
+        with:
+          context: ./apps/veriforge-frontend
+          file: ./apps/veriforge-frontend/Dockerfile
+          push: true
+          build-args: |
+            VITE_API_BASE_URL=/api
+          tags: |
+            ${{ steps.meta.outputs.web_image }}:${{ steps.meta.outputs.version }}
+            ${{ steps.meta.outputs.web_image }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  migrate:
+    name: Prisma migrate deploy
+    needs: [build-and-push]
+    if: ${{ github.event.inputs.skip_migrate != 'true' && inputs.skip_migrate != true }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || inputs.environment || 'staging' }}
+    defaults:
+      run:
+        working-directory: services/veriforge-saas-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: ${{ env.PNPM_VERSION }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: pnpm
+          cache-dependency-path: services/veriforge-saas-service/package.json
+      - run: pnpm install --no-frozen-lockfile
+      - name: Run migrations
+        env:
+          DATABASE_URL: ${{ secrets.VERIFORGE_DATABASE_URL }}
+          RUN_DB_SEED: ${{ vars.VERIFORGE_RUN_DB_SEED || '0' }}
+        run: |
+          if [ -z "${DATABASE_URL}" ]; then
+            echo "VERIFORGE_DATABASE_URL secret not set — skipping migrate (enable secret for real deploys)"
+            exit 0
+          fi
+          bash ../../scripts/migrate.sh
+
+  deploy:
+    name: Deploy
+    needs: [build-and-push, migrate]
+    if: ${{ always() && needs.build-and-push.result == 'success' && (needs.migrate.result == 'success' || needs.migrate.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || inputs.environment || 'staging' }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure cluster auth
+        if: ${{ (vars.VERIFORGE_DEPLOY_METHOD || 'kustomize') == 'kustomize' }}
+        uses: ./.github/actions/veriforge-kube-auth
+        with:
+          environment: ${{ github.event.inputs.environment || inputs.environment || 'staging' }}
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          gke_cluster: ${{ vars.GKE_CLUSTER }}
+          gke_location: ${{ vars.GKE_LOCATION }}
+          aws_role_arn: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws_region: ${{ vars.AWS_REGION }}
+          eks_cluster: ${{ vars.EKS_CLUSTER }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          aks_cluster: ${{ vars.AKS_CLUSTER }}
+          aks_resource_group: ${{ vars.AKS_RESOURCE_GROUP }}
+          kube_config_data: ${{ secrets.KUBE_CONFIG_DATA }}
+          allow_kubeconfig: ${{ vars.VERIFORGE_ALLOW_KUBECONFIG }}
+
+      - name: Deploy via scripts/deploy.sh
+        env:
+          DEPLOY_ENV: ${{ github.event.inputs.environment || inputs.environment || 'staging' }}
+          DEPLOY_METHOD: ${{ vars.VERIFORGE_DEPLOY_METHOD || 'kustomize' }}
+          VER: ${{ needs.build-and-push.outputs.version }}
+          API_DIGEST: ${{ needs.build-and-push.outputs.api_digest }}
+          WEB_DIGEST: ${{ needs.build-and-push.outputs.web_digest }}
+          OWNER: ${{ needs.build-and-push.outputs.owner }}
+          API_IMAGE: ${{ needs.build-and-push.outputs.api_image }}
+          WEB_IMAGE: ${{ needs.build-and-push.outputs.web_image }}
+          GCP_WORKLOAD_IDENTITY_PROVIDER: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          GCP_DEPLOY_SERVICE_ACCOUNT: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          GKE_CLUSTER: ${{ vars.GKE_CLUSTER }}
+          GKE_LOCATION: ${{ vars.GKE_LOCATION }}
+          AWS_DEPLOY_ROLE_ARN: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          AWS_REGION: ${{ vars.AWS_REGION }}
+          EKS_CLUSTER: ${{ vars.EKS_CLUSTER }}
+          AKS_CLUSTER: ${{ vars.AKS_CLUSTER }}
+          AKS_RESOURCE_GROUP: ${{ vars.AKS_RESOURCE_GROUP }}
+          KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
+          VERIFORGE_ALLOW_KUBECONFIG: ${{ vars.VERIFORGE_ALLOW_KUBECONFIG }}
+          VERIFORGE_DEPLOY_STAGING_ENABLED: ${{ vars.VERIFORGE_DEPLOY_STAGING_ENABLED }}
+          DEPLOY_SSH_HOST: ${{ secrets.DEPLOY_SSH_HOST }}
+          DEPLOY_SSH_USER: ${{ secrets.DEPLOY_SSH_USER }}
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_SSH_PATH: ${{ secrets.DEPLOY_SSH_PATH }}
+          DEPLOY_WEBHOOK_URL: ${{ secrets.DEPLOY_WEBHOOK_URL }}
+          DEPLOY_WEBHOOK_TOKEN: ${{ secrets.DEPLOY_WEBHOOK_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_REPOSITORY_OWNER: ${{ github.repository_owner }}
+        run: bash scripts/deploy.sh

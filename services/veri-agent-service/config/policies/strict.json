@@ -1,0 +1,54 @@
+{
+  "id": "strict",
+  "version": 1,
+  "description": "Default strict privacy — contractor FLHA private, raw images off, owners see aggregates only after completion.",
+  "flha": {
+    "contractorPrivateStates": ["draft", "contractor_only"],
+    "reviewStates": ["in_review"],
+    "ownerVisibleStates": ["approved", "post_completion_release"],
+    "contractorRoles": [
+      "CONTRACTOR",
+      "SAFETY_LEAD",
+      "COMPANY_ADMIN",
+      "PLATFORM_ADMIN"
+    ],
+    "reviewRoles": [
+      "SAFETY_LEAD",
+      "CONTRACTOR",
+      "PROJECT_MANAGER",
+      "WORKER",
+      "PROJECT_OWNER",
+      "COMPANY_ADMIN",
+      "PLATFORM_ADMIN"
+    ],
+    "postCompletionRoles": [
+      "PROJECT_OWNER",
+      "PROJECT_MANAGER",
+      "SAFETY_LEAD",
+      "CONTRACTOR",
+      "COMPANY_ADMIN",
+      "PLATFORM_ADMIN"
+    ],
+    "ownerActiveHazardAccess": "aggregate",
+    "reviewIndependentOfContractor": true,
+    "sealedBlocksAi": true,
+    "workerReviewAreaEntry": true
+  },
+  "image": {
+    "defaultAllowRawEgress": false,
+    "requireExplicitOverrideForRaw": true,
+    "describeRoles": [
+      "CONTRACTOR",
+      "SAFETY_LEAD",
+      "PROJECT_MANAGER",
+      "COMPANY_ADMIN",
+      "PLATFORM_ADMIN"
+    ],
+    "denyRawRoles": ["WORKER", "PROJECT_OWNER"],
+    "allowedRawRoles": ["SAFETY_LEAD", "COMPANY_ADMIN", "PLATFORM_ADMIN"]
+  },
+  "owner": {
+    "ongoingWorkTransform": "aggregate_only",
+    "postCompletionTransform": "abstracted"
+  }
+}

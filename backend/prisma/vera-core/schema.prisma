@@ -1,0 +1,1135 @@
+// =============================================================================
+// Vera Core — canonical domain schema reference
+// =============================================================================
+// This file documents the Vera Core PostgreSQL data model in isolation.
+// The production application uses the merged schema at prisma/schema.prisma,
+// which combines Vera Core with PM, Hub, ACP billing, and other modules.
+// =============================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// -----------------------------------------------------
+// ENUMS
+// -----------------------------------------------------
+
+enum UserRole {
+  SUPER_ADMIN
+  UNION_HALL_ADMIN
+  COMPANY_ADMIN
+  ADMIN
+  SUPERVISOR
+  PROJECT_MANAGER
+  WORKER
+  CONTRACTOR_ADMIN
+  CONTRACTOR_USER
+  TRAINING_PROVIDER_ADMIN
+  TRAINING_INSTRUCTOR
+}
+
+enum ProviderApprovalStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  SUSPENDED
+}
+
+enum InstructorQualificationStatus {
+  ACTIVE
+  EXPIRED
+  SUSPENDED
+}
+
+enum TrainingValidationOutcome {
+  PENDING
+  APPROVED
+  REJECTED
+  NEEDS_REVIEW
+}
+
+enum TrainingValidationSubject {
+  TRAINING_RECORD
+  PROVIDER
+  INSTRUCTOR
+  CERTIFICATE
+  COURSE
+}
+
+/// Regulatory decision layer (extends standards compliance; distinct from equipment/core complianceStatus).
+enum RegulatoryComplianceStatus {
+  COMPLIANT
+  PARTIALLY_COMPLIANT
+  NON_COMPLIANT
+  UNKNOWN
+}
+
+enum TrainingCredentialNftMintStatus {
+  PENDING_MINT
+  MINTED
+  FAILED
+  REVOKED
+}
+
+enum NftMintJobStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum ProjectStatus {
+  ACTIVE
+  CLOSED
+}
+
+enum AssignmentStatus {
+  ACTIVE
+  REMOVED
+  COMPLETED
+}
+
+enum LinkComplianceStatus {
+  COMPLIANT
+  NEEDS_ATTENTION
+  NON_COMPLIANT
+  LOCKED_OUT
+}
+
+enum UnionMembershipStatus {
+  ACTIVE
+  SUSPENDED
+  ENDED
+}
+
+/// Who performed the attestation on a training record (e.g. supervisor sign-off).
+enum TrainingAttestationRole {
+  SUPERVISOR
+  WORKER
+  OTHER
+}
+
+enum NotificationChannel {
+  IN_APP
+  EMAIL
+  SMS
+  PUSH
+}
+
+enum NotificationStatus {
+  PENDING
+  SENT
+  FAILED
+  READ
+}
+
+enum UnionHallTrainingStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  PUSHED
+}
+
+enum EventOutboxStatus {
+  PENDING
+  PUBLISHING
+  PUBLISHED
+  FAILED
+  DLQ
+}
+
+enum CoreOfflineSyncStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CONFLICT
+}
+
+enum AcpTenantStatus {
+  ACTIVE
+  SUSPENDED
+  TRIAL
+}
+
+// -----------------------------------------------------
+// AUTH
+// -----------------------------------------------------
+
+model User {
+  id                 Int      @id @default(autoincrement())
+  username           String   @unique
+  email              String   @unique
+  password           String
+  role               UserRole @default(WORKER)
+  companyId          Int?
+  unionHallId        Int?
+  trainingProviderId Int?
+  acpTenantId        String?  @map("acp_tenant_id")
+  active             Boolean  @default(true)
+  createdAt          DateTime @default(now())
+
+  acpTenant        AcpTenant?        @relation(fields: [acpTenantId], references: [id], onDelete: SetNull)
+  acpUserRoles     AcpUserRole[]
+  company          Company?          @relation("CompanyUsers", fields: [companyId], references: [id], onDelete: SetNull)
+  unionHall        UnionHall?        @relation("UnionHallUsers", fields: [unionHallId], references: [id], onDelete: SetNull)
+  trainingProvider TrainingProvider? @relation(fields: [trainingProviderId], references: [id], onDelete: SetNull)
+
+  worker                         Worker?
+  notifications                  Notification[]
+  notificationPreference         UserNotificationPreference?
+  auditLogs                      AuditLog[]
+  acpAuditLogs                   AcpAuditLog[]               @relation("AcpAuditActor")
+  trainingInstructorProfile      TrainingInstructor?         @relation("TrainingInstructorUser")
+  trainingValidationsReviewed    TrainingValidationResult[]  @relation("TrainingValidationReviewer")
+  projectAssignmentsAssigned     ProjectAssignment[]         @relation("ProjectAssignmentAssigner")
+  unionDispatches                  UnionDispatch[]             @relation("UnionDispatchBy")
+  unionHallTrainingAccepted        UnionHallTrainingReceipt[]  @relation("UnionHallTrainingAcceptedBy")
+  refreshTokens                    RefreshToken[]
+  passwordResetTokens              PasswordResetToken[]
+  veraApiKeysCreated               VeraApiKey[]                @relation("VeraApiKeyCreatedBy")
+  coreOfflineSyncBatchesSubmitted  CoreOfflineSyncBatch[]      @relation("CoreOfflineSyncSubmittedBy")
+  coreOfflineSyncConflictsResolved CoreOfflineSyncConflict[]   @relation("CoreOfflineSyncConflictResolver")
+}
+
+model RefreshToken {
+  id           String    @id @default(cuid())
+  userId       Int
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  createdAt    DateTime  @default(now())
+  revokedAt    DateTime?
+  replacedById String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(cuid())
+  userId    Int
+  tokenHash String    @unique
+  expiresAt DateTime
+  createdAt DateTime  @default(now())
+  usedAt    DateTime?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+// -----------------------------------------------------
+// ORG
+// -----------------------------------------------------
+
+model Company {
+  id        Int      @id @default(autoincrement())
+  name      String
+  logoUrl   String?
+  city      String?
+  province  String?
+  industry  String?
+  lat       Float?
+  lng       Float?
+  createdAt DateTime @default(now())
+
+  workers            Worker[]
+  companyLinks       CompanyLink[]
+  projects           Project[]
+  projectAssignments ProjectAssignment[]
+  users              User[]                @relation("CompanyUsers")
+  acpTenant          AcpTenant?
+  trainingRecords    TrainingRecord[]
+  workerWalletItems  WorkerWalletItem[]
+  unionDispatches    UnionDispatch[]
+  veraApiKeys        VeraApiKey[]
+  workerWalletBundles WorkerWalletBundle[]
+  coreOfflineSyncBatches CoreOfflineSyncBatch[]
+}
+
+model CompanyLink {
+  id              Int       @id @default(autoincrement())
+  workerId        Int
+  companyId       Int
+  active          Boolean   @default(true)
+  startDate       DateTime  @default(now())
+  endDate         DateTime?
+  role            String?
+  trade           String?
+  visibilityRules Json?
+
+  worker  Worker  @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  company Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId, active], map: "idx_company_link_company_active")
+  @@index([workerId, active], map: "idx_company_link_worker_active")
+  @@index([workerId, companyId], map: "idx_company_link_worker_company")
+}
+
+model Worker {
+  id          Int       @id @default(autoincrement())
+  firstName   String
+  lastName    String
+  /// Global profile status — workers are never globally inactive; use CompanyLink.active per employer.
+  status      String    @default("ACTIVE")
+  companyId   Int?
+  photoUrl    String?
+  userId      Int?      @unique
+  email       String?   @unique
+  phone       String?
+  dateOfBirth DateTime?
+  qrToken     String?   @unique
+  unionNumber String?
+
+  user User? @relation(fields: [userId], references: [id])
+
+  company                Company?                @relation(fields: [companyId], references: [id])
+  companyLinks           CompanyLink[]
+  trainingRecords        TrainingRecord[]
+  credentials            Credential[]
+  trainingAttestations   TrainingAttestation[]
+  trainingCredentialNfts TrainingCredentialNft[]
+  workerWalletItems      WorkerWalletItem[]
+  unionMemberships       UnionMembership[]
+  unionDispatches        UnionDispatch[]
+  projectAssignments     ProjectAssignment[]
+  workerWalletBundles    WorkerWalletBundle[]
+  coreOfflineSyncBatches CoreOfflineSyncBatch[]
+
+  @@index([companyId], map: "idx_worker_company")
+  @@index([lastName, firstName], map: "idx_worker_name")
+  @@index([phone], map: "idx_worker_phone")
+}
+
+model Site {
+  id        Int      @id @default(autoincrement())
+  name      String
+  /// Short directory code for QR / filtering (optional, unique when set)
+  code      String?  @unique
+  region    String?
+  latitude  Float?
+  longitude Float?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  projects Project[]
+}
+
+model Project {
+  id        Int           @id @default(autoincrement())
+  companyId Int
+  siteId    Int?
+  name      String
+  code      String?
+  status    ProjectStatus @default(ACTIVE)
+  startDate DateTime?
+  endDate   DateTime?
+  createdAt DateTime      @default(now())
+
+  company             Company             @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  site                Site?               @relation(fields: [siteId], references: [id], onDelete: SetNull)
+  workerAssignments   ProjectAssignment[]
+  trainingRecords     TrainingRecord[]
+
+  @@index([companyId, status], map: "idx_project_company_status")
+  @@index([siteId], map: "idx_project_site")
+}
+
+model ProjectAssignment {
+  id         Int              @id @default(autoincrement())
+  workerId   Int
+  projectId  Int
+  companyId  Int
+  assignedBy Int?
+  assignedAt DateTime         @default(now())
+  status     AssignmentStatus @default(ACTIVE)
+  endedAt    DateTime?
+
+  worker         Worker  @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  project        Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  company        Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  assignedByUser User?   @relation("ProjectAssignmentAssigner", fields: [assignedBy], references: [id], onDelete: SetNull)
+
+  @@index([projectId, status], map: "idx_project_assignment_project_status")
+  @@index([workerId, status], map: "idx_project_assignment_worker_status")
+  @@index([companyId], map: "idx_project_assignment_company")
+}
+
+// -----------------------------------------------------
+// TRAINING
+// -----------------------------------------------------
+
+model Certification {
+  id          Int     @id @default(autoincrement())
+  name        String
+  code        String?
+  description String?
+
+  trainingRecords TrainingRecord[]
+  trainingCourses TrainingCourse[]
+  credentials     Credential[]
+}
+
+model TrainingRecord {
+  id                              Int       @id @default(autoincrement())
+  workerId                        Int
+  certificationId                 Int
+  providerId                      Int?
+  trainingProviderId              Int?
+  courseId                        Int?
+  instructorId                    Int?
+  companyId                       Int?
+  projectId                       Int?
+  expiresAt                       DateTime?
+  issuedAt                        DateTime  @default(now())
+  /// Issuer / card certificate reference (optional)
+  certificateNumber               String?
+  certificateUrl                  String?
+  certificateQrToken              String?   @unique
+  certificateSignedAt             DateTime?
+  certificateSignedByInstructorId Int?
+  /// Set when training is explicitly marked complete (e.g. admin / PATCH complete).
+  completedAt                     DateTime?
+  /// Last structured verification outcome (VERIFIED | ATTENTION | INVALID).
+  lastVerificationStatus          String?
+  /// JSON snapshot of the most recent verification checks.
+  lastVerificationChecks          Json?
+  /// When the last structured verification was run.
+  verifiedAt                      DateTime?
+  /// Populated when this row was created from the training-ingestion upload pipeline.
+  ingestionRunId                  Int?
+
+  worker                  Worker              @relation(fields: [workerId], references: [id])
+  certification           Certification       @relation(fields: [certificationId], references: [id])
+  provider                Provider?           @relation(fields: [providerId], references: [id])
+  trainingProvider        TrainingProvider?   @relation(fields: [trainingProviderId], references: [id], onDelete: SetNull)
+  course                  TrainingCourse?     @relation(fields: [courseId], references: [id], onDelete: SetNull)
+  instructor              TrainingInstructor? @relation("TrainingRecordInstructor", fields: [instructorId], references: [id], onDelete: SetNull)
+  certificateSignedBy     TrainingInstructor? @relation("CertificateSignedBy", fields: [certificateSignedByInstructorId], references: [id], onDelete: SetNull)
+  company                 Company?            @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  project                 Project?            @relation(fields: [projectId], references: [id], onDelete: SetNull)
+
+  attestations        TrainingAttestation[]
+  validationResults   TrainingValidationResult[]
+  regulatoryDecisions RegulatoryVerificationDecision[]
+  credentialNft       TrainingCredentialNft?
+  nftMintJobs         NftMintJob[]
+  walletItem          WorkerWalletItem?
+  unionHallReceipts   UnionHallTrainingReceipt[]
+  verificationRuns    TrainingVerificationRun[]
+
+  @@index([workerId, expiresAt])
+  @@index([certificationId])
+  @@index([providerId])
+  @@index([trainingProviderId])
+  @@index([courseId])
+  @@index([companyId])
+  @@index([projectId])
+  @@index([ingestionRunId])
+  @@index([certificateQrToken])
+  @@index([lastVerificationStatus])
+}
+
+/// Audit row for each Training Verification Engine run.
+model TrainingVerificationRun {
+  id                 Int      @id @default(autoincrement())
+  trainingRecordId   Int
+  overallStatus      String
+  authenticityStatus String
+  regulatoryStatus   String?
+  standardsOutcome   String?
+  jurisdictionCode   String?
+  checks             Json?
+  propagation        Json?
+  actorId            Int?
+  createdAt          DateTime @default(now())
+
+  trainingRecord TrainingRecord @relation(fields: [trainingRecordId], references: [id], onDelete: Cascade)
+
+  @@index([trainingRecordId, createdAt])
+}
+
+/// Signed / logged confirmation tied to a training record (verification workflow).
+model TrainingAttestation {
+  id                 Int                     @id @default(autoincrement())
+  trainingRecordId   Int
+  attestedByWorkerId Int
+  role               TrainingAttestationRole @default(OTHER)
+  notes              String?
+  createdAt          DateTime                @default(now())
+
+  trainingRecord TrainingRecord @relation(fields: [trainingRecordId], references: [id], onDelete: Cascade)
+  attestedBy     Worker         @relation(fields: [attestedByWorkerId], references: [id], onDelete: Restrict)
+
+  @@index([trainingRecordId, createdAt], map: "idx_training_attestation_record_created")
+  @@index([attestedByWorkerId])
+  @@index([createdAt])
+}
+
+model Provider {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+
+  trainingRecords TrainingRecord[]
+}
+
+model TrainingProvider {
+  id             Int                    @id @default(autoincrement())
+  name           String
+  code           String?                @unique
+  email          String?                @unique
+  phone          String?
+  website        String?
+  address        String?
+  logoUrl        String?
+  qrToken        String?                @unique
+  approvalStatus ProviderApprovalStatus @default(PENDING)
+  active         Boolean                @default(true)
+  createdAt      DateTime               @default(now())
+  updatedAt      DateTime               @updatedAt
+
+  users             User[]
+  courses           TrainingCourse[]
+  instructors       TrainingInstructor[]
+  trainingRecords   TrainingRecord[]
+  validationResults TrainingValidationResult[]
+  unionHallLinks    UnionHallProviderLink[]
+  syncConfig        ProviderSyncConfig?
+  syncRuns          ProviderSyncRun[]
+  veraApiKeys       VeraApiKey[]
+}
+
+model ProviderSyncConfig {
+  id                  Int       @id @default(autoincrement())
+  providerId          Int       @unique
+  syncMode            String    @default("webhook")
+  pollUrl             String?
+  pollIntervalMinutes Int       @default(60)
+  apiKeyEnvVar        String?
+  webhookSecret       String?
+  enabled             Boolean   @default(true)
+  lastPollAt          DateTime?
+  lastSyncAt          DateTime?
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  provider TrainingProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+}
+
+model ProviderSyncRun {
+  id              Int       @id @default(autoincrement())
+  providerId      Int
+  status          String    @default("PENDING")
+  recordsFetched  Int       @default(0)
+  recordsVerified Int       @default(0)
+  recordsPushed   Int       @default(0)
+  errorMessage    String?
+  details         Json?
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+
+  provider TrainingProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+
+  @@index([providerId, startedAt])
+}
+
+model TrainingInstructor {
+  id                     Int                           @id @default(autoincrement())
+  providerId             Int
+  firstName              String
+  lastName               String
+  email                  String?
+  licenseNumber          String?
+  qualifiedCourseCodes   String[]                      @default([])
+  qualificationExpiresAt DateTime?
+  qualificationStatus    InstructorQualificationStatus @default(ACTIVE)
+  userId                 Int?                          @unique
+  active                 Boolean                       @default(true)
+  createdAt              DateTime                      @default(now())
+
+  provider            TrainingProvider           @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  user                User?                      @relation("TrainingInstructorUser", fields: [userId], references: [id], onDelete: SetNull)
+  trainingRecords     TrainingRecord[]           @relation("TrainingRecordInstructor")
+  signedCertificates  TrainingRecord[]           @relation("CertificateSignedBy")
+  courses             TrainingCourse[]           @relation("CourseInstructors")
+  validationResults   TrainingValidationResult[]
+
+  @@index([providerId, active])
+}
+
+model TrainingCourse {
+  id              Int      @id @default(autoincrement())
+  providerId      Int
+  certificationId Int?
+  code            String
+  name            String
+  description     String?
+  durationHours   Float?
+  validityDays    Int?
+  contentText     String?
+  active          Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  provider          TrainingProvider           @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  certification     Certification?             @relation(fields: [certificationId], references: [id], onDelete: SetNull)
+  trainingRecords   TrainingRecord[]
+  instructors       TrainingInstructor[]       @relation("CourseInstructors")
+  validationResults TrainingValidationResult[]
+
+  @@unique([providerId, code])
+  @@index([providerId, active])
+}
+
+model TrainingValidationResult {
+  id                   Int                       @id @default(autoincrement())
+  subjectType          TrainingValidationSubject
+  outcome              TrainingValidationOutcome @default(PENDING)
+  score                Int?
+  jurisdictionCode     String?
+  matchedStandardCodes String[]                  @default([])
+  missingStandardCodes String[]                  @default([])
+  details              Json?
+  validatedAt          DateTime                  @default(now())
+  validatedBy          Int?
+  trainingRecordId     Int?
+  trainingProviderId   Int?
+  instructorId         Int?
+  courseId             Int?
+  certificateQrToken   String?
+
+  trainingRecord   TrainingRecord?     @relation(fields: [trainingRecordId], references: [id], onDelete: Cascade)
+  trainingProvider TrainingProvider?   @relation(fields: [trainingProviderId], references: [id], onDelete: Cascade)
+  instructor       TrainingInstructor? @relation(fields: [instructorId], references: [id], onDelete: Cascade)
+  course           TrainingCourse?     @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  validatedByUser  User?               @relation("TrainingValidationReviewer", fields: [validatedBy], references: [id], onDelete: SetNull)
+  regulatoryDecisions RegulatoryVerificationDecision[]
+
+  @@index([subjectType, outcome, validatedAt])
+  @@index([trainingRecordId, validatedAt])
+  @@index([trainingProviderId, validatedAt])
+  @@index([certificateQrToken])
+}
+
+/// Append-only regulatory decision audit (does not replace TrainingValidationResult).
+model RegulatoryVerificationDecision {
+  id                         Int                        @id @default(autoincrement())
+  trainingRecordId           Int                        @map("training_record_id")
+  regulatoryComplianceStatus RegulatoryComplianceStatus @map("regulatory_compliance_status")
+  complianceScore            Int                        @map("compliance_score")
+  jurisdictionCode           String                     @map("jurisdiction_code")
+  matchedStandards           String[]                   @default([]) @map("matched_standards")
+  jurisdictionCoverage       String[]                   @default([]) @map("jurisdiction_coverage")
+  reasons                    String[]                   @default([])
+  validationResultId         Int?                       @map("validation_result_id")
+  recommendedAction          String                     @map("recommended_action")
+  decisionHash               String?                    @map("decision_hash")
+  details                    Json?
+  createdAt                  DateTime                   @default(now()) @map("created_at")
+
+  trainingRecord   TrainingRecord            @relation(fields: [trainingRecordId], references: [id], onDelete: Cascade)
+  validationResult TrainingValidationResult? @relation(fields: [validationResultId], references: [id], onDelete: SetNull)
+  credentialNfts   TrainingCredentialNft[]
+
+  @@index([trainingRecordId, createdAt], map: "regulatory_decision_record_created_idx")
+  @@index([regulatoryComplianceStatus], map: "regulatory_decision_status_idx")
+  @@map("regulatory_verification_decisions")
+}
+
+// -----------------------------------------------------
+// WALLET
+// -----------------------------------------------------
+
+model WorkerWalletItem {
+  id               Int      @id @default(autoincrement())
+  workerId         Int
+  catalogTypeKey   String
+  equipmentId      Int?
+  companyId        Int?
+  trainingRecordId Int?     @unique
+  status           String   @default("ACTIVE")
+  notes            String?  @db.Text
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  worker         Worker          @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  company        Company?        @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  trainingRecord TrainingRecord? @relation(fields: [trainingRecordId], references: [id], onDelete: SetNull)
+
+  @@index([workerId, status])
+  @@index([companyId, catalogTypeKey])
+  @@index([trainingRecordId])
+}
+
+model WorkerWalletBundle {
+  id         String   @id @default(uuid())
+  workerId   Int      @map("worker_id")
+  companyId  Int?     @map("company_id")
+  version    Int      @default(1)
+  bundleHash String   @map("bundle_hash")
+  qrPayload  String?  @map("qr_payload") @db.Text
+  payload    Json
+  deviceId   String?  @map("device_id")
+  syncedAt   DateTime @default(now()) @map("synced_at")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  worker  Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  company Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+
+  @@unique([workerId, version])
+  @@index([workerId, syncedAt])
+  @@map("worker_wallet_bundles")
+}
+
+model Credential {
+  id              Int       @id @default(autoincrement())
+  workerId        Int
+  name            String
+  value           String
+  createdAt       DateTime  @default(now())
+  expiresAt       DateTime?
+  issuedAt        DateTime  @default(now())
+  certificationId Int?
+
+  worker        Worker         @relation(fields: [workerId], references: [id])
+  certification Certification? @relation(fields: [certificationId], references: [id])
+
+  @@index([workerId], map: "idx_credential_worker")
+}
+
+/// NFT lock for a verified training credential (not a blockchain wallet).
+model TrainingCredentialNft {
+  id                               Int                             @id @default(autoincrement())
+  trainingRecordId                 Int                             @unique @map("training_record_id")
+  workerId                         Int                             @map("worker_id")
+  regulatoryVerificationDecisionId Int                             @map("regulatory_verification_decision_id")
+  nftTokenId                       String?                         @map("nft_token_id")
+  chain                            String                          @default("vera-stub")
+  transactionHash                  String?                         @map("transaction_hash")
+  mintStatus                       TrainingCredentialNftMintStatus @default(PENDING_MINT) @map("mint_status")
+  regulatoryDecisionHash           String                          @map("regulatory_decision_hash")
+  originalDocumentHash             String?                         @map("original_document_hash")
+  metadata                         Json?
+  mintedAt                         DateTime?                       @map("minted_at")
+  createdAt                        DateTime                        @default(now()) @map("created_at")
+
+  trainingRecord     TrainingRecord                 @relation(fields: [trainingRecordId], references: [id], onDelete: Cascade)
+  worker             Worker                         @relation(fields: [workerId], references: [id], onDelete: Restrict)
+  regulatoryDecision RegulatoryVerificationDecision @relation(fields: [regulatoryVerificationDecisionId], references: [id], onDelete: Restrict)
+
+  @@index([workerId], map: "training_credential_nft_worker_idx")
+  @@index([mintStatus], map: "training_credential_nft_mint_status_idx")
+  @@map("training_credential_nfts")
+}
+
+/// Outbox for async NFT mint (idempotent per training record).
+model NftMintJob {
+  id               Int              @id @default(autoincrement())
+  trainingRecordId Int              @map("training_record_id")
+  status           NftMintJobStatus @default(PENDING)
+  attempts         Int              @default(0)
+  lastError        String?          @map("last_error") @db.Text
+  idempotencyKey   String           @unique @map("idempotency_key")
+  createdAt        DateTime         @default(now()) @map("created_at")
+  processedAt      DateTime?        @map("processed_at")
+
+  trainingRecord TrainingRecord @relation(fields: [trainingRecordId], references: [id], onDelete: Cascade)
+
+  @@index([status, createdAt], map: "nft_mint_job_status_created_idx")
+  @@map("nft_mint_jobs")
+}
+
+// -----------------------------------------------------
+// UNION
+// -----------------------------------------------------
+
+model UnionHall {
+  id          Int      @id @default(autoincrement())
+  name        String
+  localNumber String?
+  region      String?
+  createdAt   DateTime @default(now())
+
+  memberships      UnionMembership[]
+  dispatches       UnionDispatch[]
+  users            User[]                    @relation("UnionHallUsers")
+  providerLinks    UnionHallProviderLink[]
+  trainingReceipts UnionHallTrainingReceipt[]
+}
+
+model UnionMembership {
+  id           Int                   @id @default(autoincrement())
+  unionHallId  Int
+  workerId     Int
+  memberNumber String?
+  status       UnionMembershipStatus @default(ACTIVE)
+  joinedAt     DateTime              @default(now())
+  endedAt      DateTime?
+
+  unionHall UnionHall @relation(fields: [unionHallId], references: [id], onDelete: Cascade)
+  worker    Worker    @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@unique([unionHallId, workerId], map: "union_membership_hall_worker")
+  @@index([workerId, status], map: "idx_union_membership_worker_status")
+}
+
+model UnionDispatch {
+  id           Int      @id @default(autoincrement())
+  unionHallId  Int
+  workerId     Int
+  companyId    Int
+  dispatchedBy Int?
+  dispatchedAt DateTime @default(now())
+  notes        String?
+  recalledAt   DateTime?
+
+  unionHall        UnionHall @relation(fields: [unionHallId], references: [id], onDelete: Cascade)
+  worker           Worker    @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  company          Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  dispatchedByUser User?     @relation("UnionDispatchBy", fields: [dispatchedBy], references: [id], onDelete: SetNull)
+
+  @@index([unionHallId, dispatchedAt], map: "idx_union_dispatch_hall_date")
+  @@index([workerId], map: "idx_union_dispatch_worker")
+}
+
+/// Approved training providers for a union hall.
+model UnionHallProviderLink {
+  id                 Int      @id @default(autoincrement())
+  unionHallId        Int
+  trainingProviderId Int
+  active             Boolean  @default(true)
+  createdAt          DateTime @default(now())
+
+  unionHall        UnionHall        @relation(fields: [unionHallId], references: [id], onDelete: Cascade)
+  trainingProvider TrainingProvider @relation(fields: [trainingProviderId], references: [id], onDelete: Cascade)
+
+  @@unique([unionHallId, trainingProviderId], map: "union_hall_provider_unique")
+  @@index([unionHallId, active])
+}
+
+/// Union hall workflow for provider-issued training (accept → validate → push).
+model UnionHallTrainingReceipt {
+  id               Int                     @id @default(autoincrement())
+  unionHallId      Int
+  trainingRecordId Int
+  status           UnionHallTrainingStatus @default(PENDING)
+  acceptedAt       DateTime?
+  acceptedByUserId Int?
+  validatedAt      DateTime?
+  pushedAt         DateTime?
+  pushedCompanyId  Int?
+  pushedProjectId  Int?
+  notes            String?
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+
+  unionHall      UnionHall      @relation(fields: [unionHallId], references: [id], onDelete: Cascade)
+  trainingRecord TrainingRecord @relation(fields: [trainingRecordId], references: [id], onDelete: Cascade)
+  acceptedBy     User?          @relation("UnionHallTrainingAcceptedBy", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+
+  @@unique([unionHallId, trainingRecordId], map: "union_hall_training_receipt_unique")
+  @@index([unionHallId, status])
+  @@index([unionHallId, createdAt])
+  @@index([trainingRecordId])
+}
+
+// -----------------------------------------------------
+// NOTIFICATIONS
+// -----------------------------------------------------
+
+model Notification {
+  id           Int                 @id @default(autoincrement())
+  userId       Int?
+  channel      NotificationChannel @default(IN_APP)
+  type         String
+  title        String?
+  body         String?
+  payload      Json
+  status       NotificationStatus  @default(PENDING)
+  readAt       DateTime?
+  dedupeKey    String?
+  scheduledFor DateTime?
+  sentAt       DateTime?
+  createdAt    DateTime            @default(now())
+
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([dedupeKey], map: "notification_dedupe_key")
+  @@index([userId, createdAt], map: "idx_notification_user_created")
+  @@index([userId, readAt], map: "idx_notification_user_read")
+}
+
+model UserNotificationPreference {
+  userId           Int     @id
+  emailEnabled     Boolean @default(true)
+  smsEnabled       Boolean @default(false)
+  pushEnabled      Boolean @default(true)
+  inAppEnabled     Boolean @default(true)
+  inspectionDue    Boolean @default(true)
+  competencyExpiry Boolean @default(true)
+  ppeExpiry        Boolean @default(true)
+  maintenanceDue   Boolean @default(true)
+  calibrationDue   Boolean @default(true)
+  assignmentAlerts Boolean @default(true)
+  quietHoursStart  String?
+  quietHoursEnd    String?
+  phone            String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+// -----------------------------------------------------
+// EVENTS
+// -----------------------------------------------------
+
+model EventOutbox {
+  id             String            @id @default(uuid())
+  eventName      String
+  topic          String
+  natsSubject    String
+  partitionKey   String?
+  payload        Json
+  status         EventOutboxStatus @default(PENDING)
+  attempts       Int               @default(0)
+  maxAttempts    Int               @default(5)
+  lastError      String?
+  publishedAt    DateTime?
+  nextRetryAt    DateTime?
+  idempotencyKey String?           @unique
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  deadLetters EventDeadLetter[]
+
+  @@index([status, nextRetryAt, createdAt])
+  @@index([eventName, createdAt])
+  @@map("event_outbox")
+}
+
+model EventDeadLetter {
+  id            String   @id @default(uuid())
+  outboxId      String?
+  eventName     String
+  topic         String
+  payload       Json
+  errorMessage  String
+  attempts      Int      @default(0)
+  consumerGroup String?
+  createdAt     DateTime @default(now())
+
+  outbox EventOutbox? @relation(fields: [outboxId], references: [id], onDelete: SetNull)
+
+  @@index([eventName, createdAt])
+  @@map("event_dead_letter")
+}
+
+// -----------------------------------------------------
+// AUDIT
+// -----------------------------------------------------
+
+model AuditLog {
+  id           Int      @id @default(autoincrement())
+  actorId      Int?     @map("userId")
+  tenantId     Int?
+  action       String
+  entityType   String?  @map("entity")
+  entityId     String?
+  metadataJson Json?    @map("metadata")
+  ip           String?
+  userAgent    String?
+  createdAt    DateTime @default(now())
+
+  actor User? @relation(fields: [actorId], references: [id])
+
+  @@index([actorId, createdAt], map: "idx_audit_log_user_created")
+  @@index([tenantId, createdAt], map: "idx_audit_log_tenant_created")
+  @@index([entityType, entityId], map: "idx_audit_log_entity")
+}
+
+model AcpAuditLog {
+  id          String   @id @default(uuid())
+  tenantId    String?  @map("tenant_id")
+  actorUserId Int?     @map("actor_user_id")
+  action      String
+  entityType  String   @map("entity_type")
+  entityId    String?  @map("entity_id")
+  metadata    Json     @default("{}")
+  ip          String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  tenant AcpTenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+  actor  User?      @relation("AcpAuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([tenantId, createdAt])
+  @@index([entityType, entityId])
+  @@map("acp_audit_logs")
+}
+
+// -----------------------------------------------------
+// OFFLINE
+// -----------------------------------------------------
+
+model CoreOfflineSyncBatch {
+  id            String                @id @default(uuid())
+  deviceId      String                @map("device_id")
+  workerId      Int?                  @map("worker_id")
+  companyId     Int?                  @map("company_id")
+  moduleType    String                @map("module_type")
+  status        CoreOfflineSyncStatus @default(PENDING)
+  itemCount     Int                   @default(0) @map("item_count")
+  payload       Json                  @default("{}")
+  submittedById Int?                  @map("submitted_by_id")
+  submittedAt   DateTime              @default(now()) @map("submitted_at")
+  processedAt   DateTime?             @map("processed_at")
+  errorMessage  String?               @map("error_message") @db.Text
+
+  worker      Worker?  @relation(fields: [workerId], references: [id], onDelete: SetNull)
+  company     Company? @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  submittedBy User?    @relation("CoreOfflineSyncSubmittedBy", fields: [submittedById], references: [id], onDelete: SetNull)
+  conflicts   CoreOfflineSyncConflict[]
+
+  @@index([deviceId, status])
+  @@index([companyId, moduleType, submittedAt])
+  @@map("core_offline_sync_batches")
+}
+
+model CoreOfflineSyncConflict {
+  id            String    @id @default(uuid())
+  batchId       String    @map("batch_id")
+  deviceId      String    @map("device_id")
+  moduleType    String    @map("module_type")
+  recordKey     String    @map("record_key")
+  localValue    Json      @default("{}") @map("local_value")
+  serverValue   Json      @default("{}") @map("server_value")
+  resolvedValue Json?     @map("resolved_value")
+  resolvedById  Int?      @map("resolved_by_id")
+  resolvedAt    DateTime? @map("resolved_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  batch      CoreOfflineSyncBatch @relation(fields: [batchId], references: [id], onDelete: Cascade)
+  resolvedBy User?                @relation("CoreOfflineSyncConflictResolver", fields: [resolvedById], references: [id], onDelete: SetNull)
+
+  @@index([deviceId, resolvedAt])
+  @@index([moduleType, recordKey])
+  @@map("core_offline_sync_conflicts")
+}
+
+// -----------------------------------------------------
+// API
+// -----------------------------------------------------
+
+model VeraApiKey {
+  id                 String    @id @default(uuid())
+  name               String
+  keyHash            String    @unique @map("key_hash")
+  keyPrefix          String    @map("key_prefix")
+  companyId          Int?      @map("company_id")
+  trainingProviderId Int?      @map("training_provider_id")
+  scopes             String[]  @default(["read"])
+  active             Boolean   @default(true)
+  lastUsedAt         DateTime? @map("last_used_at")
+  expiresAt          DateTime? @map("expires_at")
+  createdById        Int?      @map("created_by_id")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  company          Company?          @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  trainingProvider TrainingProvider? @relation(fields: [trainingProviderId], references: [id], onDelete: Cascade)
+  createdBy        User?             @relation("VeraApiKeyCreatedBy", fields: [createdById], references: [id], onDelete: SetNull)
+
+  @@index([keyPrefix, active])
+  @@index([companyId, active])
+  @@map("vera_api_keys")
+}
+
+// -----------------------------------------------------
+// RBAC (ACP)
+// -----------------------------------------------------
+
+model AcpTenant {
+  id        String          @id @default(uuid())
+  slug      String          @unique
+  name      String
+  companyId Int?            @unique @map("company_id")
+  status    AcpTenantStatus @default(ACTIVE)
+  metadata  Json            @default("{}")
+  createdAt DateTime        @default(now()) @map("created_at")
+  updatedAt DateTime        @updatedAt @map("updated_at")
+
+  company   Company?      @relation(fields: [companyId], references: [id], onDelete: SetNull)
+  users     User[]
+  userRoles AcpUserRole[]
+  roles     AcpRole[]
+  auditLogs AcpAuditLog[]
+
+  @@map("acp_tenants")
+}
+
+model AcpRole {
+  id          String   @id @default(uuid())
+  key         String
+  name        String
+  description String?
+  tenantId    String?  @map("tenant_id")
+  isSystem    Boolean  @default(false) @map("is_system")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  tenant      AcpTenant?          @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+  userRoles   AcpUserRole[]
+  permissions AcpRolePermission[]
+
+  @@unique([tenantId, key])
+  @@map("acp_roles")
+}
+
+model AcpUserRole {
+  id        String   @id @default(uuid())
+  userId    Int      @map("user_id")
+  roleId    String   @map("role_id")
+  tenantId  String?  @map("tenant_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user   User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role   AcpRole    @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  tenant AcpTenant? @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId, tenantId])
+  @@index([userId])
+  @@index([tenantId])
+  @@map("acp_user_roles")
+}
+
+model AcpPermission {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  module      String
+  action      String   @default("access")
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  roles AcpRolePermission[]
+
+  @@index([module])
+  @@map("acp_permissions")
+}
+
+model AcpRolePermission {
+  roleId       String @map("role_id")
+  permissionId String @map("permission_id")
+
+  role       AcpRole       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission AcpPermission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@id([roleId, permissionId])
+  @@map("acp_role_permissions")
+}

@@ -1,0 +1,55 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ModelVersionStatus {
+  draft
+  staging
+  production
+  retired
+}
+
+model ModelVersion {
+  id             String             @id @default(uuid()) @db.Uuid
+  companyId      String             @map("company_id") @db.Uuid
+  modelId        String             @map("model_id")
+  version        String
+  status         ModelVersionStatus @default(draft)
+  trainingJobId  String?            @map("training_job_id") @db.Uuid
+  artifactUri    String?            @map("artifact_uri")
+  metadata       Json               @default("{}") @db.JsonB
+  createdBy      String             @map("created_by") @db.Uuid
+  createdAt      DateTime           @default(now()) @map("created_at")
+  updatedAt      DateTime           @updatedAt @map("updated_at")
+
+  promotions ModelPromotionHistory[]
+
+  @@unique([companyId, modelId, version])
+  @@index([companyId])
+  @@index([companyId, modelId])
+  @@index([companyId, status])
+  @@map("model_versions")
+}
+
+model ModelPromotionHistory {
+  id             String             @id @default(uuid()) @db.Uuid
+  companyId      String             @map("company_id") @db.Uuid
+  modelVersionId String             @map("model_version_id") @db.Uuid
+  action         String
+  fromStatus     ModelVersionStatus @map("from_status")
+  toStatus       ModelVersionStatus @map("to_status")
+  performedBy    String             @map("performed_by") @db.Uuid
+  reason         String?
+  createdAt      DateTime           @default(now()) @map("created_at")
+
+  modelVersion ModelVersion @relation(fields: [modelVersionId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([modelVersionId])
+  @@map("model_promotion_history")
+}

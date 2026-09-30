@@ -1,0 +1,862 @@
+// ═══════════════════════════════════════════════════════════════════════════
+// VeriSuite SMS — production projection layer (Final Data Model)
+// Physical tables use sms_ prefix to avoid VISI company_metrics / project_metrics.
+// Appended into schema.prisma by build; keep in sync.
+//
+// SoR note: sor_* FK columns (sorJhaFlhaId, sorActionId, sorMeetingId,
+// sorEmergencyPlanId) are String (UUID) — Nest SoR (JhaFlha, PmCorrectiveAction,
+// SafetyMeeting, EmergencyPlan) uses UUID primary keys, not Int. This is an
+// intentional deviation from the canvas table literal ("INT") which predates
+// the SoR's UUID PK convention.
+// ═══════════════════════════════════════════════════════════════════════════
+
+enum SmsAccessPlane {
+  project
+  company
+  subcontractor
+}
+
+enum SmsPeriodGrain {
+  day
+  week
+  month
+  quarter
+}
+
+enum SmsGeoLevel {
+  global
+  continent
+  country
+  province
+  region
+  city
+  site
+}
+
+enum SmsFlhaStatus {
+  draft
+  active
+  closed
+  void
+}
+
+enum SmsQualityBand {
+  pass
+  warn
+  fail
+}
+
+enum SmsFieldOsSyncStatus {
+  pending
+  synced
+  error
+  na
+}
+
+enum SmsJhaStatus {
+  draft
+  in_review
+  approved
+  archived
+}
+
+enum SmsErpScenario {
+  electrical
+  fall
+  trench
+  chemical
+  rollover
+  general
+}
+
+enum SmsErpStatus {
+  draft
+  active
+  archived
+}
+
+enum SmsActionKind {
+  corrective
+  preventive
+}
+
+enum SmsActionStatus {
+  open
+  in_progress
+  pending_verify
+  closed
+  void
+}
+
+enum SmsPriority {
+  low
+  medium
+  high
+  critical
+}
+
+enum SmsSourceModule {
+  incident
+  inspection
+  jha
+  flha
+  meeting
+  manual
+  ai
+}
+
+enum SmsMeetingType {
+  toolbox
+  orientation
+  emergency_drill_brief
+  other
+}
+
+enum SmsMeetingStatus {
+  scheduled
+  completed
+  cancelled
+}
+
+enum SmsAiModelTier {
+  D0
+  D1
+  L1
+  L2
+}
+
+enum SmsAiTone {
+  neutral
+  positive
+  caution
+  alert
+}
+
+enum SmsAiSource {
+  rules
+  scorer
+  llm
+  fallback
+}
+
+enum SmsAiStatus {
+  active
+  accepted
+  rejected
+  expired
+  superseded
+}
+
+enum SmsDrillRosterStatus {
+  expected
+  accounted
+  missing
+  excused
+}
+
+enum SmsEntitlementReason {
+  no_data
+  license
+  denied
+}
+
+model SmsGeoNode {
+  id              String         @id @default(uuid())
+  companyId       Int            @map("company_id")
+  parentGeoNodeId String?        @map("parent_geo_node_id")
+  geoLevel        SmsGeoLevel    @map("geo_level")
+  geoCode         String         @map("geo_code")
+  displayName     String         @map("display_name")
+  isoCountry      String?        @map("iso_country")
+  admin1Code      String?        @map("admin1_code")
+  timezone        String?
+  centroidLat     Float?         @map("centroid_lat")
+  centroidLng     Float?         @map("centroid_lng")
+  pathLtree       String?        @map("path_ltree")
+  depth           Int            @default(0)
+  sortOrder       Int            @default(0) @map("sort_order")
+  isActive        Boolean        @default(true) @map("is_active")
+  accessPlane     SmsAccessPlane @default(company) @map("access_plane")
+  visibilityRoles String[]       @default([]) @map("visibility_roles")
+  createdByUserId Int?           @map("created_by_user_id")
+  updatedByUserId Int?           @map("updated_by_user_id")
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+  deletedAt       DateTime?      @map("deleted_at")
+  rowVersion      Int            @default(1) @map("row_version")
+
+  parent          SmsGeoNode?             @relation("SmsGeoHierarchy", fields: [parentGeoNodeId], references: [id], onDelete: Restrict)
+  children        SmsGeoNode[]            @relation("SmsGeoHierarchy")
+  entitlements    SmsGeoNodeEntitlement[]
+  projectMaps     SmsProjectGeoMap[]      @relation("SmsSiteGeo")
+  countryMaps     SmsProjectGeoMap[]      @relation("SmsCountryGeo")
+  provinceMaps    SmsProjectGeoMap[]      @relation("SmsProvinceGeo")
+  regionalMetrics SmsRegionalMetric[]
+  projectMetrics  SmsProjectMetric[]
+
+  @@unique([companyId, geoCode])
+  @@index([companyId, parentGeoNodeId])
+  @@index([companyId, geoLevel, geoCode])
+  @@map("sms_geo_nodes")
+}
+
+model SmsGeoNodeEntitlement {
+  id         String                @id @default(uuid())
+  companyId  Int                   @map("company_id")
+  geoNodeId  String                @map("geo_node_id")
+  available  Boolean               @default(true)
+  reasonCode SmsEntitlementReason? @map("reason_code")
+  createdAt  DateTime              @default(now()) @map("created_at")
+  updatedAt  DateTime              @updatedAt @map("updated_at")
+
+  geoNode SmsGeoNode @relation(fields: [geoNodeId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, geoNodeId])
+  @@index([companyId, available])
+  @@map("sms_geo_node_entitlements")
+}
+
+model SmsProjectGeoMap {
+  projectId         Int     @id @map("project_id")
+  companyId         Int     @map("company_id")
+  siteGeoNodeId     String  @map("site_geo_node_id")
+  countryGeoNodeId  String? @map("country_geo_node_id")
+  provinceGeoNodeId String? @map("province_geo_node_id")
+
+  siteGeo     SmsGeoNode  @relation("SmsSiteGeo", fields: [siteGeoNodeId], references: [id], onDelete: Restrict)
+  countryGeo  SmsGeoNode? @relation("SmsCountryGeo", fields: [countryGeoNodeId], references: [id], onDelete: SetNull)
+  provinceGeo SmsGeoNode? @relation("SmsProvinceGeo", fields: [provinceGeoNodeId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, siteGeoNodeId])
+  @@map("sms_project_geo_map")
+}
+
+model SmsIndustryBenchmarkCohort {
+  id           String         @id @default(uuid())
+  industryCode String         @map("industry_code")
+  regionScope  String         @map("region_scope")
+  periodGrain  SmsPeriodGrain @map("period_grain")
+  periodStart  DateTime       @map("period_start") @db.Date
+  periodEnd    DateTime       @map("period_end") @db.Date
+  metricKey    String         @map("metric_key")
+  cohortN      Int            @map("cohort_n")
+  p25          Decimal?       @db.Decimal(12, 4)
+  p50          Decimal?       @db.Decimal(12, 4)
+  p75          Decimal?       @db.Decimal(12, 4)
+  mean         Decimal?       @db.Decimal(12, 4)
+  suppressed   Boolean        @default(false)
+  computedAt   DateTime       @map("computed_at")
+
+  @@unique([industryCode, regionScope, periodGrain, periodStart, metricKey])
+  @@index([industryCode, regionScope, periodEnd])
+  @@map("sms_industry_benchmark_cohorts")
+}
+
+model SmsCompanyMetric {
+  id                      String         @id @default(uuid())
+  companyId               Int            @map("company_id")
+  periodStart             DateTime       @map("period_start") @db.Date
+  periodEnd               DateTime       @map("period_end") @db.Date
+  periodGrain             SmsPeriodGrain @map("period_grain")
+  hoursWorked             Decimal        @default(0) @map("hours_worked") @db.Decimal(14, 2)
+  incidentCount           Int            @default(0) @map("incident_count")
+  nearMissCount           Int            @default(0) @map("near_miss_count")
+  ltCount                 Int            @default(0) @map("lt_count")
+  recordableCount         Int            @default(0) @map("recordable_count")
+  incidentRatePer200k     Decimal?       @map("incident_rate_per_200k") @db.Decimal(12, 4)
+  nearMissRatePer200k     Decimal?       @map("near_miss_rate_per_200k") @db.Decimal(12, 4)
+  ltifr                   Decimal?       @db.Decimal(12, 4)
+  trir                    Decimal?       @db.Decimal(12, 4)
+  openActionsCount        Int            @default(0) @map("open_actions_count")
+  overdueActionsCount     Int            @default(0) @map("overdue_actions_count")
+  actionEffectivenessPct  Decimal?       @map("action_effectiveness_pct") @db.Decimal(5, 2)
+  inspectionCompletionPct Decimal?       @map("inspection_completion_pct") @db.Decimal(5, 2)
+  flhaAvgQuality          Decimal?       @map("flha_avg_quality") @db.Decimal(5, 2)
+  meetingAttendancePct    Decimal?       @map("meeting_attendance_pct") @db.Decimal(5, 2)
+  trainingCoveragePct     Decimal?       @map("training_coverage_pct") @db.Decimal(5, 2)
+  erpDrillReadinessPct    Decimal?       @map("erp_drill_readiness_pct") @db.Decimal(5, 2)
+  competencyRiskIndexAvg  Decimal?       @map("competency_risk_index_avg") @db.Decimal(5, 2)
+  industryCode            String?        @map("industry_code")
+  benchmarkRegionScope    String?        @map("benchmark_region_scope")
+  industryBenchmarkJson   Json?          @map("industry_benchmark_json")
+  kpisExtJson             Json?          @map("kpis_ext_json")
+  schemaVersion           Int            @default(1) @map("schema_version")
+  computedAt              DateTime       @map("computed_at")
+  sourceJobId             String?        @map("source_job_id")
+  accessPlane             SmsAccessPlane @default(company) @map("access_plane")
+  visibilityRoles         String[]       @default([]) @map("visibility_roles")
+  createdAt               DateTime       @default(now()) @map("created_at")
+  updatedAt               DateTime       @updatedAt @map("updated_at")
+  deletedAt               DateTime?      @map("deleted_at")
+  rowVersion              Int            @default(1) @map("row_version")
+
+  @@unique([companyId, periodGrain, periodStart])
+  @@index([companyId, periodEnd(sort: Desc)])
+  @@index([companyId, industryCode, periodEnd(sort: Desc)])
+  @@index([companyId, incidentRatePer200k])
+  @@map("sms_company_metrics")
+}
+
+model SmsProjectMetric {
+  id                     String         @id @default(uuid())
+  companyId              Int            @map("company_id")
+  projectId              Int            @map("project_id")
+  siteGeoNodeId          String?        @map("site_geo_node_id")
+  periodStart            DateTime       @map("period_start") @db.Date
+  periodEnd              DateTime       @map("period_end") @db.Date
+  periodGrain            SmsPeriodGrain @map("period_grain")
+  hoursWorked            Decimal        @default(0) @map("hours_worked") @db.Decimal(14, 2)
+  incidentCount          Int            @default(0) @map("incident_count")
+  nearMissCount          Int            @default(0) @map("near_miss_count")
+  openIncidentCount      Int            @default(0) @map("open_incident_count")
+  incidentRatePer200k    Decimal?       @map("incident_rate_per_200k") @db.Decimal(12, 4)
+  severityJson           Json?          @map("severity_json")
+  openActionsCount       Int            @default(0) @map("open_actions_count")
+  overdueActionsCount    Int            @default(0) @map("overdue_actions_count")
+  inspectionFindingsOpen Int            @default(0) @map("inspection_findings_open")
+  bboQualityAvg          Decimal?       @map("bbo_quality_avg") @db.Decimal(5, 2)
+  flhaAvgQuality         Decimal?       @map("flha_avg_quality") @db.Decimal(5, 2)
+  flhaEnergyCoveragePct  Decimal?       @map("flha_energy_coverage_pct") @db.Decimal(5, 2)
+  jhaHighResidualCount   Int            @default(0) @map("jha_high_residual_count")
+  meetingAttendancePct   Decimal?       @map("meeting_attendance_pct") @db.Decimal(5, 2)
+  trainingOverdueCount   Int            @default(0) @map("training_overdue_count")
+  erpQualityAvg          Decimal?       @map("erp_quality_avg") @db.Decimal(5, 2)
+  drillReadinessPct      Decimal?       @map("drill_readiness_pct") @db.Decimal(5, 2)
+  leadingHeatmapJson     Json?          @map("leading_heatmap_json")
+  industryBenchmarkJson  Json?          @map("industry_benchmark_json")
+  schemaVersion          Int            @default(1) @map("schema_version")
+  computedAt             DateTime       @map("computed_at")
+  sourceJobId            String?        @map("source_job_id")
+  accessPlane            SmsAccessPlane @default(project) @map("access_plane")
+  visibilityRoles        String[]       @default([]) @map("visibility_roles")
+  createdAt              DateTime       @default(now()) @map("created_at")
+  updatedAt              DateTime       @updatedAt @map("updated_at")
+  deletedAt              DateTime?      @map("deleted_at")
+  rowVersion              Int           @default(1) @map("row_version")
+
+  siteGeo SmsGeoNode? @relation(fields: [siteGeoNodeId], references: [id], onDelete: SetNull)
+
+  @@unique([companyId, projectId, periodGrain, periodStart])
+  @@index([companyId, projectId, periodEnd(sort: Desc)])
+  @@index([siteGeoNodeId, periodEnd(sort: Desc)])
+  @@map("sms_project_metrics")
+}
+
+model SmsRegionalMetric {
+  id                        String         @id @default(uuid())
+  companyId                 Int            @map("company_id")
+  geoNodeId                 String         @map("geo_node_id")
+  geoLevel                  SmsGeoLevel    @map("geo_level")
+  geoCode                   String         @map("geo_code")
+  parentGeoNodeId           String?        @map("parent_geo_node_id")
+  periodStart               DateTime       @map("period_start") @db.Date
+  periodEnd                 DateTime       @map("period_end") @db.Date
+  periodGrain               SmsPeriodGrain @map("period_grain")
+  projectCount              Int            @default(0) @map("project_count")
+  hoursWorked               Decimal        @default(0) @map("hours_worked") @db.Decimal(14, 2)
+  incidentCount             Int            @default(0) @map("incident_count")
+  incidentRatePer200k       Decimal?       @map("incident_rate_per_200k") @db.Decimal(12, 4)
+  openIncidents             Int            @default(0) @map("open_incidents")
+  openActions               Int            @default(0) @map("open_actions")
+  overdueActions            Int            @default(0) @map("overdue_actions")
+  competencyRiskIndex       Decimal?       @map("competency_risk_index") @db.Decimal(5, 2)
+  flhaAvgQuality            Decimal?       @map("flha_avg_quality") @db.Decimal(5, 2)
+  drillReadinessPct         Decimal?       @map("drill_readiness_pct") @db.Decimal(5, 2)
+  parentIncidentRatePer200k Decimal?       @map("parent_incident_rate_per_200k") @db.Decimal(12, 4)
+  deltaVsParentRate         Decimal?       @map("delta_vs_parent_rate") @db.Decimal(12, 4)
+  hotspotScore              Decimal?       @map("hotspot_score") @db.Decimal(5, 2)
+  available                 Boolean        @default(true)
+  metricsJson               Json?          @map("metrics_json")
+  industryBenchmarkJson     Json?          @map("industry_benchmark_json")
+  schemaVersion             Int            @default(1) @map("schema_version")
+  computedAt                DateTime       @map("computed_at")
+  sourceJobId               String?        @map("source_job_id")
+  accessPlane               SmsAccessPlane @default(company) @map("access_plane")
+  visibilityRoles           String[]       @default([]) @map("visibility_roles")
+  createdAt                 DateTime       @default(now()) @map("created_at")
+  updatedAt                 DateTime       @updatedAt @map("updated_at")
+  deletedAt                 DateTime?      @map("deleted_at")
+  rowVersion                Int            @default(1) @map("row_version")
+
+  geoNode SmsGeoNode @relation(fields: [geoNodeId], references: [id], onDelete: Cascade)
+
+  @@unique([companyId, geoNodeId, periodGrain, periodStart])
+  @@index([companyId, parentGeoNodeId, periodEnd(sort: Desc)])
+  @@index([companyId, geoCode])
+  @@index([companyId, geoLevel, hotspotScore(sort: Desc)])
+  @@index([companyId, available])
+  @@map("sms_regional_metrics")
+}
+
+model SmsCompetencyMetric {
+  id                 String         @id @default(uuid())
+  companyId          Int            @map("company_id")
+  projectId          Int?           @map("project_id")
+  periodStart        DateTime       @map("period_start") @db.Date
+  periodEnd          DateTime       @map("period_end") @db.Date
+  periodGrain        SmsPeriodGrain @map("period_grain")
+  roleKey            String         @map("role_key")
+  competencyKey      String         @map("competency_key")
+  headcount          Int            @default(0)
+  coveragePct        Decimal?       @map("coverage_pct") @db.Decimal(5, 2)
+  overdueCount       Int            @default(0) @map("overdue_count")
+  expiring30dCount   Int            @default(0) @map("expiring_30d_count")
+  authGapCount       Int            @default(0) @map("auth_gap_count")
+  riskIndex          Decimal?       @map("risk_index") @db.Decimal(5, 2)
+  forecastSeriesJson Json?          @map("forecast_series_json")
+  modelVersion       String?        @map("model_version")
+  schemaVersion      Int            @default(1) @map("schema_version")
+  computedAt         DateTime       @map("computed_at")
+  sourceJobId        String?        @map("source_job_id")
+  accessPlane        SmsAccessPlane @default(company) @map("access_plane")
+  visibilityRoles    String[]       @default([]) @map("visibility_roles")
+  createdAt          DateTime       @default(now()) @map("created_at")
+  updatedAt          DateTime       @updatedAt @map("updated_at")
+  deletedAt          DateTime?      @map("deleted_at")
+  rowVersion         Int            @default(1) @map("row_version")
+
+  // Logical grain uniqueness is (company_id, project_id, role_key, competency_key,
+  // period_grain, period_start). project_id is NULL for company-wide matrix rows, and
+  // Postgres UNIQUE treats each NULL as distinct, so the real de-dup guard is added via
+  // a raw SQL migration: CREATE UNIQUE INDEX ... ON (company_id, COALESCE(project_id, 0),
+  // role_key, competency_key, period_grain, period_start). The indexes below are for
+  // query access patterns only, not uniqueness.
+  @@index([companyId, periodGrain, periodStart])
+  @@index([companyId, projectId, roleKey, competencyKey])
+  @@index([companyId, riskIndex(sort: Desc)])
+  @@map("sms_competency_metrics")
+}
+
+model SmsInspectionMetric {
+  id                   String         @id @default(uuid())
+  companyId            Int            @map("company_id")
+  projectId            Int?           @map("project_id")
+  periodStart          DateTime       @map("period_start") @db.Date
+  periodEnd            DateTime       @map("period_end") @db.Date
+  periodGrain          SmsPeriodGrain @map("period_grain")
+  inspectionsCompleted Int            @default(0) @map("inspections_completed")
+  inspectionsPlanned   Int            @default(0) @map("inspections_planned")
+  completionPct        Decimal?       @map("completion_pct") @db.Decimal(5, 2)
+  bboCount             Int            @default(0) @map("bbo_count")
+  focusAuditCount      Int            @default(0) @map("focus_audit_count")
+  bboQualityAvg        Decimal?       @map("bbo_quality_avg") @db.Decimal(5, 2)
+  findingsOpen         Int            @default(0) @map("findings_open")
+  findingsClosed       Int            @default(0) @map("findings_closed")
+  findingsRatePer200k  Decimal?       @map("findings_rate_per_200k") @db.Decimal(12, 4)
+  aiFlaggedCount       Int            @default(0) @map("ai_flagged_count")
+  repeatFindingCount   Int            @default(0) @map("repeat_finding_count")
+  actionsLinkedCount   Int            @default(0) @map("actions_linked_count")
+  focusPacksJson       Json?          @map("focus_packs_json")
+  schemaVersion        Int            @default(1) @map("schema_version")
+  computedAt           DateTime       @map("computed_at")
+  sourceJobId          String?        @map("source_job_id")
+  accessPlane          SmsAccessPlane @default(project) @map("access_plane")
+  visibilityRoles      String[]       @default([]) @map("visibility_roles")
+  createdAt            DateTime       @default(now()) @map("created_at")
+  updatedAt            DateTime       @updatedAt @map("updated_at")
+  deletedAt            DateTime?      @map("deleted_at")
+  rowVersion           Int            @default(1) @map("row_version")
+
+  // Logical grain uniqueness is (company_id, project_id, period_grain, period_start);
+  // project_id nullable = company-wide. Real de-dup guard added via raw SQL migration
+  // using CREATE UNIQUE INDEX ... COALESCE(project_id, 0) ... — see SmsCompetencyMetric.
+  @@index([companyId, projectId, periodGrain, periodStart])
+  @@index([companyId, projectId, periodEnd(sort: Desc)])
+  @@index([companyId, projectId, bboQualityAvg])
+  @@index([companyId, findingsOpen])
+  @@map("sms_inspection_metrics")
+}
+
+model SmsIncidentMetric {
+  id                         String         @id @default(uuid())
+  companyId                  Int            @map("company_id")
+  projectId                  Int?           @map("project_id")
+  periodStart                DateTime       @map("period_start") @db.Date
+  periodEnd                  DateTime       @map("period_end") @db.Date
+  periodGrain                SmsPeriodGrain @map("period_grain")
+  hoursWorked                Decimal        @default(0) @map("hours_worked") @db.Decimal(14, 2)
+  totalIncidents             Int            @default(0) @map("total_incidents")
+  openCount                  Int            @default(0) @map("open_count")
+  investigatingCount         Int            @default(0) @map("investigating_count")
+  closedCount                Int            @default(0) @map("closed_count")
+  nearMissCount               Int           @default(0) @map("near_miss_count")
+  incidentRatePer200k        Decimal?       @map("incident_rate_per_200k") @db.Decimal(12, 4)
+  severityJson                Json?         @map("severity_json")
+  typeJson                    Json?         @map("type_json")
+  overdueInvestigationsGt14d Int            @default(0) @map("overdue_investigations_gt_14d")
+  sifPotentialCount           Int           @default(0) @map("sif_potential_count")
+  topRootCausesJson           Json?         @map("top_root_causes_json")
+  topLocationsJson             Json?        @map("top_locations_json")
+  industryCode                 String?      @map("industry_code")
+  industryCompareJson          Json?        @map("industry_compare_json")
+  schemaVersion               Int           @default(1) @map("schema_version")
+  computedAt                  DateTime      @map("computed_at")
+  sourceJobId                 String?       @map("source_job_id")
+  accessPlane                 SmsAccessPlane @default(project) @map("access_plane")
+  visibilityRoles              String[]     @default([]) @map("visibility_roles")
+  createdAt                   DateTime      @default(now()) @map("created_at")
+  updatedAt                   DateTime      @updatedAt @map("updated_at")
+  deletedAt                   DateTime?     @map("deleted_at")
+  rowVersion                    Int         @default(1) @map("row_version")
+
+  @@index([companyId, projectId, periodGrain, periodStart])
+  @@index([companyId, projectId, periodEnd(sort: Desc)])
+  @@index([companyId, overdueInvestigationsGt14d])
+  @@map("sms_incident_metrics")
+}
+
+model SmsFlhaRecord {
+  id                     String               @id @default(uuid())
+  sorJhaFlhaId           String               @unique @map("sor_jha_flha_id")
+  companyId              Int                  @map("company_id")
+  projectId              Int                  @map("project_id")
+  subcontractorCompanyId Int?                 @map("subcontractor_company_id")
+  accessPlane            SmsAccessPlane       @default(project) @map("access_plane")
+  visibilityRoles        String[]             @default([]) @map("visibility_roles")
+  title                  String               @default("")
+  status                 SmsFlhaStatus        @default(draft)
+  workType               String?              @map("work_type")
+  location               String?
+  crewKey                String?              @map("crew_key")
+  jhaRecordId            String?              @map("jha_record_id")
+  energyJson             Json?                @map("energy_json")
+  hazardCount            Int                  @default(0) @map("hazard_count")
+  controlCount           Int                  @default(0) @map("control_count")
+  qualityScore           Decimal?             @map("quality_score") @db.Decimal(5, 2)
+  qualityBand            SmsQualityBand?      @map("quality_band")
+  signInCount            Int                  @default(0) @map("sign_in_count")
+  gateLogMatchPct        Decimal?             @map("gate_log_match_pct") @db.Decimal(5, 2)
+  aiFlagsJson            Json?                @map("ai_flags_json")
+  fieldOsSyncStatus      SmsFieldOsSyncStatus @default(na) @map("fieldos_sync_status")
+  effectiveOn            DateTime?            @map("effective_on") @db.Date
+  closedAt               DateTime?            @map("closed_at")
+  createdByUserId        Int?                 @map("created_by_user_id")
+  updatedByUserId        Int?                 @map("updated_by_user_id")
+  createdAt              DateTime             @default(now()) @map("created_at")
+  updatedAt              DateTime             @updatedAt @map("updated_at")
+  deletedAt              DateTime?            @map("deleted_at")
+  rowVersion             Int                  @default(1) @map("row_version")
+
+  jhaRecord SmsJhaRecord? @relation(fields: [jhaRecordId], references: [id], onDelete: SetNull)
+
+  @@index([companyId, projectId, status, effectiveOn(sort: Desc)])
+  @@index([companyId, qualityScore])
+  @@index([jhaRecordId])
+  @@map("sms_flha_records")
+}
+
+model SmsJhaRecord {
+  id                     String          @id @default(uuid())
+  sorJhaFlhaId           String          @map("sor_jha_flha_id")
+  companyId              Int             @map("company_id")
+  projectId              Int?            @map("project_id")
+  subcontractorCompanyId Int?            @map("subcontractor_company_id")
+  accessPlane            SmsAccessPlane  @default(project) @map("access_plane")
+  visibilityRoles        String[]        @default([]) @map("visibility_roles")
+  title                  String
+  templateKey            String?         @map("template_key")
+  workType               String?         @map("work_type")
+  industry               String?
+  status                 SmsJhaStatus    @default(draft)
+  version                Int             @default(1)
+  residualRiskMax        Decimal?        @map("residual_risk_max") @db.Decimal(8, 2)
+  riskRankJson           Json?           @map("risk_rank_json")
+  sifPotential           Boolean         @default(false) @map("sif_potential")
+  qualityScore           Decimal?        @map("quality_score") @db.Decimal(5, 2)
+  qualityBand            SmsQualityBand? @map("quality_band")
+  erpRecordId            String?         @map("erp_record_id")
+  tasksCount             Int             @default(0) @map("tasks_count")
+  hazardsCount           Int             @default(0) @map("hazards_count")
+  approvedAt             DateTime?       @map("approved_at")
+  approvedByUserId       Int?            @map("approved_by_user_id")
+  createdByUserId        Int?            @map("created_by_user_id")
+  updatedByUserId        Int?            @map("updated_by_user_id")
+  createdAt              DateTime        @default(now()) @map("created_at")
+  updatedAt              DateTime        @updatedAt @map("updated_at")
+  deletedAt              DateTime?       @map("deleted_at")
+  rowVersion             Int             @default(1) @map("row_version")
+
+  flhaRecords SmsFlhaRecord[]
+  erpRecord   SmsErpRecord?   @relation(fields: [erpRecordId], references: [id], onDelete: SetNull)
+
+  @@unique([sorJhaFlhaId, version])
+  @@index([companyId, projectId, status])
+  @@index([companyId, sifPotential])
+  @@index([erpRecordId])
+  @@map("sms_jha_records")
+}
+
+model SmsErpRecord {
+  id                     String         @id @default(uuid())
+  sorEmergencyPlanId     String?        @unique @map("sor_emergency_plan_id")
+  companyId              Int            @map("company_id")
+  projectId              Int            @map("project_id")
+  subcontractorCompanyId Int?           @map("subcontractor_company_id")
+  accessPlane            SmsAccessPlane @default(project) @map("access_plane")
+  visibilityRoles        String[]       @default([]) @map("visibility_roles")
+  title                  String
+  scenario               SmsErpScenario @default(general)
+  workType               String?        @map("work_type")
+  regionCode             String?        @map("region_code")
+  geoNodeId              String?        @map("geo_node_id")
+  hazardsJson            Json?          @map("hazards_json")
+  stepsJson              Json?          @map("steps_json")
+  musterPoint            String?        @map("muster_point")
+  emsContactsJson        Json?          @map("ems_contacts_json")
+  emsCallScript          String?        @db.Text @map("ems_call_script")
+  qualityScore           Decimal?       @map("quality_score") @db.Decimal(5, 2)
+  complianceJson         Json?          @map("compliance_json")
+  status                 SmsErpStatus   @default(draft)
+  lastDrillAt            DateTime?      @map("last_drill_at")
+  drillReadinessPct      Decimal?       @map("drill_readiness_pct") @db.Decimal(5, 2)
+  simulationLastScore    Decimal?       @map("simulation_last_score") @db.Decimal(5, 2)
+  aiSuggestionId         String?        @map("ai_suggestion_id")
+  createdByUserId        Int?           @map("created_by_user_id")
+  updatedByUserId        Int?           @map("updated_by_user_id")
+  createdAt              DateTime       @default(now()) @map("created_at")
+  updatedAt              DateTime       @updatedAt @map("updated_at")
+  deletedAt              DateTime?      @map("deleted_at")
+  rowVersion             Int            @default(1) @map("row_version")
+
+  jhaRecords    SmsJhaRecord[]
+  drillSessions SmsErpDrillSession[]
+
+  @@index([companyId, projectId, scenario, status])
+  @@index([companyId, lastDrillAt])
+  @@index([geoNodeId])
+  @@map("sms_erp_records")
+}
+
+model SmsErpDrillSession {
+  id              String    @id @default(uuid())
+  erpRecordId     String    @map("erp_record_id")
+  startedAt       DateTime  @map("started_at")
+  endedAt         DateTime? @map("ended_at")
+  status          String    @default("in_progress")
+  trackEveryone   Boolean   @default(false) @map("track_everyone")
+  outcomeScore    Decimal?  @map("outcome_score") @db.Decimal(5, 2)
+  failedGatesJson Json?     @map("failed_gates_json")
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  erpRecord SmsErpRecord        @relation(fields: [erpRecordId], references: [id], onDelete: Cascade)
+  roster    SmsErpDrillRoster[]
+
+  @@index([erpRecordId, startedAt(sort: Desc)])
+  @@map("sms_erp_drill_sessions")
+}
+
+model SmsErpDrillRoster {
+  id                  String               @id @default(uuid())
+  sessionId           String               @map("session_id")
+  personKey           String               @map("person_key")
+  displayNameRedacted String               @map("display_name_redacted")
+  sourcesJson         Json?                @map("sources_json")
+  status              SmsDrillRosterStatus @default(expected)
+  signInRefsJson      Json?                @map("sign_in_refs_json")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+
+  session SmsErpDrillSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, personKey])
+  @@map("sms_erp_drill_roster")
+}
+
+model SmsCorrectiveAction {
+  id                     String          @id @default(uuid())
+  sorActionId            String          @unique @map("sor_action_id")
+  companyId              Int             @map("company_id")
+  projectId              Int?            @map("project_id")
+  subcontractorCompanyId Int?            @map("subcontractor_company_id")
+  accessPlane            SmsAccessPlane  @default(project) @map("access_plane")
+  visibilityRoles        String[]        @default([]) @map("visibility_roles")
+  kind                   SmsActionKind   @default(corrective)
+  title                  String
+  description            String?        @db.Text
+  status                 SmsActionStatus @default(open)
+  priority               SmsPriority     @default(medium)
+  rootCauseKey           String?         @map("root_cause_key")
+  sourceModule           SmsSourceModule @default(manual) @map("source_module")
+  sourceRecordId         String?         @map("source_record_id")
+  ownerUserId            Int?            @map("owner_user_id")
+  ownerRole               String?        @map("owner_role")
+  dueAt                  DateTime?       @map("due_at")
+  closedAt               DateTime?       @map("closed_at")
+  daysOpen                Int?          @map("days_open")
+  effectivenessPct       Decimal?        @map("effectiveness_pct") @db.Decimal(5, 2)
+  aiSuggestionId          String?        @map("ai_suggestion_id")
+  slaBreached            Boolean         @default(false) @map("sla_breached")
+  createdByUserId        Int?            @map("created_by_user_id")
+  updatedByUserId        Int?            @map("updated_by_user_id")
+  createdAt              DateTime        @default(now()) @map("created_at")
+  updatedAt              DateTime        @updatedAt @map("updated_at")
+  deletedAt              DateTime?       @map("deleted_at")
+  rowVersion             Int             @default(1) @map("row_version")
+
+  @@index([companyId, projectId, status, dueAt])
+  @@index([companyId, kind, rootCauseKey])
+  @@index([companyId, slaBreached])
+  @@index([sourceModule, sourceRecordId])
+  @@map("sms_corrective_actions")
+}
+
+model SmsSafetyMeeting {
+  id                     String           @id @default(uuid())
+  sorMeetingId           String           @unique @map("sor_meeting_id")
+  companyId              Int              @map("company_id")
+  projectId              Int?             @map("project_id")
+  subcontractorCompanyId Int?             @map("subcontractor_company_id")
+  accessPlane            SmsAccessPlane   @default(project) @map("access_plane")
+  visibilityRoles        String[]         @default([]) @map("visibility_roles")
+  title                  String
+  meetingType            SmsMeetingType   @default(toolbox) @map("meeting_type")
+  scheduledAt            DateTime?        @map("scheduled_at")
+  completedAt             DateTime?       @map("completed_at")
+  status                 SmsMeetingStatus @default(scheduled)
+  topicTitlesJson         Json?           @map("topic_titles_json")
+  aiGeneratedTopic        Boolean         @default(false) @map("ai_generated_topic")
+  aiSuggestionId           String?        @map("ai_suggestion_id")
+  attendeeExpected         Int            @default(0) @map("attendee_expected")
+  attendeeSigned           Int            @default(0) @map("attendee_signed")
+  attendancePct          Decimal?         @map("attendance_pct") @db.Decimal(5, 2)
+  linkedErpDrillId         String?        @map("linked_erp_drill_id")
+  location                 String?
+  createdByUserId        Int?             @map("created_by_user_id")
+  updatedByUserId        Int?             @map("updated_by_user_id")
+  createdAt              DateTime         @default(now()) @map("created_at")
+  updatedAt              DateTime         @updatedAt @map("updated_at")
+  deletedAt              DateTime?        @map("deleted_at")
+  rowVersion             Int              @default(1) @map("row_version")
+
+  @@index([companyId, projectId, scheduledAt(sort: Desc)])
+  @@index([companyId, attendancePct])
+  @@map("sms_safety_meetings")
+}
+
+model SmsAiInsightsCache {
+  id                     String         @id @default(uuid())
+  companyId              Int            @map("company_id")
+  projectId              Int?           @map("project_id")
+  subcontractorCompanyId Int?           @map("subcontractor_company_id")
+  geoNodeId              String?        @map("geo_node_id")
+  accessPlane            SmsAccessPlane @map("access_plane")
+  visibilityRoles        String[]       @default([]) @map("visibility_roles")
+  behaviorId             String         @map("behavior_id")
+  pageContext            String?        @map("page_context")
+  modelId                String         @map("model_id")
+  modelTier              SmsAiModelTier @map("model_tier")
+  modelVersion           String?        @map("model_version")
+  inputHash              String         @map("input_hash")
+  confidence             Decimal        @db.Decimal(4, 3)
+  tone                   SmsAiTone      @default(neutral)
+  headline               String?
+  body                   String?        @db.Text
+  payloadJson            Json           @default("{}") @map("payload_json")
+  evidenceRefsJson       Json?          @map("evidence_refs_json")
+  source                 SmsAiSource    @default(rules)
+  status                 SmsAiStatus    @default(active)
+  acceptedByUserId       Int?           @map("accepted_by_user_id")
+  acceptedAt             DateTime?      @map("accepted_at")
+  createdEntityType      String?        @map("created_entity_type")
+  createdEntityId        String?        @map("created_entity_id")
+  expiresAt              DateTime       @map("expires_at")
+  latencyMs              Int?           @map("latency_ms")
+  requestId              String?        @map("request_id")
+  createdAt              DateTime       @default(now()) @map("created_at")
+  updatedAt              DateTime       @updatedAt @map("updated_at")
+
+  @@index([companyId, behaviorId, expiresAt])
+  @@index([companyId, projectId, behaviorId])
+  @@index([expiresAt])
+  @@index([companyId, inputHash, behaviorId, pageContext])
+  @@index([geoNodeId])
+  @@map("sms_ai_insights_cache")
+}
+
+model SmsRecordLink {
+  id        String   @id @default(uuid())
+  companyId Int      @map("company_id")
+  fromType  String   @map("from_type")
+  fromId    String   @map("from_id")
+  toType    String   @map("to_type")
+  toId      String   @map("to_id")
+  linkRole  String   @map("link_role")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@unique([companyId, fromType, fromId, toType, toId, linkRole])
+  @@index([companyId, toType, toId])
+  @@map("sms_record_links")
+}
+
+model SmsAuditLog {
+  id          String          @id @default(uuid())
+  companyId   Int             @map("company_id")
+  actorUserId Int?            @map("actor_user_id")
+  action      String
+  entityType  String          @map("entity_type")
+  entityId    String?         @map("entity_id")
+  plane       SmsAccessPlane?
+  requestId   String?         @map("request_id")
+  beforeHash  String?         @map("before_hash")
+  afterHash   String?         @map("after_hash")
+  payloadJson Json?           @map("payload_json")
+  ip          String?
+  userAgent   String?         @map("user_agent")
+  createdAt   DateTime        @default(now()) @map("created_at")
+
+  @@index([companyId, createdAt(sort: Desc)])
+  @@index([entityType, entityId])
+  @@index([actorUserId, createdAt(sort: Desc)])
+  @@map("sms_audit_log")
+}
+
+model SmsAiSuggestionAudit {
+  id           String   @id @default(uuid())
+  companyId    Int      @map("company_id")
+  suggestionId String   @map("suggestion_id")
+  behaviorId   String   @map("behavior_id")
+  actorUserId  Int?     @map("actor_user_id")
+  decision     String
+  entityType   String?  @map("entity_type")
+  entityId     String?  @map("entity_id")
+  reason       String?
+  payloadJson  Json?    @map("payload_json")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([companyId, suggestionId])
+  @@index([companyId, createdAt(sort: Desc)])
+  @@map("sms_ai_suggestion_audit")
+}
+
+model SmsCailInferenceLog {
+  id           String         @id @default(uuid())
+  companyId    Int            @map("company_id")
+  behaviorId   String         @map("behavior_id")
+  entityType   String?        @map("entity_type")
+  entityId     String?        @map("entity_id")
+  modelTier    SmsAiModelTier @map("model_tier")
+  modelVersion String?        @map("model_version")
+  score        Decimal?       @db.Decimal(5, 2)
+  factorsJson  Json?          @map("factors_json")
+  inputHash    String?        @map("input_hash")
+  requestId    String?        @map("request_id")
+  createdAt    DateTime       @default(now()) @map("created_at")
+
+  @@index([companyId, behaviorId, createdAt(sort: Desc)])
+  @@map("sms_cail_inference_logs")
+}
+
+model SmsMetricsOutbox {
+  id          String    @id @default(uuid())
+  companyId   Int       @map("company_id")
+  projectId   Int?      @map("project_id")
+  eventType   String    @map("event_type")
+  payloadJson Json      @map("payload_json")
+  processedAt DateTime? @map("processed_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([processedAt, createdAt])
+  @@index([companyId, eventType])
+  @@map("sms_metrics_outbox")
+}

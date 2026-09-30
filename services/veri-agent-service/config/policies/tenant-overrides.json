@@ -1,0 +1,6 @@
+{
+  "defaultProfile": "strict",
+  "tenants": {
+    "1001": "balanced"
+  }
+}

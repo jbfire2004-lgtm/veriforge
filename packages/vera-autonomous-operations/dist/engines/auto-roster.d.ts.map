@@ -1,0 +1,1 @@
+{"version":3,"file":"auto-roster.d.ts","sourceRoot":"","sources":["../../src/engines/auto-roster.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,gBAAgB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAGzE,qBAAa,gBAAgB;IAC3B,GAAG,CAAC,GAAG,EAAE,sBAAsB,GAAG,gBAAgB;CA4EnD"}

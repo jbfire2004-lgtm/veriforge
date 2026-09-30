@@ -1,0 +1,1 @@
+{"version":3,"file":"civilization-knowledge.d.ts","sourceRoot":"","sources":["../../src/engines/civilization-knowledge.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,qBAAqB,EAAE,MAAM,UAAU,CAAC;AAIhF,qBAAa,2BAA2B;IACtC,OAAO,CAAC,GAAG,EAAE,wBAAwB,GAAG,qBAAqB;CAe9D"}

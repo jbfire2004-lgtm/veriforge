@@ -1,0 +1,121 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum EquipmentStatus {
+  active
+  maintenance
+  locked_out
+  retired
+  out_of_service
+}
+
+enum InspectionStatus {
+  pass
+  fail
+  conditional
+  pending
+}
+
+enum AuthorizationStatus {
+  active
+  revoked
+  expired
+}
+
+model Equipment {
+  id                 String          @id @default(uuid()) @db.Uuid
+  companyId          String          @map("company_id") @db.Uuid
+  projectId          String?         @map("project_id") @db.Uuid
+  type               String
+  model              String?
+  serialNumber       String?         @map("serial_number")
+  status             EquipmentStatus @default(active)
+  conditionScore     Int             @default(100) @map("condition_score")
+  lastInspectionDate DateTime?       @map("last_inspection_date")
+  nextInspectionDue  DateTime?       @map("next_inspection_due")
+  createdAt          DateTime        @default(now()) @map("created_at")
+  updatedAt          DateTime        @updatedAt @map("updated_at")
+
+  inspections     EquipmentInspection[]
+  certifications  EquipmentCertification[]
+  authorizations  EquipmentAuthorization[]
+  lockouts        EquipmentLockout[]
+
+  @@unique([companyId, serialNumber])
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@index([status])
+  @@map("equipment")
+}
+
+model EquipmentInspection {
+  id          String           @id @default(uuid()) @db.Uuid
+  equipmentId String           @map("equipment_id") @db.Uuid
+  inspectorId String           @map("inspector_id") @db.Uuid
+  templateId  String?          @map("template_id") @db.Uuid
+  status      InspectionStatus @default(pending)
+  notes       String?
+  createdAt   DateTime         @default(now()) @map("created_at")
+
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@index([equipmentId])
+  @@index([equipmentId, createdAt])
+  @@map("equipment_inspections")
+}
+
+model EquipmentCertification {
+  id                String    @id @default(uuid()) @db.Uuid
+  equipmentId       String    @map("equipment_id") @db.Uuid
+  certificationType String    @map("certification_type")
+  issuedBy          String?   @map("issued_by")
+  issueDate         DateTime  @map("issue_date")
+  expiryDate        DateTime? @map("expiry_date")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@index([equipmentId])
+  @@index([equipmentId, expiryDate])
+  @@map("equipment_certifications")
+}
+
+model EquipmentAuthorization {
+  id           String              @id @default(uuid()) @db.Uuid
+  equipmentId  String              @map("equipment_id") @db.Uuid
+  workerId     String              @map("worker_id") @db.Uuid
+  authorizedBy String              @map("authorized_by") @db.Uuid
+  status       AuthorizationStatus @default(active)
+  expiryDate   DateTime?           @map("expiry_date")
+  createdAt    DateTime            @default(now()) @map("created_at")
+  updatedAt    DateTime            @updatedAt @map("updated_at")
+
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@unique([equipmentId, workerId])
+  @@index([equipmentId])
+  @@index([workerId])
+  @@map("equipment_authorizations")
+}
+
+model EquipmentLockout {
+  id         String    @id @default(uuid()) @db.Uuid
+  equipmentId String   @map("equipment_id") @db.Uuid
+  reason     String
+  lockedBy   String    @map("locked_by") @db.Uuid
+  lockedAt   DateTime  @default(now()) @map("locked_at")
+  unlockedBy String?   @map("unlocked_by") @db.Uuid
+  unlockedAt DateTime? @map("unlocked_at")
+  active     Boolean   @default(true)
+
+  equipment Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+
+  @@index([equipmentId, active])
+  @@map("equipment_lockouts")
+}

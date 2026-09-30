@@ -1,0 +1,33 @@
+﻿VeriSuite intelligence UI typecheck
+Date: 2026-07-17
+Cwd: C:\Projects\veri-temp\vera-frontend
+Command: node node_modules/typescript/bin/tsc --noEmit --pretty false
+(npx unavailable in PATH; used local tsc binary)
+
+Project tsc exit code: 1 (unrelated errors elsewhere in app/)
+
+Filtered errors (verisuite-intelligence-ui | VeriSuiteUiKit):
+  NONE
+
+Sample unrelated project errors (not in scope):
+  app/auth/reset-password/page.tsx(11,17): error TS18047: 'params' is possibly 'null'.
+  app/companies/[id]/orientation/new/page.tsx(15,16): error TS18047: 'search' is possibly 'null'.
+  (and more app/ page param nullability issues)
+
+---
+ComparisonPanel props vs ComparisonRow
+
+ComparisonRow (components/verisuite-intelligence-ui/ComparisonPanel.tsx):
+  label: string
+  left: number | null
+  right: number | null
+  suppressed?: boolean
+  unit?: string
+
+VeriSuiteUiKitHandoff usage (components/verisuite-sms-mockups/VeriSuiteUiKitHandoff.tsx ~364-379):
+  rows={[
+    { label: "Incident rate /200k", left: 1.22, right: 1.85, unit: "/200k" },
+    { label: "TRIR", left: 0.9, right: 1.4 },
+  ]}
+
+Verdict: MATCH — handoff uses label/left/right (and optional unit) aligned with ComparisonRow. No TS errors on this usage.

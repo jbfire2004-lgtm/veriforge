@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model CailTrainingData {
+  id               String   @id @default(uuid()) @db.Uuid
+  companyId        String   @map("company_id") @db.Uuid
+  modelId          String   @map("model_id")
+  version          Int
+  datasetReference String   @map("dataset_reference")
+  featureSet       Json     @map("feature_set") @db.JsonB
+  labelSet         Json?    @map("label_set") @db.JsonB
+  sourceEvent      String?  @map("source_event")
+  anomalyFlag      Boolean  @default(false) @map("anomaly_flag")
+  qualityScore     Float    @default(1) @map("quality_score")
+  createdAt        DateTime @default(now()) @map("created_at")
+
+  @@index([companyId])
+  @@index([companyId, modelId, version])
+  @@index([datasetReference])
+  @@index([companyId, createdAt])
+  @@index([anomalyFlag])
+  @@map("cail_training_data")
+}

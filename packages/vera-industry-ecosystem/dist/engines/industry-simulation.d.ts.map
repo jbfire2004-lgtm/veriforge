@@ -1,0 +1,1 @@
+{"version":3,"file":"industry-simulation.d.ts","sourceRoot":"","sources":["../../src/engines/industry-simulation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,oBAAoB,EAAE,kBAAkB,EAAE,MAAM,UAAU,CAAC;AAIzE,qBAAa,wBAAwB;IACnC,GAAG,CAAC,GAAG,EAAE,oBAAoB,GAAG,kBAAkB,EAAE;CAqBrD"}

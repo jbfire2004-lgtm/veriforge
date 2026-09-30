@@ -1,0 +1,1 @@
+{"version":3,"file":"fraud-detection.d.ts","sourceRoot":"","sources":["../../src/engines/fraud-detection.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,cAAc,EAAE,WAAW,EAAE,MAAM,UAAU,CAAC;AAE5D,qBAAa,oBAAoB;IAC/B,OAAO,CAAC,QAAQ,EAAE,MAAM,EAAE,MAAM,EAAE,cAAc,EAAE,GAAG;QAAE,KAAK,EAAE,MAAM,CAAC;QAAC,OAAO,EAAE,WAAW,EAAE,CAAA;KAAE;CA8E/F"}

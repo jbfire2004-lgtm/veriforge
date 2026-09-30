@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RecommendationType {
+  control
+  training
+  corrective_action
+  equipment_maintenance
+  jha_improvement
+  inspection_focus
+  pm_schedule_adjustment
+}
+
+model CailRecommendation {
+  id                 String             @id @default(uuid()) @db.Uuid
+  companyId          String             @map("company_id") @db.Uuid
+  projectId          String?            @map("project_id") @db.Uuid
+  workerId           String?            @map("worker_id") @db.Uuid
+  equipmentId        String?            @map("equipment_id") @db.Uuid
+  entityType         String             @map("entity_type")
+  entityId           String             @map("entity_id") @db.Uuid
+  recommendationType RecommendationType @map("recommendation_type")
+  recommendationText String             @map("recommendation_text")
+  evidence           Json               @db.JsonB
+  confidence         Float
+  createdAt          DateTime           @default(now()) @map("created_at")
+
+  @@index([companyId])
+  @@index([companyId, recommendationType])
+  @@index([entityType, entityId])
+  @@index([companyId, entityType, entityId])
+  @@index([projectId])
+  @@index([createdAt])
+  @@map("cail_recommendations")
+}

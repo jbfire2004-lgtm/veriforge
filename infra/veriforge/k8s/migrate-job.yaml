@@ -1,0 +1,38 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: veriforge-migrate
+  namespace: veriforge
+  labels:
+    app.kubernetes.io/name: veriforge-migrate
+spec:
+  backoffLimit: 3
+  ttlSecondsAfterFinished: 300
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: veriforge-migrate
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: ghcr.io/OWNER/veriforge-api:latest
+          imagePullPolicy: Always
+          command: ["sh", "scripts/migrate-deploy.sh"]
+          env:
+            - name: RUN_DB_SEED
+              value: "1"
+            - name: ALLOW_DESTRUCTIVE_MIGRATIONS
+              value: "0"
+          envFrom:
+            - configMapRef:
+                name: veriforge-config
+            - secretRef:
+                name: veriforge-secrets
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi

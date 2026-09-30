@@ -1,0 +1,1 @@
+{"version":3,"file":"shift-optimization.d.ts","sourceRoot":"","sources":["../../src/engines/shift-optimization.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,iBAAiB,EAAE,MAAM,UAAU,CAAC;AAI1E,qBAAa,uBAAuB;IAClC,OAAO,CAAC,GAAG,EAAE,sBAAsB,GAAG,iBAAiB;CAuCxD"}

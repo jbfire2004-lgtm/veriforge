@@ -1,0 +1,135 @@
+name: VeriForge cluster auth (OIDC)
+description: Authenticate kubectl via GitHub OIDC. Production never accepts kubeconfig.
+inputs:
+  environment:
+    required: true
+  gcp_workload_identity_provider:
+    required: false
+    default: ""
+  gcp_service_account:
+    required: false
+    default: ""
+  gke_cluster:
+    required: false
+    default: ""
+  gke_location:
+    required: false
+    default: ""
+  aws_role_arn:
+    required: false
+    default: ""
+  aws_region:
+    required: false
+    default: ""
+  eks_cluster:
+    required: false
+    default: ""
+  azure_client_id:
+    required: false
+    default: ""
+  azure_tenant_id:
+    required: false
+    default: ""
+  azure_subscription_id:
+    required: false
+    default: ""
+  aks_cluster:
+    required: false
+    default: ""
+  aks_resource_group:
+    required: false
+    default: ""
+  kube_config_data:
+    required: false
+    default: ""
+  allow_kubeconfig:
+    required: false
+    default: "false"
+
+runs:
+  using: composite
+  steps:
+    - name: Reject kubeconfig on production
+      shell: bash
+      env:
+        ENVIRONMENT: ${{ inputs.environment }}
+        KUBE_CONFIG_DATA: ${{ inputs.kube_config_data }}
+      run: |
+        set -euo pipefail
+        if [ "$ENVIRONMENT" = "production" ] && [ -n "$KUBE_CONFIG_DATA" ]; then
+          echo "KUBE_CONFIG_DATA is not allowed for production. Use GitHub OIDC (GCP WIF or AWS IAM)." >&2
+          exit 1
+        fi
+
+    - name: Authenticate to GKE (OIDC)
+      if: ${{ inputs.gcp_workload_identity_provider != '' }}
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ inputs.gcp_workload_identity_provider }}
+        service_account: ${{ inputs.gcp_service_account }}
+
+    - name: Get GKE credentials
+      if: ${{ inputs.gcp_workload_identity_provider != '' }}
+      uses: google-github-actions/get-gke-credentials@v2
+      with:
+        cluster_name: ${{ inputs.gke_cluster }}
+        location: ${{ inputs.gke_location }}
+
+    - name: Authenticate to EKS (OIDC)
+      if: ${{ inputs.gcp_workload_identity_provider == '' && inputs.aws_role_arn != '' }}
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.aws_role_arn }}
+        aws-region: ${{ inputs.aws_region }}
+
+    - name: Get EKS kubeconfig
+      if: ${{ inputs.gcp_workload_identity_provider == '' && inputs.aws_role_arn != '' }}
+      shell: bash
+      run: aws eks update-kubeconfig --name "${{ inputs.eks_cluster }}" --region "${{ inputs.aws_region }}"
+
+    - name: Authenticate to Azure (OIDC)
+      if: ${{ inputs.gcp_workload_identity_provider == '' && inputs.aws_role_arn == '' && inputs.azure_client_id != '' }}
+      uses: azure/login@v2
+      with:
+        client-id: ${{ inputs.azure_client_id }}
+        tenant-id: ${{ inputs.azure_tenant_id }}
+        subscription-id: ${{ inputs.azure_subscription_id }}
+
+    - name: Get AKS credentials
+      if: ${{ inputs.gcp_workload_identity_provider == '' && inputs.aws_role_arn == '' && inputs.azure_client_id != '' }}
+      shell: bash
+      run: |
+        set -euo pipefail
+        if [ -z "${{ inputs.aks_cluster }}" ] || [ -z "${{ inputs.aks_resource_group }}" ]; then
+          echo "AKS_CLUSTER and AKS_RESOURCE_GROUP are required for Azure deploy." >&2
+          exit 1
+        fi
+        az aks get-credentials \
+          --resource-group "${{ inputs.aks_resource_group }}" \
+          --name "${{ inputs.aks_cluster }}" \
+          --overwrite-existing
+
+    - name: Staging kubeconfig fallback (explicit only)
+      if: ${{ inputs.gcp_workload_identity_provider == '' && inputs.aws_role_arn == '' && inputs.azure_client_id == '' }}
+      shell: bash
+      env:
+        ENVIRONMENT: ${{ inputs.environment }}
+        ALLOW: ${{ inputs.allow_kubeconfig }}
+        KUBE_CONFIG_DATA: ${{ inputs.kube_config_data }}
+      run: |
+        set -euo pipefail
+        if [ -n "${{ inputs.gcp_workload_identity_provider }}" ] || [ -n "${{ inputs.aws_role_arn }}" ]; then
+          exit 0
+        fi
+        if [ "$ENVIRONMENT" = "production" ]; then
+          echo "Production deploy requires GCP WIF, AWS IAM, or Azure OIDC (AZURE_CLIENT_ID)." >&2
+          exit 1
+        fi
+        if [ "$ALLOW" != "true" ] || [ -z "$KUBE_CONFIG_DATA" ]; then
+          echo "Set GCP/AWS/Azure OIDC secrets, or for staging only vars.VERIFORGE_ALLOW_KUBECONFIG=true plus KUBE_CONFIG_DATA." >&2
+          exit 1
+        fi
+        mkdir -p ~/.kube
+        echo "$KUBE_CONFIG_DATA" | base64 -d > ~/.kube/config
+        chmod 600 ~/.kube/config
+        echo "WARNING: using legacy kubeconfig on staging. Production still requires OIDC."

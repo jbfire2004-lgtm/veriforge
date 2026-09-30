@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model DriftReport {
+  id             String   @id @default(uuid()) @db.Uuid
+  companyId      String   @map("company_id") @db.Uuid
+  modelId        String   @map("model_id")
+  modelVersion   String?  @map("model_version")
+  baselineStats  Json     @map("baseline_stats") @db.JsonB
+  currentStats   Json     @map("current_stats") @db.JsonB
+  featureDrifts  Json     @map("feature_drifts") @db.JsonB
+  driftScore     Float    @map("drift_score")
+  driftDetected  Boolean  @map("drift_detected")
+  createdBy      String   @map("created_by") @db.Uuid
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  events DriftEvent[]
+
+  @@index([companyId])
+  @@index([companyId, modelId])
+  @@map("drift_reports")
+}
+
+model AlertThreshold {
+  id          String   @id @default(uuid()) @db.Uuid
+  companyId   String   @map("company_id") @db.Uuid
+  modelId     String   @map("model_id")
+  featureName String   @map("feature_name")
+  method      String   @default("z_score")
+  threshold   Float
+  enabled     Boolean  @default(true)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, modelId, featureName])
+  @@index([companyId])
+  @@map("alert_thresholds")
+}
+
+model DriftEvent {
+  id           String   @id @default(uuid()) @db.Uuid
+  companyId    String   @map("company_id") @db.Uuid
+  driftReportId String  @map("drift_report_id") @db.Uuid
+  eventType    String   @map("event_type")
+  payload      Json     @db.JsonB
+  emittedAt    DateTime @default(now()) @map("emitted_at")
+
+  driftReport DriftReport @relation(fields: [driftReportId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([eventType])
+  @@map("drift_events")
+}

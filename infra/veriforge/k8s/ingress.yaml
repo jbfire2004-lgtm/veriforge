@@ -1,0 +1,38 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: veriforge
+  namespace: veriforge
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "25m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "60"
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: app.veriglobal.ca
+      http:
+        paths:
+          # Stripe webhooks (no rewrite strip needed beyond path)
+          - path: /webhooks(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: veriforge-api
+                port:
+                  number: 3020
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: veriforge-api
+                port:
+                  number: 3020
+          - path: /()(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: veriforge-frontend
+                port:
+                  number: 80

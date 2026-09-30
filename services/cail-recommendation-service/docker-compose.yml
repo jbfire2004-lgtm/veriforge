@@ -1,0 +1,34 @@
+services:
+  cail-recommendation-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_cail_recommend
+      POSTGRES_PASSWORD: vera_cail_recommend_secret
+      POSTGRES_DB: vera_cail_recommend
+    ports:
+      - "5457:5432"
+    volumes:
+      - cail_recommend_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_cail_recommend -d vera_cail_recommend"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  cail-recommendation-service:
+    build: .
+    ports:
+      - "3025:3025"
+    environment:
+      NODE_ENV: production
+      PORT: 3025
+      DATABASE_URL: postgresql://vera_cail_recommend:vera_cail_recommend_secret@cail-recommendation-db:5432/vera_cail_recommend?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      MODEL_KEY: deterministic_rules_v1
+    depends_on:
+      cail-recommendation-db:
+        condition: service_healthy
+
+volumes:
+  cail_recommend_pg_data:

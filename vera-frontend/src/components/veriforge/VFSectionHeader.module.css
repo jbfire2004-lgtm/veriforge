@@ -1,0 +1,49 @@
+.header {
+  composes: root from "./shared.module.css";
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid rgba(90, 97, 105, 0.7);
+}
+
+.kicker {
+  font-family: var(--vf-font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--vf-inspection-teal);
+  margin: 0;
+}
+
+.title {
+  font-family: var(--vf-font-heading);
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.01em;
+  font-size: 1.25rem;
+  color: var(--vf-safety-white);
+  margin: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+  box-shadow: none;
+}
+
+.description {
+  font-family: var(--vf-font-body);
+  font-size: 14px;
+  font-weight: 500;
+  color: #a8b0b8;
+  margin: 0;
+  max-width: 48rem;
+  line-height: 1.45;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}

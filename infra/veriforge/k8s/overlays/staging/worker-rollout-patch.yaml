@@ -1,0 +1,11 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veriforge-worker
+spec:
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      # Single-replica worker cannot roll with maxUnavailable: 0
+      maxUnavailable: 1
+      maxSurge: 1

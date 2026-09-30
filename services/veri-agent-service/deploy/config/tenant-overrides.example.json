@@ -1,0 +1,8 @@
+{
+  "defaultProfile": "strict",
+  "tenants": {
+    "1001": "balanced",
+    "2002": "strict"
+  },
+  "notes": "Map companyId → policy profile. Mount as VERA_AGENT_TENANT_POLICY_MAP."
+}

@@ -1,0 +1,2 @@
+# Migrations live in services/veriforge-saas-service/prisma/migrations.
+# This folder exists so the DDD tree matches the target architecture.

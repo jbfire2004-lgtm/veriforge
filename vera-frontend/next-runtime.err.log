@@ -1,0 +1,59 @@
+[browser] Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have a side-effect in your render function that asynchronously tries to update the component. Move this work to useEffect instead. 
+[browser] Encountered a script tag while rendering React component. Scripts inside React components are never executed when rendering on the client. Consider using template tag instead (https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template). 
+[browser] Uncaught ChunkLoadError: Loading chunk app/layout failed.
+(timeout: http://localhost:3000/_next/static/chunks/app/layout.js)
+    at RootLayout (app\layout.tsx:78:9)
+  76 |       <body className="flex min-h-full flex-col font-[family-name:var(--font-inter)]">
+  77 |         <ThemeScript />
+> 78 |         <ProvidersGate pathname={pathname}>{children}</ProvidersGate>
+     |         ^
+  79 |       </body>
+  80 |     </html>
+  81 |   );
+[browser] ChunkLoadError: Loading chunk app/layout failed.
+(timeout: http://localhost:3000/_next/static/chunks/app/layout.js)
+    at GlobalError (app\global-error.tsx:15:9)
+  13 |     <html lang="en">
+  14 |       <body className="min-h-screen bg-vera-surface/40 px-vera-6 py-vera-10">
+> 15 |         <RouteErrorPanel
+     |         ^
+  16 |           error={error}
+  17 |           reset={reset}
+  18 |           title="Unexpected application error" (src\components\layout\RouteErrorPanel.tsx:33:13)
+[browser] ChunkLoadError: Loading chunk app/layout failed.
+(timeout: http://localhost:3000/_next/static/chunks/app/layout.js)
+    at GlobalError (app\global-error.tsx:15:9)
+  13 |     <html lang="en">
+  14 |       <body className="min-h-screen bg-vera-surface/40 px-vera-6 py-vera-10">
+> 15 |         <RouteErrorPanel
+     |         ^
+  16 |           error={error}
+  17 |           reset={reset}
+  18 |           title="Unexpected application error" (src\components\layout\RouteErrorPanel.tsx:33:13)
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[browser] TypeError: Failed to fetch
+    at executeAuthedFetch (lib\api-fetch.ts:153:10)
+    at apiFetch (lib\api-fetch.ts:187:19)
+    at async apiFetchJson (lib\api-fetch.ts:228:15)
+  151 |   }
+  152 |
+> 153 |   return fetch(toAbsoluteUrl(input), {
+      |          ^
+  154 |     ...init,
+  155 |     signal,
+  156 |     credentials: init.credentials ?? "include",
+[browser] TypeError: Failed to fetch
+    at executeAuthedFetch (lib\api-fetch.ts:153:10)
+    at apiFetch (lib\api-fetch.ts:187:19)
+    at async apiFetchJson (lib\api-fetch.ts:228:15)
+  151 |   }
+  152 |
+> 153 |   return fetch(toAbsoluteUrl(input), {
+      |          ^
+  154 |     ...init,
+  155 |     signal,
+  156 |     credentials: init.credentials ?? "include",

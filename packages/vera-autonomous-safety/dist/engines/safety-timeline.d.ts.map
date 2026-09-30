@@ -1,0 +1,1 @@
+{"version":3,"file":"safety-timeline.d.ts","sourceRoot":"","sources":["../../src/engines/safety-timeline.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,mBAAmB,EAAE,MAAM,UAAU,CAAC;AAI5E,qBAAa,oBAAoB;IAC/B,KAAK,CACH,MAAM,EAAE,IAAI,CACV,sBAAsB,EACtB,KAAK,GAAG,MAAM,GAAG,eAAe,CACjC,GACA,mBAAmB,EAAE;CAmCzB"}

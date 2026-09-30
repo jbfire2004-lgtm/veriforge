@@ -1,0 +1,1 @@
+{"version":3,"file":"auto-conflict-resolution.d.ts","sourceRoot":"","sources":["../../src/engines/auto-conflict-resolution.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAGjF,qBAAa,4BAA4B;IACvC,GAAG,CACD,GAAG,EAAE,sBAAsB,EAC3B,mBAAmB,EAAE,MAAM,EAAE,EAC7B,iBAAiB,EAAE,MAAM,EAAE,GAC1B,wBAAwB;CAyE5B"}

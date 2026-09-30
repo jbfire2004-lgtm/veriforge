@@ -1,0 +1,26 @@
+﻿node.exe : 
+At C:\Users\JB01\AppData\Local\Temp\ps-script-c31f4957-da21-4e28-b88c-1d79a6e5d3fd.ps1:102 char:143
++ ... p\backend"; & $node ".\node_modules\@nestjs\cli\bin\nest.js" build 2> ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+<--- Last few GCs --->
+
+[10512:00000229315A1000]   209136 ms: Mark-Compact 2044.3 (2083.4) -> 2041.1 (2083.2) MB, pooled: 0 MB, 2103.04 / 0.00 
+ms  (average mu = 0.159, current mu = 0.043) allocation failure; scavenge might not succeed
+
+
+<--- JS stacktrace --->
+
+FATAL ERROR: Ineffective mark-compacts near heap limit Allocation failed - JavaScript heap out of memory
+----- Native stack trace -----
+
+ 1: 00007FF6B16333D7 node::SetCppgcReference+21127
+ 2: 00007FF6B15938AB v8::base::CPU::num_virtual_address_bits+102331
+ 3: 00007FF6B219C281 v8::Isolate::ReportExternalAllocationLimitReached+65
+ 4: 00007FF6B2188D46 v8::Function::Experimental_IsNopFunction+3302
+ 5: 00007FF6B1FE54A0 v8::internal::StrongRootAllocatorBase::StrongRootAllocatorBase+33904
+ 6: 00007FF6B1FDE8EA v8::internal::StrongRootAllocatorBase::StrongRootAllocatorBase+6330
+ 7: 00007FF6B1FDA125 v8::CpuProfileNode::GetScriptResourceNameStr+190613
+ 8: 00007FF6B1963DCD BIO_ssl_shutdown+189

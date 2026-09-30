@@ -1,0 +1,33 @@
+services:
+  equipment-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_equipment
+      POSTGRES_PASSWORD: vera_equipment_secret
+      POSTGRES_DB: vera_equipment
+    ports:
+      - "5445:5432"
+    volumes:
+      - equipment_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_equipment -d vera_equipment"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  equipment-safety-service:
+    build: .
+    ports:
+      - "3013:3013"
+    environment:
+      NODE_ENV: production
+      PORT: 3013
+      DATABASE_URL: postgresql://vera_equipment:vera_equipment_secret@equipment-db:5432/vera_equipment?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+    depends_on:
+      equipment-db:
+        condition: service_healthy
+
+volumes:
+  equipment_pg_data:

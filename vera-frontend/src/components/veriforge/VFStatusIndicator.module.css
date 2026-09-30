@@ -1,0 +1,48 @@
+.indicator {
+  composes: root from "./shared.module.css";
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--vf-font-heading);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  color: var(--vf-safety-white);
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 1px;
+  border: 1px solid var(--vf-steel-grey);
+  background: var(--vf-steel-grey);
+  flex-shrink: 0;
+  box-shadow: none;
+}
+
+.stable .dot {
+  background: var(--vf-soft-green);
+  border-color: #3d8f58;
+}
+
+.watch .dot {
+  background: var(--vf-muted-amber);
+  border-color: #a8842f;
+}
+
+.active .dot {
+  background: var(--vf-safety-blue);
+  border-color: #174f86;
+}
+
+.critical .dot {
+  background: var(--vf-critical);
+  border-color: #b33a3a;
+  box-shadow: none;
+}
+
+.offline .dot {
+  background: var(--vf-ledger);
+  border-color: #454a51;
+}

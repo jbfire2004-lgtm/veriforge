@@ -1,0 +1,55 @@
+name: VeriSuite SMS Production Gate
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main, master]
+    paths:
+      - 'backend/src/verisuite-sms/**'
+      - 'backend/prisma/sms_schema_fragment.prisma'
+      - 'backend/prisma/migrations/20260717000000_verisuite_sms/**'
+      - 'vera-frontend/components/verisuite-sms-*/**'
+      - 'vera-frontend/components/veripm-*/**'
+      - 'vera-frontend/tests/verisuite-sms.smoke.test.ts'
+      - 'scripts/verisuite-sms-production-gate.mjs'
+      - 'docs/verisuite-sms-production-deploy.md'
+      - '.env.production.example'
+  pull_request:
+    paths:
+      - 'backend/src/verisuite-sms/**'
+      - 'vera-frontend/tests/verisuite-sms.smoke.test.ts'
+      - 'scripts/verisuite-sms-production-gate.mjs'
+
+jobs:
+  sms-production-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: |
+            backend/package-lock.json
+            vera-frontend/package-lock.json
+
+      - name: Install backend deps
+        working-directory: backend
+        run: npm ci --ignore-scripts
+
+      - name: Install frontend deps
+        working-directory: vera-frontend
+        run: npm ci --ignore-scripts
+
+      - name: Prisma generate (SMS schema)
+        working-directory: backend
+        env:
+          NODE_OPTIONS: --max-old-space-size=8192
+        run: npx prisma generate
+
+      - name: Run VeriSuite SMS production gate
+        env:
+          NODE_OPTIONS: --max-old-space-size=4096
+        run: node scripts/verisuite-sms-production-gate.mjs

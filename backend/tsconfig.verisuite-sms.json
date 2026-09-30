@@ -1,0 +1,10 @@
+﻿{
+  "extends": "./tsconfig.json",
+  "include": ["src/verisuite-sms/**/*"],
+  "compilerOptions": {
+    "noEmit": true,
+    "incremental": false,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+  }
+}

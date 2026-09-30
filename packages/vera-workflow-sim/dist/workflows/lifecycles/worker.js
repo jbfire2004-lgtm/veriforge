@@ -1,0 +1,51 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.workerLifecycle = void 0;
+const builder_1 = require("../builder");
+exports.workerLifecycle = (0, builder_1.buildWorkflow)({
+    id: "worker.lifecycle",
+    title: "Worker Lifecycle",
+    category: "worker",
+    description: "Creation → operation → completion → archival",
+    initialState: "draft",
+    terminalStates: ["archived"],
+    modules: ["Workers", "Companies", "Projects", "Training", "Compliance", "Wallets", "Field"],
+    steps: [
+        { id: "create", label: "Worker creation", permissions: ["COMPANY_ADMIN"], required: true },
+        { id: "linkCompany", label: "Link to company", permissions: ["COMPANY_ADMIN"], required: true },
+        { id: "assignProject", label: "Assign to project", permissions: ["SUPERVISOR"], required: false },
+        { id: "uploadTraining", label: "Training upload", permissions: ["COMPANY_ADMIN", "TRAINING_INSTRUCTOR"], offlineCapable: true },
+        { id: "complianceCheck", label: "Compliance validation", complianceChecks: ["training.valid", "competency.valid"], required: true },
+        { id: "competencyEval", label: "Competency evaluation", permissions: ["SUPERVISOR"] },
+        { id: "qrScanOnline", label: "QR scan (online)", permissions: ["SUPERVISOR"] },
+        { id: "qrScanOffline", label: "QR scan (offline)", permissions: ["SUPERVISOR"], offlineCapable: true },
+        { id: "walletUpdate", label: "Wallet updates", permissions: ["COMPANY_ADMIN"] },
+        { id: "leaveProject", label: "Leave project", permissions: ["SUPERVISOR"] },
+        { id: "leaveCompany", label: "Leave company", permissions: ["COMPANY_ADMIN"] },
+        { id: "transferCompany", label: "Transfer company", permissions: ["COMPANY_ADMIN"] },
+        { id: "historyArchive", label: "History archival", permissions: ["COMPANY_ADMIN"] },
+    ],
+    transitions: [
+        { from: "draft", to: "created", event: "worker.create", permissions: ["COMPANY_ADMIN", "SUPERVISOR"] },
+        { from: "created", to: "linked", event: "worker.linkCompany", permissions: ["COMPANY_ADMIN", "SUPERVISOR"] },
+        { from: "linked", to: "assigned", event: "worker.assignProject", permissions: ["SUPERVISOR"] },
+        { from: "linked", to: "active", event: "worker.skipProject" },
+        { from: "assigned", to: "active", event: "worker.activate" },
+        { from: "active", to: "trainingPending", event: "worker.uploadTraining" },
+        { from: "trainingPending", to: "compliant", event: "compliance.pass", guards: ["training.valid"] },
+        { from: "active", to: "compliant", event: "compliance.pass", guards: ["training.valid", "competency.valid"] },
+        { from: "compliant", to: "scanned", event: "worker.qrScan" },
+        { from: "compliant", to: "offlineQueued", event: "worker.qrScanOffline", guards: ["offline.mode"] },
+        { from: "offlineQueued", to: "compliant", event: "sync.complete" },
+        { from: "compliant", to: "leavingProject", event: "worker.leaveProject" },
+        { from: "leavingProject", to: "active", event: "worker.reassign" },
+        { from: "compliant", to: "leavingCompany", event: "worker.leaveCompany" },
+        { from: "leavingCompany", to: "transferred", event: "worker.transferCompany" },
+        { from: "transferred", to: "linked", event: "worker.linkCompany" },
+        { from: "leavingCompany", to: "archived", event: "worker.archive" },
+        { from: "compliant", to: "archived", event: "worker.archive" },
+        { from: "active", to: "nonCompliant", event: "compliance.fail" },
+        { from: "nonCompliant", to: "active", event: "training.corrected" },
+    ],
+});
+//# sourceMappingURL=worker.js.map

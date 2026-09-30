@@ -1,0 +1,1 @@
+{"version":3,"file":"auto-readiness.d.ts","sourceRoot":"","sources":["../../src/engines/auto-readiness.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAG5E,qBAAa,mBAAmB;IAC9B,GAAG,CAAC,GAAG,EAAE,sBAAsB,GAAG,mBAAmB;CAsFtD"}

@@ -1,0 +1,77 @@
+import type { LucideIcon } from "lucide-react";
+import {
+  AlertTriangle,
+  BadgeCheck,
+  Building2,
+  ClipboardList,
+  FileText,
+  FlaskConical,
+  GraduationCap,
+  HardHat,
+  LayoutDashboard,
+  Radio,
+  Shield,
+  ShieldAlert,
+  ShieldCheck,
+  Upload,
+  Users,
+  Wallet,
+  Wrench,
+} from "lucide-react";
+
+/** Serializable href → icon lookup for client `ModuleLinkGrid` (no function props from RSC). */
+export const MODULE_LINK_ICONS: Record<string, LucideIcon> = {
+  "/wallet": Wallet,
+  "/supervisor": HardHat,
+  "/supervisor/scan": HardHat,
+  "/supervisor/combined": HardHat,
+  "/supervisor/incidents/new": ShieldAlert,
+  "/supervisor/signoff/preuse": Shield,
+  "/supervisor/worker-lookup": Users,
+  "/supervisor/equipment-lookup": HardHat,
+  "/admin": LayoutDashboard,
+  "/dashboard": LayoutDashboard,
+  "/pm": ClipboardList,
+  "/pm/jha-flha": ClipboardList,
+  "/pm/sms": Shield,
+  "/pm/project-safety": ShieldCheck,
+  "/pm/action-management": Wrench,
+  "/pm/sif-heca": AlertTriangle,
+  "/pm/inspections": Shield,
+  "/pm/incidents": ShieldAlert,
+  "/pm/safety-meetings": Users,
+  "/pm/corrective-actions": Wrench,
+  "/pm/documents": FileText,
+  "/pm/equipment-safety": HardHat,
+  "/pm/emergency-response": Radio,
+  "/pm/work-at-heights": HardHat,
+  "/pm/training": GraduationCap,
+  "/pm/safety-suite": LayoutDashboard,
+  "/pm/site-access-control": Building2,
+  "/pm/safety-stations": Radio,
+  "/pm/unified-safety-intelligence": LayoutDashboard,
+  "/pm/safety-forms": ClipboardList,
+  "/pm/safety-intelligence": ShieldAlert,
+  "/pm/safety/sds": FlaskConical,
+  "/core": ShieldCheck,
+  "/core/readiness": BadgeCheck,
+  "/core/workers": Users,
+  "/core/equipment": Wrench,
+  "/core/training-ingest": Upload,
+  "/core/verification": ShieldCheck,
+  "/core/upload": Upload,
+  "/core/meeting-records": Users,
+  "/core/daily-logs": FileText,
+  "/core/compliance-notes": FileText,
+  "/core/action-items": ClipboardList,
+  "/core/safety-observations": ShieldAlert,
+  "/core/site-risks": AlertTriangle,
+  "/core/sites/data-table": Building2,
+};
+
+export function moduleLinkIcon(href: string): LucideIcon {
+  if (MODULE_LINK_ICONS[href]) return MODULE_LINK_ICONS[href];
+  const base = href.split("?")[0] ?? href;
+  if (MODULE_LINK_ICONS[base]) return MODULE_LINK_ICONS[base];
+  return LayoutDashboard;
+}

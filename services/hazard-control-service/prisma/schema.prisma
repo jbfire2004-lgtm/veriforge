@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Hazard {
+  id               String   @id @default(uuid()) @db.Uuid
+  companyId        String   @map("company_id") @db.Uuid
+  hazardType       String   @map("hazard_type")
+  category         String
+  energyType       String   @map("energy_type")
+  severity         Int
+  likelihood       Int
+  sifPotential     Boolean  @default(false) @map("sif_potential")
+  hecaCategory     String   @map("heca_category")
+  requiredControls Json     @default("[]") @map("required_controls") @db.JsonB
+  requiredTraining Json     @default("[]") @map("required_training") @db.JsonB
+  requiredPpe      Json     @default("[]") @map("required_ppe") @db.JsonB
+  version          Int      @default(1)
+  title            String?
+  description      String?
+  createdAt        DateTime @default(now()) @map("created_at")
+  updatedAt        DateTime @updatedAt @map("updated_at")
+
+  controlLinks HazardControl[]
+
+  @@index([companyId])
+  @@index([companyId, hazardType])
+  @@index([companyId, sifPotential])
+  @@map("hazards")
+}
+
+model Control {
+  id                String   @id @default(uuid()) @db.Uuid
+  companyId         String   @map("company_id") @db.Uuid
+  controlType       String   @map("control_type")
+  hierarchyLevel    Int      @map("hierarchy_level")
+  controlStrength   Int      @map("control_strength")
+  verificationSteps Json     @default("[]") @map("verification_steps") @db.JsonB
+  requiredTraining  Json     @default("[]") @map("required_training") @db.JsonB
+  requiredPpe       Json     @default("[]") @map("required_ppe") @db.JsonB
+  version           Int      @default(1)
+  title             String?
+  description       String?
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  hazardLinks HazardControl[]
+
+  @@index([companyId])
+  @@index([companyId, controlType])
+  @@map("controls")
+}
+
+model HazardControl {
+  id        String @id @default(uuid()) @db.Uuid
+  hazardId  String @map("hazard_id") @db.Uuid
+  controlId String @map("control_id") @db.Uuid
+
+  hazard  Hazard  @relation(fields: [hazardId], references: [id], onDelete: Cascade)
+  control Control @relation(fields: [controlId], references: [id], onDelete: Cascade)
+
+  @@unique([hazardId, controlId])
+  @@index([hazardId])
+  @@index([controlId])
+  @@map("hazard_controls")
+}

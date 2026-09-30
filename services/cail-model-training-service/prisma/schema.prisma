@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TrainingJobStatus {
+  queued
+  running
+  completed
+  failed
+}
+
+model TrainingJob {
+  id           String            @id @default(uuid()) @db.Uuid
+  companyId    String            @map("company_id") @db.Uuid
+  name         String
+  modelType    String            @map("model_type")
+  status       TrainingJobStatus @default(queued)
+  config       Json              @default("{}") @db.JsonB
+  errorMessage String?           @map("error_message") @db.Text
+  startedAt    DateTime?         @map("started_at")
+  completedAt  DateTime?         @map("completed_at")
+  createdBy    String            @map("created_by") @db.Uuid
+  createdAt    DateTime          @default(now()) @map("created_at")
+  updatedAt    DateTime          @updatedAt @map("updated_at")
+
+  datasetReferences DatasetReference[]
+  artifacts         ModelArtifact[]
+  ingestionEvents   IngestionEventLog[]
+
+  @@index([companyId])
+  @@index([companyId, status])
+  @@map("training_jobs")
+}
+
+model DatasetReference {
+  id             String   @id @default(uuid()) @db.Uuid
+  companyId      String   @map("company_id") @db.Uuid
+  trainingJobId  String   @map("training_job_id") @db.Uuid
+  datasetId      String   @map("dataset_id")
+  datasetVersion String? @map("dataset_version")
+  sourceType     String   @map("source_type")
+  metadata       Json     @default("{}") @db.JsonB
+  createdAt      DateTime @default(now()) @map("created_at")
+
+  trainingJob TrainingJob @relation(fields: [trainingJobId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([trainingJobId])
+  @@map("dataset_references")
+}
+
+model ModelArtifact {
+  id            String   @id @default(uuid()) @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
+  trainingJobId String   @map("training_job_id") @db.Uuid
+  artifactUri   String   @map("artifact_uri")
+  artifactType  String   @map("artifact_type")
+  checksum      String?
+  sizeBytes     BigInt?  @map("size_bytes")
+  metadata      Json     @default("{}") @db.JsonB
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  trainingJob TrainingJob @relation(fields: [trainingJobId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+  @@index([trainingJobId])
+  @@map("model_artifacts")
+}
+
+model IngestionEventLog {
+  id            String   @id @default(uuid()) @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
+  eventType     String   @map("event_type")
+  payload       Json     @db.JsonB
+  trainingJobId String?  @map("training_job_id") @db.Uuid
+  processedAt   DateTime @default(now()) @map("processed_at")
+
+  trainingJob TrainingJob? @relation(fields: [trainingJobId], references: [id], onDelete: SetNull)
+
+  @@index([companyId])
+  @@index([eventType])
+  @@map("ingestion_event_logs")
+}

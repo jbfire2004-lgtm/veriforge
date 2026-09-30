@@ -1,0 +1,1 @@
+{"version":3,"file":"twin-integration.d.ts","sourceRoot":"","sources":["../../src/integrations/twin-integration.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,iBAAiB,EAAE,MAAM,UAAU,CAAC;AAE1E,wBAAgB,sBAAsB,CACpC,MAAM,EAAE,IAAI,CAAC,sBAAsB,EAAE,SAAS,GAAG,KAAK,GAAG,MAAM,GAAG,aAAa,GAAG,SAAS,GAAG,eAAe,CAAC,GAC7G,iBAAiB,CAmCnB"}

@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.versionRouter = void 0;
+const express_1 = require("express");
+const version_controller_1 = require("../controllers/version.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const version_validators_1 = require("../validators/version.validators");
+exports.versionRouter = (0, express_1.Router)();
+exports.versionRouter.use(auth_middleware_1.requireAuth);
+exports.versionRouter.post('/', version_validators_1.registerValidators, error_handler_1.handleValidation, version_controller_1.versionController.register);
+exports.versionRouter.get('/', version_validators_1.listValidators, error_handler_1.handleValidation, version_controller_1.versionController.list);
+exports.versionRouter.post('/promote', version_validators_1.promoteValidators, error_handler_1.handleValidation, version_controller_1.versionController.promote);
+exports.versionRouter.post('/rollback', version_validators_1.rollbackValidators, error_handler_1.handleValidation, version_controller_1.versionController.rollback);
+exports.versionRouter.post('/from-training', version_validators_1.fromTrainingValidators, error_handler_1.handleValidation, version_controller_1.versionController.registerFromTraining);
+exports.versionRouter.get('/:id', version_validators_1.idParamValidators, error_handler_1.handleValidation, version_controller_1.versionController.getById);

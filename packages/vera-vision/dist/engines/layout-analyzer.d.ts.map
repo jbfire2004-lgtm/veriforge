@@ -1,0 +1,1 @@
+{"version":3,"file":"layout-analyzer.d.ts","sourceRoot":"","sources":["../../src/engines/layout-analyzer.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,SAAS,EAAE,MAAM,UAAU,CAAC;AAE1C,MAAM,MAAM,cAAc,GAAG;IAC3B,QAAQ,EAAE,MAAM,EAAE,CAAC;IACnB,UAAU,EAAE,MAAM,EAAE,CAAC;IACrB,MAAM,EAAE,MAAM,EAAE,EAAE,CAAC;CACpB,CAAC;AAEF,qBAAa,sBAAsB;IACjC,OAAO,CAAC,GAAG,EAAE,SAAS,GAAG,cAAc;CA4BxC"}

@@ -1,0 +1,1 @@
+{"version":3,"file":"industry-optimization.d.ts","sourceRoot":"","sources":["../../src/engines/industry-optimization.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,oBAAoB,EAAE,oBAAoB,EAAE,MAAM,UAAU,CAAC;AAG3E,qBAAa,0BAA0B;IACrC,QAAQ,CAAC,GAAG,EAAE,oBAAoB,GAAG,oBAAoB;CAkC1D"}

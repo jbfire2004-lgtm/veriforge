@@ -1,0 +1,34 @@
+services:
+  cail-version-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_cail_version
+      POSTGRES_PASSWORD: vera_cail_version_secret
+      POSTGRES_DB: vera_cail_version
+    ports:
+      - "5464:5432"
+    volumes:
+      - cail_version_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_cail_version -d vera_cail_version"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  cail-model-versioning-service:
+    build: .
+    ports:
+      - "3032:3032"
+    environment:
+      NODE_ENV: production
+      PORT: 3032
+      DATABASE_URL: postgresql://vera_cail_version:vera_cail_version_secret@cail-version-db:5432/vera_cail_version?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      TRAINING_SERVICE_URL: http://host.docker.internal:3031/cail/train
+    depends_on:
+      cail-version-db:
+        condition: service_healthy
+
+volumes:
+  cail_version_pg_data:

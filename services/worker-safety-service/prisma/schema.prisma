@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model WorkerProfile {
+  id                  String   @id @default(uuid()) @db.Uuid
+  companyId           String   @map("company_id") @db.Uuid
+  workerId            String   @unique @map("worker_id") @db.Uuid
+  role                String
+  trade               String?
+  medicalRestrictions Json     @default("[]") @map("medical_restrictions") @db.JsonB
+  safetyScore         Int      @default(0) @map("safety_score")
+  riskLevel           String   @default("low") @map("risk_level")
+  createdAt           DateTime @default(now()) @map("created_at")
+  updatedAt           DateTime @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@index([companyId, workerId])
+  @@map("worker_profiles")
+}
+
+model WorkerTraining {
+  id               String    @id @default(uuid()) @db.Uuid
+  companyId        String    @map("company_id") @db.Uuid
+  workerId         String    @map("worker_id") @db.Uuid
+  courseId         String    @map("course_id")
+  completionDate   DateTime  @map("completion_date")
+  expiryDate       DateTime? @map("expiry_date")
+  competencyLevel  String    @default("basic") @map("competency_level")
+  certificatePath  String?   @map("certificate_path")
+  createdAt        DateTime  @default(now()) @map("created_at")
+
+  @@index([workerId])
+  @@index([companyId, workerId])
+  @@map("worker_training")
+}
+
+model WorkerCompetency {
+  id             String   @id @default(uuid()) @db.Uuid
+  companyId      String   @map("company_id") @db.Uuid
+  workerId       String   @map("worker_id") @db.Uuid
+  competencyCode String   @map("competency_code")
+  level          String   @default("basic")
+  verifiedAt     DateTime @default(now()) @map("verified_at")
+
+  @@unique([workerId, competencyCode])
+  @@index([companyId, workerId])
+  @@map("worker_competencies")
+}
+
+model WorkerAuthorization {
+  id                String    @id @default(uuid()) @db.Uuid
+  companyId         String    @map("company_id") @db.Uuid
+  workerId          String    @map("worker_id") @db.Uuid
+  equipmentType     String    @map("equipment_type")
+  authorizationType String    @map("authorization_type")
+  issueDate         DateTime  @map("issue_date")
+  expiryDate        DateTime? @map("expiry_date")
+  createdAt         DateTime  @default(now()) @map("created_at")
+
+  @@index([workerId])
+  @@index([companyId, workerId])
+  @@map("worker_authorizations")
+}
+
+model WorkerRestriction {
+  id              String    @id @default(uuid()) @db.Uuid
+  companyId       String    @map("company_id") @db.Uuid
+  workerId        String    @map("worker_id") @db.Uuid
+  restrictionType String    @map("restriction_type")
+  description     String?
+  effectiveDate   DateTime  @default(now()) @map("effective_date")
+  expiryDate      DateTime? @map("expiry_date")
+  createdAt       DateTime  @default(now()) @map("created_at")
+
+  @@index([workerId])
+  @@index([companyId, workerId])
+  @@map("worker_restrictions")
+}
+
+model WorkerHazardExposure {
+  id           String   @id @default(uuid()) @db.Uuid
+  companyId    String   @map("company_id") @db.Uuid
+  workerId     String   @map("worker_id") @db.Uuid
+  hazardId     String   @map("hazard_id") @db.Uuid
+  severity     Int
+  likelihood   Int
+  exposureDate DateTime @map("exposure_date")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([workerId])
+  @@index([companyId, workerId])
+  @@map("worker_hazard_exposure")
+}
+
+model WorkerIncident {
+  id           String   @id @default(uuid()) @db.Uuid
+  companyId    String   @map("company_id") @db.Uuid
+  workerId     String   @map("worker_id") @db.Uuid
+  incidentId   String   @map("incident_id") @db.Uuid
+  role         String   @default("involved")
+  incidentDate DateTime @map("incident_date")
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@index([workerId])
+  @@index([companyId, workerId])
+  @@map("worker_incidents")
+}
+
+model WorkerCorrectiveAssignment {
+  id                 String   @id @default(uuid()) @db.Uuid
+  companyId          String   @map("company_id") @db.Uuid
+  workerId           String   @map("worker_id") @db.Uuid
+  correctiveActionId String   @map("corrective_action_id") @db.Uuid
+  status             String   @default("assigned")
+  assignedAt         DateTime @default(now()) @map("assigned_at")
+
+  @@index([workerId])
+  @@index([companyId, workerId])
+  @@map("worker_corrective_assignments")
+}
+
+model WorkerAccessLog {
+  id         String   @id @default(uuid()) @db.Uuid
+  companyId  String   @map("company_id") @db.Uuid
+  workerId   String   @map("worker_id") @db.Uuid
+  siteId     String?  @map("site_id") @db.Uuid
+  accessType String   @map("access_type")
+  granted    Boolean  @default(true)
+  reason     String?
+  loggedAt   DateTime @default(now()) @map("logged_at")
+
+  @@index([workerId])
+  @@index([companyId, workerId])
+  @@map("worker_access_logs")
+}

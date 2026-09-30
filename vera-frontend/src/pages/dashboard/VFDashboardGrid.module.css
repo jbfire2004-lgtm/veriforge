@@ -1,0 +1,48 @@
+.grid {
+  composes: tokens from "./shared.module.css";
+  display: grid;
+  gap: 16px;
+  background: transparent;
+}
+
+.cols2 {
+  grid-template-columns: 1fr;
+}
+
+.cols3 {
+  grid-template-columns: 1fr;
+}
+
+.cols4 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .cols2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cols3 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .cols4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1100px) {
+  .cols3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .cols4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.divider {
+  height: 1px;
+  width: 100%;
+  background: var(--vf-steel-grey);
+  border: 0;
+  margin: 8px 0;
+  box-shadow: var(--vf-steel-glow);
+}

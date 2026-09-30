@@ -1,0 +1,1 @@
+{"version":3,"file":"replicating-colony-coordination.d.ts","sourceRoot":"","sources":["../../src/engines/replicating-colony-coordination.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,6BAA6B,EAAE,MAAM,UAAU,CAAC;AAExF,qBAAa,mCAAmC;IAC9C,UAAU,CAAC,GAAG,EAAE,wBAAwB,GAAG,6BAA6B;CAUzE"}

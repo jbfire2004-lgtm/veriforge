@@ -1,0 +1,33 @@
+services:
+  worker-safety-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_worker
+      POSTGRES_PASSWORD: vera_worker_secret
+      POSTGRES_DB: vera_worker
+    ports:
+      - "5443:5432"
+    volumes:
+      - worker_safety_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_worker -d vera_worker"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  worker-safety-service:
+    build: .
+    ports:
+      - "3011:3011"
+    environment:
+      NODE_ENV: production
+      PORT: 3011
+      DATABASE_URL: postgresql://vera_worker:vera_worker_secret@worker-safety-db:5432/vera_worker?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+    depends_on:
+      worker-safety-db:
+        condition: service_healthy
+
+volumes:
+  worker_safety_pg_data:

@@ -1,0 +1,35 @@
+.node {
+  composes: root from "./shared.module.css";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 96px;
+  padding: 10px 14px;
+  border: 1px solid var(--vf-steel-grey);
+  background-image: var(--vf-metallic);
+  border-radius: 0;
+  color: var(--vf-safety-white);
+  box-shadow: var(--vf-steel-glow);
+  transition:
+    border-color 120ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 120ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.node:hover {
+  background: #424242;
+}
+
+.label {
+  font-family: var(--vf-font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+}
+
+.connector {
+  height: 2px;
+  width: 48px;
+  border-radius: 0;
+  align-self: center;
+}

@@ -1,0 +1,9 @@
+process.env.NODE_ENV = 'test';
+process.env.PORT = '8099';
+process.env.AUTH_SERVICE_URL = 'http://localhost:3001';
+process.env.RBAC_SERVICE_URL = 'http://localhost:3002';
+process.env.AUDIT_SERVICE_URL = 'http://localhost:3003';
+process.env.BACKEND_SERVICE_URL = 'http://localhost:3000';
+process.env.JWT_ACCESS_SECRET = 'test-access-secret-minimum-32-characters';
+process.env.RBAC_ENABLED = 'false';
+process.env.LOG_LEVEL = 'error';

@@ -1,0 +1,1 @@
+{"version":3,"file":"civilization-memory.d.ts","sourceRoot":"","sources":["../../src/engines/civilization-memory.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,kBAAkB,EAAgB,MAAM,UAAU,CAAC;AAI3F,qBAAa,wBAAwB;IACnC,MAAM,CAAC,GAAG,EAAE,wBAAwB,GAAG,kBAAkB;CA+B1D"}

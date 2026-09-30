@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: veriforge-worker
+  namespace: veriforge
+  labels:
+    app.kubernetes.io/name: veriforge-worker
+spec:
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: veriforge-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: veriforge-worker
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "3021"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: worker
+          image: ghcr.io/OWNER/veriforge-api:latest
+          imagePullPolicy: Always
+          command: ["node", "dist/worker.js"]
+          ports:
+            - name: health
+              containerPort: 3021
+          envFrom:
+            - configMapRef:
+                name: veriforge-config
+            - secretRef:
+                name: veriforge-secrets
+          env:
+            - name: WORKER_MODE
+              value: "true"
+          readinessProbe:
+            httpGet:
+              path: /health/ready
+              port: health
+            initialDelaySeconds: 10
+            periodSeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /health/live
+              port: health
+            initialDelaySeconds: 20
+            periodSeconds: 30
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: veriforge-worker
+  namespace: veriforge
+spec:
+  selector:
+    app.kubernetes.io/name: veriforge-worker
+  ports:
+    - name: health
+      port: 3021
+      targetPort: health

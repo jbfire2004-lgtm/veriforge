@@ -1,0 +1,1 @@
+{"version":3,"file":"realtime-automation.d.ts","sourceRoot":"","sources":["../../src/engines/realtime-automation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,kBAAkB,EAAE,mBAAmB,EAAE,MAAM,UAAU,CAAC;AACxE,OAAO,KAAK,EAAE,oBAAoB,EAAE,MAAM,gCAAgC,CAAC;AAE3E,qBAAa,wBAAwB;IACnC,QAAQ,CACN,GAAG,EAAE,mBAAmB,EACxB,MAAM,EAAE,UAAU,CAAC,OAAO,oBAAoB,CAAC,GAC9C,kBAAkB;CAetB"}

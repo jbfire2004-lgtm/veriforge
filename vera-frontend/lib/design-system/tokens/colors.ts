@@ -1,0 +1,62 @@
+/**
+ * VERA platform color palette — industrial safety aesthetic.
+ * Hub · VeriCore · VeriPM · VeriForge
+ */
+
+export const palette = {
+  primary: "#1E6FB8",
+  primaryLight: "#2F85CC",
+  primaryDark: "#174F86",
+  gray50: "#F4F6F8",
+  gray100: "#E8ECF0",
+  gray200: "#D5DBE0",
+  gray300: "#B8C0C8",
+  gray400: "#8A9199",
+  gray500: "#5A6169",
+  gray600: "#3B3F45",
+  gray700: "#2A2E33",
+  gray800: "#23272C",
+  gray900: "#1C1F24",
+  success: "#4FAF6F",
+  warning: "#C89F3D",
+  danger: "#B33A3A",
+  info: "#1E6FB8",
+  inspectionTeal: "#2F8F8C",
+  surface: "#FFFFFF",
+  surfaceAlt: "#F4F6F8",
+  border: "#D5DBE0",
+  darkBg: "#1C1F24",
+  darkSurface: "#2A2E33",
+  darkBorder: "#3B3F45",
+  darkText: "#F4F6F8",
+  /** Legacy brand accents — remapped to industrial palette */
+  brandTeal: "#2F8F8C",
+  brandDeep: "#2A2E33",
+} as const;
+
+export const cssColorVars = {
+  primary: "--color-primary",
+  primaryLight: "--color-primary-light",
+  primaryDark: "--color-primary-dark",
+  gray50: "--color-gray-50",
+  gray100: "--color-gray-100",
+  gray200: "--color-gray-200",
+  gray300: "--color-gray-300",
+  gray400: "--color-gray-400",
+  gray500: "--color-gray-500",
+  gray600: "--color-gray-600",
+  gray700: "--color-gray-700",
+  gray800: "--color-gray-800",
+  gray900: "--color-gray-900",
+  success: "--color-success",
+  warning: "--color-warning",
+  danger: "--color-danger",
+  info: "--color-info",
+  surface: "--color-surface",
+  surfaceAlt: "--color-surface-alt",
+  border: "--color-border",
+  darkBg: "--color-dark-bg",
+  darkSurface: "--color-dark-surface",
+  darkBorder: "--color-dark-border",
+  darkText: "--color-dark-text",
+} as const;

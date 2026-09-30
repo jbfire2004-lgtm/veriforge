@@ -1,0 +1,33 @@
+services:
+  hazard-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_hazard
+      POSTGRES_PASSWORD: vera_hazard_secret
+      POSTGRES_DB: vera_hazard
+    ports:
+      - "5438:5432"
+    volumes:
+      - hazard_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_hazard -d vera_hazard"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  hazard-control-service:
+    build: .
+    ports:
+      - "3006:3006"
+    environment:
+      NODE_ENV: production
+      PORT: 3006
+      DATABASE_URL: postgresql://vera_hazard:vera_hazard_secret@hazard-db:5432/vera_hazard?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+    depends_on:
+      hazard-db:
+        condition: service_healthy
+
+volumes:
+  hazard_pg_data:

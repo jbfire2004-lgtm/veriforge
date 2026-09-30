@@ -1,0 +1,1 @@
+{"version":3,"file":"industry-prediction.d.ts","sourceRoot":"","sources":["../../src/engines/industry-prediction.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,oBAAoB,EAAE,kBAAkB,EAAE,MAAM,UAAU,CAAC;AAEzE,qBAAa,wBAAwB;IACnC,OAAO,CAAC,GAAG,EAAE,oBAAoB,GAAG,kBAAkB;CAoCvD"}

@@ -1,0 +1,15 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.projectRouter = void 0;
+const express_1 = require("express");
+const project_controller_1 = require("../controllers/project.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const project_validators_1 = require("../validators/project.validators");
+exports.projectRouter = (0, express_1.Router)();
+exports.projectRouter.use(auth_middleware_1.requireAuth);
+exports.projectRouter.post('/', project_validators_1.createValidators, error_handler_1.handleValidation, project_controller_1.projectController.create);
+exports.projectRouter.get('/company/:company_id', project_validators_1.companyIdParam, error_handler_1.handleValidation, project_controller_1.projectController.listByCompany);
+exports.projectRouter.get('/:id', project_validators_1.getValidators, error_handler_1.handleValidation, project_controller_1.projectController.getById);
+exports.projectRouter.post('/:id/risk', project_validators_1.riskValidators, error_handler_1.handleValidation, project_controller_1.projectController.updateRisk);
+exports.projectRouter.post('/:id/safety-gate/check', project_validators_1.safetyGateValidators, error_handler_1.handleValidation, project_controller_1.projectController.safetyGateCheck);

@@ -1,0 +1,1 @@
+{"version":3,"file":"civilization-ethics.d.ts","sourceRoot":"","sources":["../../src/engines/civilization-ethics.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,kBAAkB,EAAe,MAAM,UAAU,CAAC;AAG1F,qBAAa,wBAAwB;IACnC,QAAQ,CAAC,GAAG,EAAE,wBAAwB,GAAG,kBAAkB;CA4B5D"}

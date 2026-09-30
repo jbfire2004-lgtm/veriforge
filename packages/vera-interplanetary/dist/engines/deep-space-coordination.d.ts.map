@@ -1,0 +1,1 @@
+{"version":3,"file":"deep-space-coordination.d.ts","sourceRoot":"","sources":["../../src/engines/deep-space-coordination.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,qBAAqB,EAAE,0BAA0B,EAAE,MAAM,UAAU,CAAC;AAElF,qBAAa,2BAA2B;IACtC,UAAU,CAAC,GAAG,EAAE,0BAA0B,GAAG,qBAAqB;CAiBnE"}

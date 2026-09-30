@@ -1,0 +1,36 @@
+services:
+  cail-realtime-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_cail_realtime
+      POSTGRES_PASSWORD: vera_cail_realtime_secret
+      POSTGRES_DB: vera_cail_realtime
+    ports:
+      - "5459:5432"
+    volumes:
+      - cail_realtime_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_cail_realtime -d vera_cail_realtime"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  cail-realtime-service:
+    build: .
+    ports:
+      - "3027:3027"
+    environment:
+      NODE_ENV: production
+      PORT: 3027
+      DATABASE_URL: postgresql://vera_cail_realtime:vera_cail_realtime_secret@cail-realtime-db:5432/vera_cail_realtime?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      DEFAULT_MODEL_ID: deterministic_rules_v1
+      DEFAULT_MODEL_VERSION: 1
+      MODEL_CACHE_TTL_MS: 300000
+    depends_on:
+      cail-realtime-db:
+        condition: service_healthy
+
+volumes:
+  cail_realtime_pg_data:

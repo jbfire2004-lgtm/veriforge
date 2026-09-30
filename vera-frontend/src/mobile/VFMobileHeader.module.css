@@ -1,0 +1,44 @@
+.header {
+  composes: tokens from "./shared.module.css";
+  margin-bottom: 16px;
+  border: 1px solid var(--vf-steel-grey);
+  background: var(--vf-iron-black);
+  background-image: var(--vf-metallic);
+  padding: 14px;
+  border-radius: 0;
+}
+
+.kicker {
+  margin: 0;
+  font-family: var(--vf-font-heading);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #ffc9c9;
+}
+
+.title {
+  margin: 8px 0 0;
+  font-family: var(--vf-font-heading);
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--vf-safety-white);
+}
+
+.accent {
+  margin-top: 12px;
+  height: 2px;
+  width: 7rem;
+  background: var(--vf-forge-red);
+  box-shadow: var(--vf-glow);
+}
+
+.description {
+  margin: 12px 0 0;
+  font-family: var(--vf-font-body);
+  font-size: 13px;
+  color: #c8c8c8;
+}

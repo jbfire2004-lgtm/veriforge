@@ -1,0 +1,1 @@
+{"version":3,"file":"availability-prediction.d.ts","sourceRoot":"","sources":["../../src/engines/availability-prediction.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAEvD,qBAAa,4BAA4B;IACvC,OAAO,CAAC,GAAG,EAAE,sBAAsB,GAAG;QAAE,QAAQ,EAAE,MAAM,CAAC;QAAC,IAAI,EAAE,MAAM,CAAC;QAAC,SAAS,EAAE,OAAO,CAAA;KAAE,EAAE;CAmB/F"}

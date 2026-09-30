@@ -1,0 +1,39 @@
+services:
+  attachment-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_attachment
+      POSTGRES_PASSWORD: vera_attachment_secret
+      POSTGRES_DB: vera_attachment
+    ports:
+      - "5436:5432"
+    volumes:
+      - attachment_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_attachment -d vera_attachment"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  attachment-service:
+    build: .
+    ports:
+      - "3004:3004"
+    environment:
+      NODE_ENV: production
+      PORT: 3004
+      DATABASE_URL: postgresql://vera_attachment:vera_attachment_secret@attachment-db:5432/vera_attachment?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      STORAGE_DRIVER: local
+      LOCAL_STORAGE_PATH: /app/data/uploads
+      ATTACHMENT_PUBLIC_URL: http://localhost:3004
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+    volumes:
+      - attachment_uploads:/app/data/uploads
+    depends_on:
+      attachment-db:
+        condition: service_healthy
+
+volumes:
+  attachment_pg_data:
+  attachment_uploads:

@@ -1,0 +1,37 @@
+services:
+  inspection-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_inspection
+      POSTGRES_PASSWORD: vera_inspection_secret
+      POSTGRES_DB: vera_inspection
+    ports:
+      - "5460:5432"
+    volumes:
+      - inspection_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_inspection -d vera_inspection"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  inspection-service:
+    build: .
+    ports:
+      - "3028:3028"
+    environment:
+      NODE_ENV: production
+      PORT: 3028
+      DATABASE_URL: postgresql://vera_inspection:vera_inspection_secret@inspection-db:5432/vera_inspection?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      CORRECTIVE_ACTION_SERVICE_URL: http://host.docker.internal:3008/corrective-action
+      HAZARD_CONTROL_SERVICE_URL: http://host.docker.internal:3006
+      EQUIPMENT_SAFETY_SERVICE_URL: http://host.docker.internal:3013/equipment
+      NATS_BRIDGE_URL: http://host.docker.internal:4222/publish
+    depends_on:
+      inspection-db:
+        condition: service_healthy
+
+volumes:
+  inspection_pg_data:

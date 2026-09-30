@@ -1,0 +1,43 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.SUBSCRIBED_EVENTS = exports.DomainEvent = void 0;
+/** Domain events the ingestion service subscribes to (platform + PM safety extensions). */
+exports.DomainEvent = {
+    WORKER_CREATED: 'worker.created',
+    WORKER_UPDATED: 'worker.updated',
+    WORKER_LINKED: 'worker.linked',
+    WORKER_UNLINKED: 'worker.unlinked',
+    EQUIPMENT_CREATED: 'equipment.created',
+    EQUIPMENT_UPDATED: 'equipment.updated',
+    EQUIPMENT_LINKED: 'equipment.linked',
+    EQUIPMENT_UNLINKED: 'equipment.unlinked',
+    INSPECTION_COMPLETED: 'inspection.completed',
+    TRAINING_UPLOADED: 'training.uploaded',
+    TRAINING_VALIDATED: 'training.validated',
+    PROVIDER_APPROVED: 'provider.approved',
+    PROJECT_ASSIGNED: 'project.assigned',
+    PROJECT_CLOSED: 'project.closed',
+    COMPLIANCE_RECALC: 'compliance.recalc',
+    SYNC_BATCH: 'sync.batch',
+    CAIL_CREATED: 'cail.created',
+    CAIL_ASSIGNED: 'cail.assigned',
+    CAIL_RESOLVED: 'cail.resolved',
+    CAIL_VERIFIED: 'cail.verified',
+    CAIL_OVERDUE: 'cail.overdue',
+    LESSON_LEARNED_PUBLISHED: 'lesson_learned.published',
+    VSI_DASHBOARD_INVALIDATE: 'vsi.dashboard.invalidate',
+    JHA_SUBMITTED: 'jha.submitted',
+    INSPECTION_DEFICIENCY_CREATED: 'inspection.deficiency_created',
+    INCIDENT_REPORTED: 'incident.reported',
+    CAPA_OVERDUE: 'capa.overdue',
+    CAPA_VERIFIED: 'capa.verified',
+    HAZARD_PUBLISHED: 'hazard.published',
+    ACCESS_DENIED: 'access.denied',
+    ACCESS_GRANTED: 'access.granted',
+    EMERGENCY_DECLARED: 'emergency.declared',
+    CAIL_INFERENCE_COMPLETE: 'cail.inference_complete',
+    TASK_STARTED: 'task.started',
+    TASK_COMPLETED: 'task.completed',
+    SCHEDULE_CONFLICT: 'schedule.conflict',
+};
+exports.SUBSCRIBED_EVENTS = Object.values(exports.DomainEvent);

@@ -1,0 +1,17 @@
+-- TEMPLATE: online (expand/contract) column add — copy into a dated migration folder.
+-- Do NOT wrap CREATE INDEX CONCURRENTLY in an explicit transaction (Prisma default
+-- transaction must be disabled for that statement — use a dedicated migration file
+-- with `-- prisma migrate` note, or run CONCURRENTLY via ops runbook).
+
+-- Expand phase (safe, additive):
+-- ALTER TABLE "users" ADD COLUMN IF NOT EXISTS "phone_enc" TEXT;
+-- CREATE INDEX CONCURRENTLY IF NOT EXISTS "users_org_id_status_idx"
+--   ON "users" ("org_id", "status");
+
+-- Backfill (batched app job or SQL loops with LIMIT):
+-- UPDATE "users" SET "phone_enc" = ... WHERE "phone_enc" IS NULL AND id IN (
+--   SELECT id FROM "users" WHERE "phone_enc" IS NULL LIMIT 1000
+-- );
+
+-- Contract phase (later release, after dual-write / readers switched):
+-- ALTER TABLE "users" DROP COLUMN IF EXISTS "legacy_phone";

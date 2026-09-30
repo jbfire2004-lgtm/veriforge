@@ -1,0 +1,1 @@
+{"version":3,"file":"automation-marketplace.d.ts","sourceRoot":"","sources":["../../src/engines/automation-marketplace.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,uBAAuB,EAAE,MAAM,UAAU,CAAC;AAE7E,qBAAa,2BAA2B;IACtC,GAAG,CAAC,GAAG,EAAE,uBAAuB,GAAG,mBAAmB;CAgBvD"}

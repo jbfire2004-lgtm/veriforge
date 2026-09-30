@@ -1,0 +1,1 @@
+{"version":3,"file":"hazard-patterns.d.ts","sourceRoot":"","sources":["../../src/engines/hazard-patterns.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,qBAAqB,EAAE,kBAAkB,EAAE,MAAM,UAAU,CAAC;AAE1E,qBAAa,8BAA8B;IACzC,OAAO,CAAC,GAAG,EAAE,kBAAkB,GAAG,qBAAqB;CA+CxD"}

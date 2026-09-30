@@ -1,0 +1,1 @@
+{"version":3,"file":"sif-prevention.d.ts","sourceRoot":"","sources":["../../src/engines/sif-prevention.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,kBAAkB,EAAE,WAAW,EAAoB,MAAM,UAAU,CAAC;AAWlF,qBAAa,mBAAmB;IAC9B,OAAO,CAAC,GAAG,EAAE,kBAAkB,GAAG,WAAW;IAmD7C,OAAO,CAAC,WAAW;IAOnB,OAAO,CAAC,cAAc;IAQtB,OAAO,CAAC,eAAe;CAaxB"}

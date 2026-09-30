@@ -1,0 +1,23 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.OfflineNetworkEngine = void 0;
+class OfflineNetworkEngine {
+    constructor() {
+        this.queue = [];
+    }
+    enqueue(ctx) {
+        const id = `net-offline-${Date.now()}`;
+        this.queue.push({ id, context: { ...ctx, offline: true }, queuedAt: new Date().toISOString() });
+        return id;
+    }
+    drain() {
+        const items = [...this.queue];
+        this.queue = [];
+        return items;
+    }
+    markSynced(report) {
+        return { ...report, context: { ...report.context, offline: false } };
+    }
+}
+exports.OfflineNetworkEngine = OfflineNetworkEngine;
+//# sourceMappingURL=offline-network.js.map

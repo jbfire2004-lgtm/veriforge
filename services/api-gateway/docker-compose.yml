@@ -1,0 +1,16 @@
+services:
+  api-gateway:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      AUTH_SERVICE_URL: http://host.docker.internal:3001
+      RBAC_SERVICE_URL: http://host.docker.internal:3002
+      AUDIT_SERVICE_URL: http://host.docker.internal:3003
+      BACKEND_SERVICE_URL: http://host.docker.internal:3000
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUDIT_SERVICE_KEY: dev-audit-ingest-secret
+      RBAC_ENABLED: "true"
+      CORS_ORIGIN: http://localhost:3000

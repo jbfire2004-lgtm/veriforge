@@ -1,0 +1,1 @@
+{"version":3,"file":"global-automation-intelligence.d.ts","sourceRoot":"","sources":["../../src/engines/global-automation-intelligence.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,4BAA4B,EAAE,mBAAmB,EAAE,MAAM,UAAU,CAAC;AAElF,qBAAa,kCAAkC;IAC7C,OAAO,CAAC,GAAG,EAAE,mBAAmB,GAAG,4BAA4B;CAiBhE"}

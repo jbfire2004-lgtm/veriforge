@@ -1,0 +1,1 @@
+{"version":3,"file":"safety-automation.d.ts","sourceRoot":"","sources":["../../src/engines/safety-automation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EACV,sBAAsB,EACtB,sBAAsB,EAEvB,MAAM,UAAU,CAAC;AAElB,qBAAa,sBAAsB;IACjC,QAAQ,CAAC,OAAO,EAAE,IAAI,CAAC,sBAAsB,EAAE,SAAS,GAAG,KAAK,GAAG,MAAM,GAAG,aAAa,GAAG,WAAW,GAAG,eAAe,CAAC,GAAG,sBAAsB;CAqCpJ"}

@@ -1,0 +1,72 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum TrainingStatus {
+  assigned
+  completed
+  verified
+  expired
+}
+
+model TrainingCourse {
+  id            String   @id @default(uuid()) @db.Uuid
+  companyId     String   @map("company_id") @db.Uuid
+  name          String
+  category      String
+  provider      String?
+  durationHours Float?   @map("duration_hours")
+  expiryDays    Int      @default(365) @map("expiry_days")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  workerTraining WorkerTraining[]
+
+  @@index([companyId])
+  @@index([companyId, category])
+  @@map("training_courses")
+}
+
+model TrainingMatrix {
+  id              String   @id @default(uuid()) @db.Uuid
+  companyId       String   @map("company_id") @db.Uuid
+  role            String
+  requiredCourses Json     @default("[]") @map("required_courses") @db.JsonB
+  version         Int      @default(1)
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@unique([companyId, role])
+  @@index([companyId])
+  @@map("training_matrix")
+}
+
+model WorkerTraining {
+  id              String         @id @default(uuid()) @db.Uuid
+  companyId       String         @map("company_id") @db.Uuid
+  workerId        String         @map("worker_id") @db.Uuid
+  courseId        String         @map("course_id") @db.Uuid
+  status          TrainingStatus @default(assigned)
+  completionDate  DateTime?      @map("completion_date")
+  expiryDate      DateTime?      @map("expiry_date")
+  competencyLevel String         @default("basic") @map("competency_level")
+  competencyScore Int            @default(0) @map("competency_score")
+  certificatePath String?        @map("certificate_path")
+  assignedAt      DateTime       @default(now()) @map("assigned_at")
+  verifiedAt      DateTime?      @map("verified_at")
+  verifiedBy      String?        @map("verified_by") @db.Uuid
+  createdAt       DateTime       @default(now()) @map("created_at")
+  updatedAt       DateTime       @updatedAt @map("updated_at")
+
+  course TrainingCourse @relation(fields: [courseId], references: [id], onDelete: Restrict)
+
+  @@index([workerId])
+  @@index([companyId, workerId])
+  @@index([companyId, courseId])
+  @@index([expiryDate, status])
+  @@map("worker_training")
+}

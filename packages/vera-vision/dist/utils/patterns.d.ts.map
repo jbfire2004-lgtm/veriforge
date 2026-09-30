@@ -1,0 +1,1 @@
+{"version":3,"file":"patterns.d.ts","sourceRoot":"","sources":["../../src/utils/patterns.ts"],"names":[],"mappings":"AAAA,eAAO,MAAM,aAAa,UAIzB,CAAC;AAEF,eAAO,MAAM,iBAAiB,EAAE;IAAE,IAAI,EAAE,MAAM,CAAC;IAAC,EAAE,EAAE,MAAM,CAAA;CAAE,EAO3D,CAAC;AAEF,eAAO,MAAM,mBAAmB,EAAE,MAAM,CAAC,MAAM,EAAE,MAAM,EAAE,CAOxD,CAAC;AAEF,eAAO,MAAM,eAAe,UAI3B,CAAC"}

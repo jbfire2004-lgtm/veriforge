@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.taskRouter = void 0;
+const express_1 = require("express");
+const task_controller_1 = require("../controllers/task.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const task_validators_1 = require("../validators/task.validators");
+exports.taskRouter = (0, express_1.Router)();
+exports.taskRouter.use(auth_middleware_1.requireAuth);
+exports.taskRouter.post('/', task_validators_1.createValidators, error_handler_1.handleValidation, task_controller_1.taskController.create);
+exports.taskRouter.get('/work-package/:wp_id', task_validators_1.listValidators, error_handler_1.handleValidation, task_controller_1.taskController.listByWorkPackage);
+exports.taskRouter.get('/:id', task_validators_1.getValidators, error_handler_1.handleValidation, task_controller_1.taskController.getById);
+exports.taskRouter.post('/:id/requirements', task_validators_1.requirementsValidators, error_handler_1.handleValidation, task_controller_1.taskController.updateRequirements);
+exports.taskRouter.post('/:id/start', task_validators_1.lifecycleValidators, error_handler_1.handleValidation, task_controller_1.taskController.start);
+exports.taskRouter.post('/:id/complete', task_validators_1.lifecycleValidators, error_handler_1.handleValidation, task_controller_1.taskController.complete);

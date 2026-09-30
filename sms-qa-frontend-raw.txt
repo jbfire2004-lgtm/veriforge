@@ -1,0 +1,27 @@
+
+ RUN  v3.2.4 C:/Projects/veri-temp/vera-frontend
+
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/verisuite-sms.smoke.test.ts [ tests/verisuite-sms.smoke.test.ts ]
+Error: Cannot find package '@vera/api-contract' imported from 'C:/Projects/veri-temp/vera-frontend/lib/core/api-error.ts'
+ ❯ lib/core/api-error.ts:4:1
+      2|  * Parse failed HTTP responses from the VERA API (Nest {@link HttpExce…
+      3|  */
+      4| import { VeraApiErrorEnvelopeSchema } from "@vera/api-contract";
+       | ^
+      5| 
+      6| export type NestErrorBody = {
+
+Caused by: Error: Failed to load url @vera/api-contract (resolved id: @vera/api-contract) in C:/Projects/veri-temp/vera-frontend/lib/core/api-error.ts. Does the file exist?
+ ❯ loadAndTransform node_modules/vite/dist/node/chunks/config.js:22679:33
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  no tests
+   Start at  00:03:25
+   Duration  3.10s (transform 294ms, setup 0ms, collect 0ms, tests 0ms, environment 0ms, prepare 1.27s)
+

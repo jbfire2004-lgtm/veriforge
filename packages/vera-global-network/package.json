@@ -1,0 +1,19 @@
+{
+  "name": "@vera/global-network",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vera Global Network Intelligence Engine (VGNIE) — multi-company federated intelligence",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

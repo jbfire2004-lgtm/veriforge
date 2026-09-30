@@ -1,0 +1,312 @@
+// FieldOS Prisma model pack
+// Drop these enums/models into backend/prisma/schema.prisma
+// and create a migration for the raw SQL indexes noted at the bottom.
+
+enum FieldOsZoneType {
+  polygon
+  radius
+  equipment_dynamic
+}
+
+enum FieldOsZoneLifecycleState {
+  active
+  inactive
+  exclusion
+}
+
+enum FieldOsZoneContractorAccessLevel {
+  none
+  read
+  work
+  supervise
+}
+
+enum FieldOsZoneContractorStatus {
+  active
+  suspended
+  revoked
+}
+
+enum FieldOsDocumentType {
+  flha
+  jha
+  permit
+  toolbox
+  inspection
+}
+
+enum FieldOsRuleType {
+  training
+  role
+  contractor
+  permit
+  guest
+}
+
+enum FieldOsRuleEffect {
+  allow
+  deny
+  read_only
+}
+
+enum FieldOsEventType {
+  enter
+  exit
+  sign_on
+  denied
+  override
+  sync
+}
+
+enum FieldOsEventSource {
+  gps
+  ble
+  qr
+  nfc
+  system
+}
+
+enum FieldOsEventSeverity {
+  info
+  warning
+  critical
+}
+
+enum FieldOsGuestAccessMode {
+  read_only
+  sign_on
+}
+
+enum FieldOsGuestTokenStatus {
+  issued
+  active
+  used
+  expired
+  revoked
+}
+
+enum FieldOsConnectivityState {
+  online
+  offline
+  degraded
+}
+
+enum FieldOsRuntimeState {
+  ready
+  syncing
+  recovery_pending
+}
+
+model FieldOsZone {
+  id               String                     @id @default(uuid()) @db.Uuid
+  companyId        Int                        @map("company_id")
+  projectId        Int?                       @map("project_id")
+  code             String                     @db.VarChar(64)
+  name             String                     @db.VarChar(160)
+  zoneType         FieldOsZoneType            @map("zone_type")
+  lifecycleState   FieldOsZoneLifecycleState  @map("lifecycle_state")
+  geometry         Unsupported("geometry(MultiPolygon,4326)")?
+  centerLat        Decimal?                   @map("center_lat") @db.Decimal(9, 6)
+  centerLng        Decimal?                   @map("center_lng") @db.Decimal(9, 6)
+  radiusMeters     Int?                       @map("radius_meters")
+  equipmentAnchorId Int?                      @map("equipment_anchor_id")
+  effectiveStartAt DateTime                   @map("effective_start_at")
+  effectiveEndAt   DateTime?                  @map("effective_end_at")
+  version          Int                        @default(1)
+  metadataJson     Json                       @default("{}") @map("metadata_json")
+  createdAt        DateTime                   @default(now()) @map("created_at")
+  updatedAt        DateTime                   @updatedAt @map("updated_at")
+  deletedAt        DateTime?                  @map("deleted_at")
+
+  company          Company                    @relation(fields: [companyId], references: [id])
+  project          Project?                   @relation(fields: [projectId], references: [id])
+  equipmentAnchor  Equipment?                 @relation(fields: [equipmentAnchorId], references: [id])
+  zoneContractors  FieldOsZoneContractor[]
+  documentBindings FieldOsZoneDocumentBinding[]
+  accessRules      FieldOsZoneAccessRule[]
+  zoneEvents       FieldOsZoneEvent[]
+  guestTokens      FieldOsGuestAccessToken[]
+
+  @@unique([companyId, code], map: "uq_fieldos_zone_company_code")
+  @@index([companyId, lifecycleState, effectiveStartAt(sort: Desc)], map: "idx_fieldos_zone_company_state_window")
+  @@index([companyId, centerLat, centerLng, radiusMeters], map: "idx_fieldos_zone_radius_lookup")
+  @@index([projectId, lifecycleState], map: "idx_fieldos_zone_project_state")
+  @@index([equipmentAnchorId], map: "idx_fieldos_zone_equipment_anchor")
+  @@map("fieldos_zone")
+}
+
+model FieldOsZoneContractor {
+  id                  String                            @id @default(uuid()) @db.Uuid
+  zoneId              String                            @map("zone_id") @db.Uuid
+  companyId           Int                               @map("company_id")
+  contractorCompanyId Int                               @map("contractor_company_id")
+  accessLevel         FieldOsZoneContractorAccessLevel  @map("access_level")
+  trainingProfileId   String?                           @map("training_profile_id") @db.Uuid
+  validFrom           DateTime                          @map("valid_from")
+  validTo             DateTime?                         @map("valid_to")
+  status              FieldOsZoneContractorStatus
+  createdByUserId     Int                               @map("created_by_user_id")
+  updatedByUserId     Int                               @map("updated_by_user_id")
+  createdAt           DateTime                          @default(now()) @map("created_at")
+  updatedAt           DateTime                          @updatedAt @map("updated_at")
+
+  zone               FieldOsZone @relation(fields: [zoneId], references: [id])
+  company            Company     @relation("FieldOsZoneContractorCompany", fields: [companyId], references: [id])
+  contractorCompany  Company     @relation("FieldOsZoneContractorContractor", fields: [contractorCompanyId], references: [id])
+  createdByUser      User        @relation("FieldOsZoneContractorCreatedBy", fields: [createdByUserId], references: [id])
+  updatedByUser      User        @relation("FieldOsZoneContractorUpdatedBy", fields: [updatedByUserId], references: [id])
+
+  @@index([zoneId, status], map: "idx_fieldos_zone_contractor_zone_status")
+  @@index([companyId, contractorCompanyId, status], map: "idx_fieldos_zone_contractor_company")
+  @@index([validFrom, validTo], map: "idx_fieldos_zone_contractor_validity")
+  @@map("fieldos_zone_contractor")
+}
+
+model FieldOsZoneDocumentBinding {
+  id                String              @id @default(uuid()) @db.Uuid
+  zoneId            String              @map("zone_id") @db.Uuid
+  companyId         Int                 @map("company_id")
+  documentType      FieldOsDocumentType @map("document_type")
+  documentId        String              @map("document_id") @db.VarChar(64)
+  documentVersion   Int                 @map("document_version")
+  requiredForAccess Boolean             @default(true) @map("required_for_access")
+  priority          Int                 @default(50)
+  validFrom         DateTime            @map("valid_from")
+  validTo           DateTime?           @map("valid_to")
+  revokedAt         DateTime?           @map("revoked_at")
+  metadataJson      Json                @default("{}") @map("metadata_json")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+
+  zone    FieldOsZone @relation(fields: [zoneId], references: [id])
+  company Company     @relation(fields: [companyId], references: [id])
+
+  @@index([zoneId, documentType, validFrom, validTo], map: "idx_fieldos_zdb_zone_doc_validity")
+  @@index([companyId, revokedAt], map: "idx_fieldos_zdb_company_revoked")
+  @@index([documentType, documentId, documentVersion], map: "idx_fieldos_zdb_doc_ref")
+  @@map("fieldos_zone_document_binding")
+}
+
+model FieldOsZoneAccessRule {
+  id             String            @id @default(uuid()) @db.Uuid
+  zoneId         String            @map("zone_id") @db.Uuid
+  companyId      Int               @map("company_id")
+  ruleKey        String            @map("rule_key") @db.VarChar(64)
+  ruleType       FieldOsRuleType   @map("rule_type")
+  effect         FieldOsRuleEffect
+  priority       Int
+  conditionsJson Json              @map("conditions_json")
+  exceptionsJson Json              @default("{}") @map("exceptions_json")
+  validFrom      DateTime          @map("valid_from")
+  validTo        DateTime?         @map("valid_to")
+  active         Boolean           @default(true)
+  version        Int               @default(1)
+  createdAt      DateTime          @default(now()) @map("created_at")
+  updatedAt      DateTime          @updatedAt @map("updated_at")
+
+  zone    FieldOsZone @relation(fields: [zoneId], references: [id])
+  company Company     @relation(fields: [companyId], references: [id])
+
+  @@unique([zoneId, ruleKey], map: "uq_fieldos_zar_zone_rule_key")
+  @@index([zoneId, active, priority], map: "idx_fieldos_zar_zone_priority_active")
+  @@index([companyId, ruleType, active], map: "idx_fieldos_zar_company_ruletype_active")
+  @@map("fieldos_zone_access_rule")
+}
+
+model FieldOsZoneEvent {
+  id              String               @id @default(uuid()) @db.Uuid
+  companyId       Int                  @map("company_id")
+  zoneId          String?              @map("zone_id") @db.Uuid
+  projectId       Int?                 @map("project_id")
+  actorUserId     Int?                 @map("actor_user_id")
+  actorDeviceId   String?              @map("actor_device_id") @db.Uuid
+  eventType       FieldOsEventType     @map("event_type")
+  eventSource     FieldOsEventSource   @map("event_source")
+  severity        FieldOsEventSeverity
+  occurredAt      DateTime             @map("occurred_at")
+  ingestedAt      DateTime             @default(now()) @map("ingested_at")
+  gpsLat          Decimal?             @map("gps_lat") @db.Decimal(9, 6)
+  gpsLng          Decimal?             @map("gps_lng") @db.Decimal(9, 6)
+  confidenceScore Decimal?             @map("confidence_score") @db.Decimal(5, 2)
+  payloadJson     Json                 @map("payload_json")
+  signatureHash   String?              @map("signature_hash") @db.VarChar(128)
+
+  company  Company      @relation(fields: [companyId], references: [id])
+  zone     FieldOsZone? @relation(fields: [zoneId], references: [id])
+  project  Project?     @relation(fields: [projectId], references: [id])
+  actorUser User?       @relation(fields: [actorUserId], references: [id])
+
+  @@index([companyId, occurredAt(sort: Desc)], map: "idx_fieldos_ze_company_occurred")
+  @@index([zoneId, eventType, occurredAt(sort: Desc)], map: "idx_fieldos_ze_zone_type_occurred")
+  @@index([actorDeviceId, occurredAt(sort: Desc)], map: "idx_fieldos_ze_device_occurred")
+  @@index([eventType, severity, occurredAt(sort: Desc)], map: "idx_fieldos_ze_type_severity_occurred")
+  @@map("fieldos_zone_event")
+}
+
+model FieldOsGuestAccessToken {
+  id             String                 @id @default(uuid()) @db.Uuid
+  tokenHash      String                 @unique @map("token_hash") @db.VarChar(128)
+  companyId      Int                    @map("company_id")
+  zoneId         String                 @map("zone_id") @db.Uuid
+  issuedByUserId Int                    @map("issued_by_user_id")
+  guestName      String                 @map("guest_name") @db.VarChar(120)
+  guestIdentifier String?               @map("guest_identifier") @db.VarChar(120)
+  accessMode     FieldOsGuestAccessMode @map("access_mode")
+  scopeJson      Json                   @map("scope_json")
+  expiresAt      DateTime               @map("expires_at")
+  usedAt         DateTime?              @map("used_at")
+  revokedAt      DateTime?              @map("revoked_at")
+  status         FieldOsGuestTokenStatus
+  createdAt      DateTime               @default(now()) @map("created_at")
+
+  company      Company     @relation(fields: [companyId], references: [id])
+  zone         FieldOsZone @relation(fields: [zoneId], references: [id])
+  issuedByUser User        @relation(fields: [issuedByUserId], references: [id])
+
+  @@index([zoneId, status, expiresAt], map: "idx_fieldos_gat_zone_status_expiry")
+  @@index([companyId, status, expiresAt], map: "idx_fieldos_gat_company_status_expiry")
+  @@index([issuedByUserId, createdAt(sort: Desc)], map: "idx_fieldos_gat_issuer_created")
+  @@map("fieldos_guest_access_token")
+}
+
+model FieldOsDeviceCacheState {
+  deviceId           String                   @map("device_id") @db.Uuid
+  companyId          Int                      @map("company_id")
+  lastSyncCursor     String?                  @map("last_sync_cursor") @db.VarChar(96)
+  lastSyncAt         DateTime?                @map("last_sync_at")
+  zoneGraphVersion   Int                      @default(0) @map("zone_graph_version")
+  policyVersion      Int                      @default(0) @map("policy_version")
+  docManifestVersion Int                      @default(0) @map("doc_manifest_version")
+  pendingIntentCount Int                      @default(0) @map("pending_intent_count")
+  cacheIntegrityHash String?                  @map("cache_integrity_hash") @db.VarChar(128)
+  connectivityState  FieldOsConnectivityState @map("connectivity_state")
+  runtimeState       FieldOsRuntimeState      @map("runtime_state")
+  lastErrorCode      String?                  @map("last_error_code") @db.VarChar(48)
+  lastErrorAt        DateTime?                @map("last_error_at")
+  updatedAt          DateTime                 @updatedAt @map("updated_at")
+
+  company Company @relation(fields: [companyId], references: [id])
+
+  @@id([deviceId, companyId])
+  @@index([companyId, updatedAt(sort: Desc)], map: "idx_fieldos_dcs_company_updated")
+  @@index([runtimeState, connectivityState], map: "idx_fieldos_dcs_runtime_connectivity")
+  @@index([pendingIntentCount], map: "idx_fieldos_dcs_pending_intents")
+  @@map("fieldos_device_cache_state")
+}
+
+// Recommended raw SQL (migration) for indexes Prisma cannot fully express:
+// 1) Geospatial GIST index
+//    CREATE INDEX idx_fieldos_zone_geometry_gist
+//      ON fieldos_zone USING GIST (geometry);
+//
+// 2) Partial unique active contractor assignment
+//    CREATE UNIQUE INDEX uq_fieldos_zone_contractor_active
+//      ON fieldos_zone_contractor(zone_id, contractor_company_id)
+//      WHERE status = 'active';
+//
+// 3) GIN forensic payload index
+//    CREATE INDEX idx_fieldos_ze_payload_gin
+//      ON fieldos_zone_event USING GIN (payload_json);
+//
+// 4) Time-series partitioning (optional, high scale)
+//    Partition fieldos_zone_event by RANGE (occurred_at), then hash/subpartition by company_id.

@@ -1,0 +1,35 @@
+services:
+  emergency-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_emergency
+      POSTGRES_PASSWORD: vera_emergency_secret
+      POSTGRES_DB: vera_emergency
+    ports:
+      - "5449:5432"
+    volumes:
+      - emergency_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_emergency -d vera_emergency"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  emergency-response-service:
+    build: .
+    ports:
+      - "3017:3017"
+    environment:
+      NODE_ENV: production
+      PORT: 3017
+      DATABASE_URL: postgresql://vera_emergency:vera_emergency_secret@emergency-db:5432/vera_emergency?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      ACCESS_CONTROL_SERVICE_URL: http://host.docker.internal:3014
+      SAFETY_STATIONS_SERVICE_URL: http://host.docker.internal:3015
+    depends_on:
+      emergency-db:
+        condition: service_healthy
+
+volumes:
+  emergency_pg_data:

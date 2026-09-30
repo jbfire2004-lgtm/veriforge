@@ -1,0 +1,32 @@
+// Copyright: optional Slither gate for Smart contracts (invoked from monorepo CI when docker available)
+name: contracts-slither
+
+on:
+  pull_request:
+    paths:
+      - "apps/wle-contracts/**"
+      - ".github/workflows/contracts-slither.yml"
+  workflow_dispatch:
+
+jobs:
+  slither:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/wle-contracts
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: npm ci || npm install
+      - run: npx hardhat compile
+      - run: npx hardhat test
+      - run: npx hardhat run scripts/soak-local.ts
+      - name: Run Slither
+        uses: crytic/slither-action@v0.4.0
+        with:
+          target: apps/wle-contracts
+          fail-on: high
+          ignore-compile: true
+        continue-on-error: false

@@ -1,0 +1,13 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.offlineRouter = void 0;
+const express_1 = require("express");
+const offline_controller_1 = require("../controllers/offline.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const offline_validators_1 = require("../validators/offline.validators");
+exports.offlineRouter = (0, express_1.Router)();
+exports.offlineRouter.use(auth_middleware_1.requireAuth);
+exports.offlineRouter.post('/sync', offline_validators_1.syncValidators, error_handler_1.handleValidation, offline_controller_1.offlineController.sync);
+exports.offlineRouter.post('/conflict/resolve', offline_validators_1.resolveConflictValidators, error_handler_1.handleValidation, offline_controller_1.offlineController.resolveConflict);
+exports.offlineRouter.get('/device/:id', offline_validators_1.deviceValidators, error_handler_1.handleValidation, offline_controller_1.offlineController.getDevice);

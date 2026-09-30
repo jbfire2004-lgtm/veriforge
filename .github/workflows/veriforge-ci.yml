@@ -1,0 +1,14 @@
+# Thin wrapper — canonical CI is .github/workflows/ci.yml
+name: VeriForge CI (legacy)
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    uses: ./.github/workflows/ci.yml
+    secrets: inherit

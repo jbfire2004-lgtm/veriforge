@@ -1,0 +1,1 @@
+{"version":3,"file":"auto-lockout.d.ts","sourceRoot":"","sources":["../../src/engines/auto-lockout.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,iBAAiB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAG1E,qBAAa,iBAAiB;IAC5B,GAAG,CAAC,GAAG,EAAE,sBAAsB,GAAG,iBAAiB;CA8EpD"}

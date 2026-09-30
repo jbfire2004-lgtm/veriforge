@@ -1,0 +1,17 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.driftRouter = void 0;
+const express_1 = require("express");
+const drift_controller_1 = require("../controllers/drift.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const drift_validators_1 = require("../validators/drift.validators");
+exports.driftRouter = (0, express_1.Router)();
+exports.driftRouter.use(auth_middleware_1.requireAuth);
+exports.driftRouter.post('/detect', drift_validators_1.detectValidators, error_handler_1.handleValidation, drift_controller_1.driftController.detect);
+exports.driftRouter.get('/reports', drift_validators_1.listValidators, error_handler_1.handleValidation, drift_controller_1.driftController.listReports);
+exports.driftRouter.get('/reports/:id', drift_validators_1.reportIdValidators, error_handler_1.handleValidation, drift_controller_1.driftController.getReport);
+exports.driftRouter.post('/thresholds', drift_validators_1.thresholdValidators, error_handler_1.handleValidation, drift_controller_1.driftController.createThreshold);
+exports.driftRouter.get('/thresholds', drift_validators_1.listValidators, error_handler_1.handleValidation, drift_controller_1.driftController.listThresholds);
+exports.driftRouter.patch('/thresholds/:id', drift_validators_1.thresholdUpdateValidators, error_handler_1.handleValidation, drift_controller_1.driftController.updateThreshold);
+exports.driftRouter.delete('/thresholds/:id', drift_validators_1.thresholdIdValidators, error_handler_1.handleValidation, drift_controller_1.driftController.deleteThreshold);

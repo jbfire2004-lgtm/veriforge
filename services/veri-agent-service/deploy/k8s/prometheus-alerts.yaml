@@ -1,0 +1,65 @@
+# PrometheusRule — wire into your Prometheus / Alertmanager stack
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: veri-agent-alerts
+  namespace: veri-agent
+  labels:
+    app.kubernetes.io/name: veri-agent
+    release: prometheus
+spec:
+  groups:
+    - name: veri-agent
+      rules:
+        - alert: VeriAgentHighErrorRate
+          expr: |
+            sum(rate(veriagent_requests_total{outcome="failure"}[5m]))
+              /
+            clamp_min(sum(rate(veriagent_requests_total[5m])), 0.001)
+              > 0.05
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "VeriAgent error rate > 5%"
+            description: "Elevated failure rate on VeriAgent HTTP/AI paths."
+
+        - alert: VeriAgentPolicyViolationSpike
+          expr: |
+            sum(rate(veriagent_policy_decisions_total{allowed="false"}[5m])) > 1
+          for: 5m
+          labels:
+            severity: warning
+          annotations:
+            summary: "VeriAgent policy denials spiking"
+            description: "Unusual volume of policy denials — possible abuse or misconfiguration."
+
+        - alert: VeriAgentRateLimitHits
+          expr: |
+            sum(rate(veriagent_rate_limit_hits_total[5m])) > 0.5
+          for: 5m
+          labels:
+            severity: info
+          annotations:
+            summary: "VeriAgent rate-limit hits elevated"
+            description: "Clients are hitting per-tenant/user rate limits."
+
+        - alert: VeriAgentHighLatency
+          expr: |
+            histogram_quantile(0.95, sum(rate(veriagent_request_duration_seconds_bucket[5m])) by (le)) > 5
+          for: 10m
+          labels:
+            severity: warning
+          annotations:
+            summary: "VeriAgent p95 latency > 5s"
+            description: "AI orchestration path is slow — check provider / firewall / DB."
+
+        - alert: VeriAgentAbuseBlocks
+          expr: |
+            sum(rate(veriagent_abuse_blocks_total[5m])) > 0.2
+          for: 5m
+          labels:
+            severity: critical
+          annotations:
+            summary: "VeriAgent abuse blocks firing"
+            description: "Suspicious privacy-bypass or denial patterns are being blocked."

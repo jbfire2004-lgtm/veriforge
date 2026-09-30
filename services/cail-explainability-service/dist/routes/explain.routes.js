@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.explainRouter = void 0;
+const express_1 = require("express");
+const explain_controller_1 = require("../controllers/explain.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const explain_validators_1 = require("../validators/explain.validators");
+exports.explainRouter = (0, express_1.Router)();
+exports.explainRouter.use(auth_middleware_1.requireAuth);
+exports.explainRouter.post('/', explain_validators_1.explainValidators, error_handler_1.handleValidation, explain_controller_1.explainController.explain);
+exports.explainRouter.get('/:prediction_id', explain_validators_1.getValidators, error_handler_1.handleValidation, explain_controller_1.explainController.getByPredictionId);

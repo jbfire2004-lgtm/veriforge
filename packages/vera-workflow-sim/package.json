@@ -1,0 +1,23 @@
+{
+  "name": "@vera/workflow-sim",
+  "version": "0.1.0",
+  "private": true,
+  "description": "End-to-end workflow simulation, validation, and reporting for Vera Core",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "vera-simulate": "dist/cli.js"
+  },
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "simulate": "node dist/cli.js",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

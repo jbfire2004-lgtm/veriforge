@@ -1,0 +1,136 @@
+# Thin wrapper — canonical CD is .github/workflows/cd.yml
+# Keeps promote/rollback dispatch for advanced operators.
+name: VeriForge CD (legacy)
+
+on:
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "Use cd.yml for push deploys; here: promote-production | rollback"
+        required: true
+        type: choice
+        options:
+          - promote-production
+          - rollback
+          - deploy-via-cd
+        default: deploy-via-cd
+      version:
+        description: "Image tag (sha-xxxxxxxxxxxx) for promote/rollback"
+        required: false
+        type: string
+      overlay:
+        description: "Kustomize overlay for rollback"
+        required: false
+        type: choice
+        options:
+          - staging
+          - production
+        default: production
+
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+
+jobs:
+  deploy-via-cd:
+    if: ${{ inputs.action == 'deploy-via-cd' }}
+    uses: ./.github/workflows/cd.yml
+    secrets: inherit
+    with: {}
+
+  promote-production:
+    if: ${{ inputs.action == 'promote-production' }}
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-kubectl@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Resolve version
+        id: ver
+        run: |
+          VER="${{ inputs.version }}"
+          if [ -z "$VER" ]; then
+            echo "version input (sha-xxxxxxxxxxxx) is required" >&2
+            exit 1
+          fi
+          echo "version=$VER" >> "$GITHUB_OUTPUT"
+      - name: Configure cluster auth
+        uses: ./.github/actions/veriforge-kube-auth
+        with:
+          environment: production
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          gke_cluster: ${{ vars.GKE_CLUSTER }}
+          gke_location: ${{ vars.GKE_LOCATION }}
+          aws_role_arn: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws_region: ${{ vars.AWS_REGION }}
+          eks_cluster: ${{ vars.EKS_CLUSTER }}
+          azure_client_id: ${{ secrets.AZURE_CLIENT_ID }}
+          azure_tenant_id: ${{ secrets.AZURE_TENANT_ID }}
+          azure_subscription_id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+          aks_cluster: ${{ vars.AKS_CLUSTER }}
+          aks_resource_group: ${{ vars.AKS_RESOURCE_GROUP }}
+          kube_config_data: ${{ secrets.KUBE_CONFIG_DATA }}
+          allow_kubeconfig: "false"
+      - name: Resolve digests
+        id: digests
+        run: |
+          set -euo pipefail
+          OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')
+          VER=${{ steps.ver.outputs.version }}
+          echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+          API_DIGEST=$(docker buildx imagetools inspect "ghcr.io/${OWNER}/veriforge-api:${VER}" --format '{{json .Manifest.Digest}}' | tr -d '"')
+          WEB_DIGEST=$(docker buildx imagetools inspect "ghcr.io/${OWNER}/veriforge-frontend:${VER}" --format '{{json .Manifest.Digest}}' | tr -d '"')
+          echo "api_digest=$API_DIGEST" >> "$GITHUB_OUTPUT"
+          echo "web_digest=$WEB_DIGEST" >> "$GITHUB_OUTPUT"
+      - name: Deploy production
+        env:
+          VER: ${{ steps.ver.outputs.version }}
+          API_DIGEST: ${{ steps.digests.outputs.api_digest }}
+          WEB_DIGEST: ${{ steps.digests.outputs.web_digest }}
+        run: bash infra/veriforge/scripts/kustomize-deploy.sh production
+
+  rollback:
+    if: ${{ inputs.action == 'rollback' }}
+    runs-on: ubuntu-latest
+    environment: ${{ inputs.overlay }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: azure/setup-kubectl@v4
+      - uses: docker/setup-buildx-action@v3
+      - name: Configure cluster auth
+        uses: ./.github/actions/veriforge-kube-auth
+        with:
+          environment: ${{ inputs.overlay }}
+          gcp_workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          gcp_service_account: ${{ secrets.GCP_DEPLOY_SERVICE_ACCOUNT }}
+          gke_cluster: ${{ vars.GKE_CLUSTER }}
+          gke_location: ${{ vars.GKE_LOCATION }}
+          aws_role_arn: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws_region: ${{ vars.AWS_REGION }}
+          eks_cluster: ${{ vars.EKS_CLUSTER }}
+          kube_config_data: ${{ secrets.KUBE_CONFIG_DATA }}
+          allow_kubeconfig: ${{ vars.VERIFORGE_ALLOW_KUBECONFIG }}
+      - name: Rollback
+        env:
+          OVERLAY_NAME: ${{ inputs.overlay }}
+          VER: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          NS=$([ "$OVERLAY_NAME" = "staging" ] && echo veriforge-staging || echo veriforge)
+          OWNER=$(echo '${{ github.repository_owner }}' | tr '[:upper:]' '[:lower:]')
+          if [ -n "${VER}" ]; then
+            echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u "${{ github.actor }}" --password-stdin
+            API_DIGEST=$(docker buildx imagetools inspect "ghcr.io/${OWNER}/veriforge-api:${VER}" --format '{{json .Manifest.Digest}}' | tr -d '"')
+            WEB_DIGEST=$(docker buildx imagetools inspect "ghcr.io/${OWNER}/veriforge-frontend:${VER}" --format '{{json .Manifest.Digest}}' | tr -d '"')
+            kubectl -n "$NS" set image deployment/veriforge-api "api=ghcr.io/${OWNER}/veriforge-api:${VER}@${API_DIGEST}"
+            kubectl -n "$NS" set image deployment/veriforge-worker "worker=ghcr.io/${OWNER}/veriforge-api:${VER}@${API_DIGEST}"
+            kubectl -n "$NS" set image deployment/veriforge-frontend "frontend=ghcr.io/${OWNER}/veriforge-frontend:${VER}@${WEB_DIGEST}"
+          else
+            kubectl -n "$NS" rollout undo deployment/veriforge-api
+            kubectl -n "$NS" rollout undo deployment/veriforge-worker
+            kubectl -n "$NS" rollout undo deployment/veriforge-frontend
+          fi
+          kubectl -n "$NS" rollout status deployment/veriforge-api --timeout=300s

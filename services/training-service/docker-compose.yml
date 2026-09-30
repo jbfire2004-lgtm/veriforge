@@ -1,0 +1,34 @@
+services:
+  training-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_training
+      POSTGRES_PASSWORD: vera_training_secret
+      POSTGRES_DB: vera_training
+    ports:
+      - "5444:5432"
+    volumes:
+      - training_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_training -d vera_training"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  training-service:
+    build: .
+    ports:
+      - "3012:3012"
+    environment:
+      NODE_ENV: production
+      PORT: 3012
+      DATABASE_URL: postgresql://vera_training:vera_training_secret@training-db:5432/vera_training?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      ATTACHMENT_SERVICE_URL: http://host.docker.internal:3004/attachment
+    depends_on:
+      training-db:
+        condition: service_healthy
+
+volumes:
+  training_pg_data:

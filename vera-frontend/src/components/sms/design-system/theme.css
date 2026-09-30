@@ -1,0 +1,367 @@
+/**
+ * Vera SMS design system — extends `.sf-theme` (safety-forms-theme.css).
+ * Import after safety-forms-theme.css on PM / SMS routes.
+ */
+
+.sf-theme {
+  /* Secondary accent — inspection teal (platform) */
+  --sms-secondary: var(--color-inspection-teal);
+  --sms-secondary-hover: #3aa39f;
+  --sms-secondary-muted: color-mix(in srgb, var(--color-inspection-teal) 12%, transparent);
+
+  /* Spacing — alias platform --space-* (4px base) */
+  --sms-space-1: var(--space-1);
+  --sms-space-2: var(--space-2);
+  --sms-space-3: var(--space-3);
+  --sms-space-4: var(--space-4);
+  --sms-space-5: var(--space-5);
+  --sms-space-6: var(--space-6);
+  --sms-space-8: var(--space-8);
+  --sms-space-10: var(--space-10);
+
+  /* Layout */
+  --sms-page-max: 72rem;
+  --sms-content-narrow: 48rem;
+}
+
+[data-theme="dark"] .sf-theme,
+.sf-theme.sf-dark {
+  --sms-secondary: #3aa39f;
+  --sms-secondary-hover: #5bb8b5;
+  --sms-secondary-muted: color-mix(in srgb, var(--color-inspection-teal) 18%, transparent);
+}
+
+/* Typography utilities */
+.sf-theme .sms-text-display {
+  font-size: 1.875rem;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  line-height: 1.2;
+  color: var(--sf-text);
+}
+
+.sf-theme .sms-text-h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+  color: var(--sf-text);
+}
+
+@media (min-width: 640px) {
+  .sf-theme .sms-text-h1 {
+    font-size: 1.75rem;
+  }
+}
+
+.sf-theme .sms-text-h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--sf-text);
+}
+
+.sf-theme .sms-text-h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--sf-text);
+}
+
+.sf-theme .sms-text-body {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--sf-text);
+}
+
+.sf-theme .sms-text-body-muted {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--sf-text-muted);
+}
+
+.sf-theme .sms-text-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--sf-text-muted);
+}
+
+.sf-theme .sms-text-caption {
+  font-size: 0.75rem;
+  line-height: 1.4;
+  color: var(--sf-text-subtle);
+}
+
+.sf-theme .sms-eyebrow {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--sms-secondary);
+}
+
+/* Responsive grid helpers */
+.sf-theme .sms-grid {
+  display: grid;
+  gap: var(--sms-space-4);
+}
+
+.sf-theme .sms-grid-2 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .sf-theme .sms-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.sf-theme .sms-grid-3 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .sf-theme .sms-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .sf-theme .sms-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* List card — compact row for mobile registers */
+.sf-theme .sms-list-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sms-space-2);
+  padding: var(--sms-space-4);
+  background: var(--sf-surface);
+  border: 1px solid var(--sf-border);
+  border-radius: var(--vera-card-radius, var(--sf-radius-md));
+  box-shadow: none;
+  transition: border-color var(--sf-transition);
+}
+
+.sf-theme .sms-list-card-interactive:hover {
+  border-color: var(--sf-border-strong);
+  box-shadow: none;
+}
+
+/* Sticky mobile action bar */
+.sf-theme .sms-mobile-actions {
+  position: sticky;
+  bottom: 0;
+  z-index: 20;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sms-space-2);
+  padding: var(--sms-space-3) var(--sms-space-4);
+  margin: var(--sms-space-4) calc(-1 * var(--sms-space-4)) 0;
+  background: color-mix(in srgb, var(--sf-surface) 92%, transparent);
+  border-top: 1px solid var(--sf-border);
+  backdrop-filter: blur(8px);
+}
+
+@media (min-width: 768px) {
+  .sf-theme .sms-mobile-actions {
+    position: static;
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    border-top: none;
+    backdrop-filter: none;
+  }
+}
+
+/* Touch-friendly minimum tap targets (WCAG 2.5.5) */
+.sf-theme .sms-tap-target {
+  min-height: 2.75rem;
+}
+
+.sf-theme button.sms-tap-target,
+.sf-theme a.sms-tap-target {
+  min-height: 2.75rem;
+}
+
+/* Focus ring for keyboard users */
+.sf-theme :focus-visible {
+  outline: 2px solid var(--sms-secondary);
+  outline-offset: 2px;
+}
+
+.sf-theme button:focus:not(:focus-visible),
+.sf-theme a:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* Table — high-contrast industrial rows */
+.sf-theme .sms-table-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--sf-border);
+  border-radius: var(--vera-card-radius, var(--sf-radius-md));
+  background: var(--sf-surface);
+  box-shadow: none;
+}
+
+.sf-theme .sms-table {
+  width: 100%;
+  font-size: 0.875rem;
+  border-collapse: collapse;
+}
+
+.sf-theme .sms-table thead {
+  background: var(--sf-surface-hover);
+  color: var(--sf-text-muted);
+  text-align: left;
+}
+
+.sf-theme .sms-table th {
+  padding: var(--sms-space-3) var(--sms-space-4);
+  font-weight: 600;
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--sf-border);
+}
+
+.sf-theme .sms-table tbody tr {
+  border-bottom: 1px solid var(--sf-border);
+  transition: background-color 150ms ease;
+}
+
+.sf-theme .sms-table tbody tr:nth-child(odd) {
+  background: var(--sf-slate-50);
+}
+
+.sf-theme .sms-table tbody tr:nth-child(even) {
+  background: var(--sf-surface);
+}
+
+.sf-theme .sms-table tbody tr:hover {
+  background: var(--sf-surface-hover);
+}
+
+.sf-theme .sms-table tbody tr[data-state="selected"],
+.sf-theme .sms-table tbody tr.is-selected {
+  background: rgba(30, 111, 184, 0.12);
+  box-shadow: inset 3px 0 0 #1e6fb8;
+}
+
+.sf-theme .sms-table tbody tr[data-critical="true"],
+.sf-theme .sms-table tbody tr.is-critical {
+  background: rgba(179, 58, 58, 0.1);
+  box-shadow: inset 3px 0 0 #b33a3a;
+}
+
+.sf-theme .sms-table td {
+  padding: var(--sms-space-3) var(--sms-space-4);
+  color: var(--sf-text);
+}
+
+/* Bottom sheet safe area (iOS) */
+.sf-theme .sms-drawer-sheet {
+  padding-bottom: max(var(--sms-space-4), env(safe-area-inset-bottom));
+}
+
+/* ── Module layout template (SMS Core system) ─────────────────────────── */
+
+.sf-theme .sms-module-layout,
+.sf-theme .sms-universal-layout {
+  color: var(--sf-text);
+}
+
+.sf-theme .sms-universal-layout [data-region="summary-cards"],
+.sf-theme .sms-universal-layout [data-region="main-content"] {
+  width: 100%;
+}
+
+.sf-theme .sms-module-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--sms-space-2);
+}
+
+.sf-theme .sms-section-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--sf-radius-sm);
+  border: 1px solid var(--sf-border);
+  background: var(--sf-surface-hover);
+  color: var(--sms-secondary);
+  flex-shrink: 0;
+}
+
+.sf-theme .sms-stat-value {
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--sf-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.sf-theme .sms-module-section-card {
+  background: var(--sf-surface);
+  border-color: var(--sf-border);
+}
+
+/* Industrial status badges — mirror .vera-status (platform contract) */
+.sf-theme .sms-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  border-radius: var(--vera-badge-radius, var(--sf-radius-sm));
+  border: 1px solid var(--sf-border);
+  padding: var(--vera-badge-pad-y, 0.2rem) var(--vera-badge-pad-x, 0.55rem);
+  font-size: var(--vera-type-label, 0.6875rem);
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  line-height: 1.3;
+  white-space: nowrap;
+}
+
+.sf-theme .sms-status-neutral {
+  color: var(--muted-foreground);
+  background: var(--muted);
+}
+
+.sf-theme .sms-status-info {
+  color: var(--badge-info-fg);
+  background: var(--badge-info-bg);
+  border-color: color-mix(in srgb, var(--color-info) 35%, var(--sf-border));
+}
+
+.sf-theme .sms-status-positive {
+  color: var(--badge-success-fg);
+  background: var(--badge-success-bg);
+  border-color: color-mix(in srgb, var(--color-success) 35%, var(--sf-border));
+}
+
+.sf-theme .sms-status-caution {
+  color: var(--badge-warning-fg);
+  background: var(--badge-warning-bg);
+  border-color: color-mix(in srgb, var(--color-warning) 35%, var(--sf-border));
+}
+
+.sf-theme .sms-status-critical {
+  color: var(--badge-danger-fg);
+  background: var(--badge-danger-bg);
+  border-color: color-mix(in srgb, var(--color-danger) 35%, var(--sf-border));
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .sf-theme .sf-animate-in {
+    animation: none;
+  }
+}

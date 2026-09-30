@@ -1,0 +1,55 @@
+replicaCount: 2
+
+image:
+  repository: veriforge/veri-agent-service
+  tag: "1.0.0"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3040
+
+privacyMode: strict # strict | balanced
+region: ca-central-1
+llmEnabled: true
+allowImageEgress: false
+rateLimitPerMinute: 120
+
+env:
+  LOG_LEVEL: info
+  REDIS_ENABLED: "true"
+  JWT_ISSUER: veriforge
+  JWT_AUDIENCE: veri-agent
+  AUTH_DEV_BYPASS: "false"
+  OTEL_SERVICE_NAME: veri-agent-service
+  OTEL_METRICS_ENABLED: "true"
+  OTEL_TRACING_ENABLED: "true"
+
+# Create these externally or via sealed-secrets
+existingSecret: veri-agent-secrets
+
+tenantOverrides:
+  defaultProfile: strict
+  tenants:
+    "1001": balanced
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: "1"
+    memory: 512Mi
+
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 8
+  targetCPUUtilizationPercentage: 70
+
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+serviceMonitor:
+  enabled: false

@@ -1,0 +1,1 @@
+{"version":3,"file":"planetary-coordination.d.ts","sourceRoot":"","sources":["../../src/engines/planetary-coordination.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,0BAA0B,EAAE,qBAAqB,EAAoB,MAAM,UAAU,CAAC;AAKpG,qBAAa,2BAA2B;IACtC,UAAU,CAAC,GAAG,EAAE,0BAA0B,GAAG,qBAAqB;CAkDnE"}

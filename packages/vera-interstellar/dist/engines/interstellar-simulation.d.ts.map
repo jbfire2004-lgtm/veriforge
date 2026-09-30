@@ -1,0 +1,1 @@
+{"version":3,"file":"interstellar-simulation.d.ts","sourceRoot":"","sources":["../../src/engines/interstellar-simulation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAIjF,qBAAa,4BAA4B;IACvC,GAAG,CAAC,GAAG,EAAE,wBAAwB,GAAG,sBAAsB,EAAE;CAmB7D"}

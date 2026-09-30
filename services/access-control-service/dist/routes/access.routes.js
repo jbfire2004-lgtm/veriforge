@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.accessRouter = void 0;
+const express_1 = require("express");
+const access_controller_1 = require("../controllers/access.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const access_validators_1 = require("../validators/access.validators");
+exports.accessRouter = (0, express_1.Router)();
+exports.accessRouter.use(auth_middleware_1.requireAuth);
+exports.accessRouter.post('/validate', access_validators_1.validateValidators, error_handler_1.handleValidation, access_controller_1.accessController.validate);
+exports.accessRouter.post('/override', auth_middleware_1.requireSupervisor, access_validators_1.overrideValidators, error_handler_1.handleValidation, access_controller_1.accessController.override);
+exports.accessRouter.get('/worker/:id', access_validators_1.workerValidators, error_handler_1.handleValidation, access_controller_1.accessController.getWorker);
+exports.accessRouter.get('/equipment/:id', access_validators_1.equipmentValidators, error_handler_1.handleValidation, access_controller_1.accessController.getEquipment);

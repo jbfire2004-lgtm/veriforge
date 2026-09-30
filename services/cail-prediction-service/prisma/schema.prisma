@@ -1,0 +1,45 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum PredictionType {
+  incident_likelihood
+  equipment_failure
+  hazard_emergence
+  sif_heca_potential
+  training_lapse
+  capa_overdue
+  access_denial
+  emergency_likelihood
+}
+
+model CailPrediction {
+  id              String         @id @default(uuid()) @db.Uuid
+  companyId       String         @map("company_id") @db.Uuid
+  projectId       String?        @map("project_id") @db.Uuid
+  workerId        String?        @map("worker_id") @db.Uuid
+  equipmentId     String?        @map("equipment_id") @db.Uuid
+  entityType      String         @map("entity_type")
+  entityId        String         @map("entity_id") @db.Uuid
+  moduleType      String         @map("module_type")
+  predictionType  PredictionType @map("prediction_type")
+  predictionValue Float          @map("prediction_value")
+  confidence      Float
+  riskLevel       String         @map("risk_level")
+  factors         Json           @default("[]") @db.JsonB
+  modelKey        String         @default("deterministic_rules_v1") @map("model_key")
+  createdAt       DateTime       @default(now()) @map("created_at")
+
+  @@index([companyId])
+  @@index([companyId, predictionType])
+  @@index([entityType, entityId])
+  @@index([companyId, entityType, entityId])
+  @@index([moduleType])
+  @@index([createdAt])
+  @@map("cail_predictions")
+}

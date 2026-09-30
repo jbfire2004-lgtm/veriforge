@@ -1,0 +1,36 @@
+services:
+  pm-schedule-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_pm_schedule
+      POSTGRES_PASSWORD: vera_pm_schedule_secret
+      POSTGRES_DB: vera_pm_schedule
+    ports:
+      - "5453:5432"
+    volumes:
+      - pm_schedule_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_pm_schedule -d vera_pm_schedule"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  pm-schedule-service:
+    build: .
+    ports:
+      - "3021:3021"
+    environment:
+      NODE_ENV: production
+      PORT: 3021
+      DATABASE_URL: postgresql://vera_pm_schedule:vera_pm_schedule_secret@pm-schedule-db:5432/vera_pm_schedule?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      PM_PROJECT_SERVICE_URL: http://host.docker.internal:3018
+      PM_TASK_SERVICE_URL: http://host.docker.internal:3020
+      CAIL_SERVICE_URL: http://host.docker.internal:3000/api/v1/pm/cail
+    depends_on:
+      pm-schedule-db:
+        condition: service_healthy
+
+volumes:
+  pm_schedule_pg_data:

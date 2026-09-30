@@ -1,0 +1,38 @@
+services:
+  permit-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_permit
+      POSTGRES_PASSWORD: vera_permit_secret
+      POSTGRES_DB: vera_permit
+    ports:
+      - "5462:5432"
+    volumes:
+      - permit_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_permit -d vera_permit"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  permit-service:
+    build: .
+    ports:
+      - "3030:3030"
+    environment:
+      NODE_ENV: production
+      PORT: 3030
+      DATABASE_URL: postgresql://vera_permit:vera_permit_secret@permit-db:5432/vera_permit?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      JHA_SERVICE_URL: http://host.docker.internal:3010/jha
+      TRAINING_SERVICE_URL: http://host.docker.internal:3012/training
+      SDS_SERVICE_URL: http://host.docker.internal:3014/sds
+      HAZARD_CONTROL_SERVICE_URL: http://host.docker.internal:3016
+      PM_TASK_SERVICE_URL: http://host.docker.internal:3040/pm/task
+    depends_on:
+      permit-db:
+        condition: service_healthy
+
+volumes:
+  permit_pg_data:

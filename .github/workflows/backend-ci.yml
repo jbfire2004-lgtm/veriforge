@@ -1,0 +1,81 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - 'backend/**'
+      - 'packages/vera-api-contract/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'packages/vera-api-contract/**'
+      - '.github/workflows/backend-ci.yml'
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vera_ci
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d vera_ci"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vera_ci?schema=public
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vera_ci_shadow?schema=public
+      JWT_SECRET: ci_jwt_secret
+      NODE_ENV: test
+      SEED_USER_PASSWORD: hashedpassword123
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: |
+            backend/package-lock.json
+            packages/vera-api-contract/package-lock.json
+
+      - name: Install contract package deps
+        run: npm ci --prefix packages/vera-api-contract
+
+      - name: Install backend deps
+        run: npm ci --prefix backend --legacy-peer-deps
+
+      - name: Validate backend lint and types
+        run: npm run lint:check --prefix backend && npm run typecheck --prefix backend
+
+      - name: Validate Prisma schema
+        run: npx prisma validate
+        working-directory: backend
+
+      - name: Create shadow database
+        run: psql "postgresql://postgres:postgres@localhost:5432/postgres" -c "CREATE DATABASE vera_ci_shadow;"
+
+      - name: Prisma drift check
+        run: npx prisma migrate diff --from-migrations prisma/migrations --to-schema-datamodel prisma/schema.prisma --shadow-database-url "$SHADOW_DATABASE_URL" --exit-code
+        working-directory: backend
+
+      - name: Prisma migrate + generate
+        run: npx prisma migrate deploy && npx prisma generate
+        working-directory: backend
+
+      - name: Seed DB
+        run: npm run prisma:seed --prefix backend
+
+      - name: Run backend CI test suite
+        run: npm run test:ci --prefix backend

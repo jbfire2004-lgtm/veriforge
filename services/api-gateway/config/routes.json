@@ -1,0 +1,475 @@
+[
+  {
+    "id": "auth",
+    "prefix": "/auth",
+    "targetEnv": "AUTH_SERVICE_URL",
+    "auth": "public",
+    "publicPaths": ["^/auth/(register|login|refresh)$"],
+    "companyScope": false,
+    "rbac": false
+  },
+  {
+    "id": "rbac",
+    "prefix": "/rbac",
+    "targetEnv": "RBAC_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": false
+  },
+  {
+    "id": "audit",
+    "prefix": "/audit",
+    "targetEnv": "AUDIT_SERVICE_URL",
+    "auth": "optional",
+    "companyScope": true,
+    "rbac": false
+  },
+  {
+    "id": "attachments-alias",
+    "prefix": "/attachments",
+    "targetEnv": "ATTACHMENT_SERVICE_URL",
+    "pathRewrite": { "^/attachments": "/attachment" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "platform.attachment" }
+  },
+  {
+    "id": "attachment",
+    "prefix": "/attachment",
+    "targetEnv": "ATTACHMENT_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "platform.attachment" }
+  },
+  {
+    "id": "offline",
+    "prefix": "/offline",
+    "targetEnv": "OFFLINE_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "platform.offline" }
+  },
+  {
+    "id": "hazard-ms",
+    "prefix": "/hazard",
+    "targetEnv": "HAZARD_CONTROL_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.hazard" }
+  },
+  {
+    "id": "control-ms",
+    "prefix": "/control",
+    "targetEnv": "HAZARD_CONTROL_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.control" }
+  },
+  {
+    "id": "jha",
+    "prefix": "/jha",
+    "targetEnv": "JHA_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.jha" }
+  },
+  {
+    "id": "corrective",
+    "prefix": "/corrective",
+    "targetEnv": "CORRECTIVE_ACTION_SERVICE_URL",
+    "pathRewrite": { "^/corrective": "/corrective-action" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.corrective_action" }
+  },
+  {
+    "id": "inspection",
+    "prefix": "/inspection",
+    "targetEnv": "INSPECTION_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.inspection" }
+  },
+  {
+    "id": "incident",
+    "prefix": "/incident",
+    "targetEnv": "INCIDENT_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.incident" }
+  },
+  {
+    "id": "company",
+    "prefix": "/company",
+    "targetEnv": "COMPANY_SAFETY_SERVICE_URL",
+    "pathRewrite": { "^/company": "/company/safety" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "context.company" }
+  },
+  {
+    "id": "project",
+    "prefix": "/project",
+    "targetEnv": "PROJECT_SAFETY_SERVICE_URL",
+    "pathRewrite": { "^/project": "/project/safety" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "context.project" }
+  },
+  {
+    "id": "worker",
+    "prefix": "/worker",
+    "targetEnv": "WORKER_SAFETY_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "context.worker" }
+  },
+  {
+    "id": "training",
+    "prefix": "/training",
+    "targetEnv": "TRAINING_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "access.training" }
+  },
+  {
+    "id": "access",
+    "prefix": "/access",
+    "targetEnv": "ACCESS_CONTROL_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "access.site" }
+  },
+  {
+    "id": "station",
+    "prefix": "/station",
+    "targetEnv": "SAFETY_STATIONS_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "access.station" }
+  },
+  {
+    "id": "equipment",
+    "prefix": "/equipment",
+    "targetEnv": "EQUIPMENT_SAFETY_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.equipment" }
+  },
+  {
+    "id": "sds",
+    "prefix": "/sds",
+    "targetEnv": "SDS_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.sds" }
+  },
+  {
+    "id": "emergency",
+    "prefix": "/emergency",
+    "targetEnv": "EMERGENCY_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.emergency" }
+  },
+  {
+    "id": "safety-jha",
+    "prefix": "/safety/jha",
+    "targetEnv": "JHA_SERVICE_URL",
+    "pathRewrite": { "^/safety/jha": "/jha" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.jha" }
+  },
+  {
+    "id": "safety-sif",
+    "prefix": "/safety/sif-heca",
+    "targetEnv": "BACKEND_SERVICE_URL",
+    "pathRewrite": { "^/safety/sif-heca": "/api/v1/pm/sif-heca" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.sif" }
+  },
+  {
+    "id": "safety-inspection",
+    "prefix": "/safety/inspection",
+    "targetEnv": "INSPECTION_SERVICE_URL",
+    "pathRewrite": { "^/safety/inspection": "/inspection" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.inspection" }
+  },
+  {
+    "id": "safety-incident",
+    "prefix": "/safety/incident",
+    "targetEnv": "INCIDENT_SERVICE_URL",
+    "pathRewrite": { "^/safety/incident": "/incident" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.incident" }
+  },
+  {
+    "id": "safety-corrective-action",
+    "prefix": "/safety/corrective-action",
+    "targetEnv": "CORRECTIVE_ACTION_SERVICE_URL",
+    "pathRewrite": { "^/safety/corrective-action": "/corrective-action" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.corrective_action" }
+  },
+  {
+    "id": "safety-hazard",
+    "prefix": "/safety/hazard",
+    "targetEnv": "BACKEND_SERVICE_URL",
+    "pathRewrite": { "^/safety/hazard": "/api/v1/pm/hazard" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.hazard" }
+  },
+  {
+    "id": "safety-sds",
+    "prefix": "/safety/sds",
+    "targetEnv": "SDS_SERVICE_URL",
+    "pathRewrite": { "^/safety/sds": "/sds" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.sds" }
+  },
+  {
+    "id": "safety-emergency",
+    "prefix": "/safety/emergency",
+    "targetEnv": "EMERGENCY_SERVICE_URL",
+    "pathRewrite": { "^/safety/emergency": "/emergency" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.emergency" }
+  },
+  {
+    "id": "safety-equipment",
+    "prefix": "/safety/equipment",
+    "targetEnv": "EQUIPMENT_SAFETY_SERVICE_URL",
+    "pathRewrite": { "^/safety/equipment": "/equipment" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "safety.equipment" }
+  },
+  {
+    "id": "context-company",
+    "prefix": "/context/company",
+    "targetEnv": "COMPANY_SAFETY_SERVICE_URL",
+    "pathRewrite": { "^/context/company": "/company/safety" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "context.company" }
+  },
+  {
+    "id": "context-project",
+    "prefix": "/context/project",
+    "targetEnv": "PROJECT_SAFETY_SERVICE_URL",
+    "pathRewrite": { "^/context/project": "/project/safety" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "context.project" }
+  },
+  {
+    "id": "context-worker",
+    "prefix": "/context/worker",
+    "targetEnv": "WORKER_SAFETY_SERVICE_URL",
+    "pathRewrite": { "^/context/worker": "/worker" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "context.worker" }
+  },
+  {
+    "id": "access-site",
+    "prefix": "/access/site",
+    "targetEnv": "ACCESS_CONTROL_SERVICE_URL",
+    "pathRewrite": { "^/access/site": "/access" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "access.site" }
+  },
+  {
+    "id": "access-station",
+    "prefix": "/access/station",
+    "targetEnv": "SAFETY_STATIONS_SERVICE_URL",
+    "pathRewrite": { "^/access/station": "/station" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "access.station" }
+  },
+  {
+    "id": "access-training",
+    "prefix": "/access/training",
+    "targetEnv": "TRAINING_SERVICE_URL",
+    "pathRewrite": { "^/access/training": "/training" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "access.training" }
+  },
+  {
+    "id": "pm-project",
+    "prefix": "/pm/project",
+    "targetEnv": "PM_PROJECT_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "pm.project" }
+  },
+  {
+    "id": "pm-work-package",
+    "prefix": "/pm/work-package",
+    "targetEnv": "PM_WORK_PACKAGE_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "pm.work_package" }
+  },
+  {
+    "id": "pm-task",
+    "prefix": "/pm/task",
+    "targetEnv": "PM_TASK_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "pm.task" }
+  },
+  {
+    "id": "pm-schedule",
+    "prefix": "/pm/schedule",
+    "targetEnv": "PM_SCHEDULE_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "pm.schedule" }
+  },
+  {
+    "id": "pm-permit",
+    "prefix": "/pm/permit",
+    "targetEnv": "PERMIT_SERVICE_URL",
+    "pathRewrite": { "^/pm/permit": "/permit" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "pm.permit" }
+  },
+  {
+    "id": "permit",
+    "prefix": "/permit",
+    "targetEnv": "PERMIT_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "pm.permit" }
+  },
+  {
+    "id": "pm-fallback",
+    "prefix": "/pm",
+    "targetEnv": "BACKEND_SERVICE_URL",
+    "pathRewrite": { "^/pm": "/api/v1/pm" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "pm" }
+  },
+  {
+    "id": "platform-attachment",
+    "prefix": "/platform/attachment",
+    "targetEnv": "ATTACHMENT_SERVICE_URL",
+    "pathRewrite": { "^/platform/attachment": "/attachment" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "platform.attachment" }
+  },
+  {
+    "id": "platform-offline",
+    "prefix": "/platform/offline",
+    "targetEnv": "OFFLINE_SERVICE_URL",
+    "pathRewrite": { "^/platform/offline": "/offline" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "platform.offline" }
+  },
+  {
+    "id": "platform-fallback",
+    "prefix": "/platform",
+    "targetEnv": "BACKEND_SERVICE_URL",
+    "pathRewrite": { "^/platform": "/api/v1/pm" },
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "platform" }
+  },
+  {
+    "id": "cail-ingest",
+    "prefix": "/cail/ingest",
+    "targetEnv": "CAIL_INGESTION_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "cail.ingest" }
+  },
+  {
+    "id": "cail-score",
+    "prefix": "/cail/score",
+    "targetEnv": "CAIL_SCORING_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "cail.score" }
+  },
+  {
+    "id": "cail-predict",
+    "prefix": "/cail/predict",
+    "targetEnv": "CAIL_PREDICTION_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "cail.predict" }
+  },
+  {
+    "id": "cail-recommend",
+    "prefix": "/cail/recommend",
+    "targetEnv": "CAIL_RECOMMENDATION_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "cail.recommend" }
+  },
+  {
+    "id": "cail-explain",
+    "prefix": "/cail/explain",
+    "targetEnv": "CAIL_EXPLAINABILITY_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "cail.explain" }
+  },
+  {
+    "id": "cail-realtime",
+    "prefix": "/cail/realtime",
+    "targetEnv": "CAIL_REALTIME_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "cail.realtime" }
+  },
+  {
+    "id": "cail-train",
+    "prefix": "/cail/train",
+    "targetEnv": "CAIL_MODEL_TRAINING_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "cail.train" }
+  },
+  {
+    "id": "cail-version",
+    "prefix": "/cail/version",
+    "targetEnv": "CAIL_MODEL_VERSIONING_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "cail.version" }
+  },
+  {
+    "id": "cail-drift",
+    "prefix": "/cail/drift",
+    "targetEnv": "CAIL_MODEL_DRIFT_SERVICE_URL",
+    "auth": "required",
+    "companyScope": true,
+    "rbac": { "resource": "cail.drift" }
+  },
+  {
+    "id": "config",
+    "prefix": "/config",
+    "targetEnv": "CONFIG_SERVICE_URL",
+    "auth": "required",
+    "companyScope": false,
+    "rbac": { "resource": "platform.config" }
+  }
+]

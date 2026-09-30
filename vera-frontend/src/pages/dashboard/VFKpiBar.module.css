@@ -1,0 +1,48 @@
+.wrap {
+  composes: tokens from "./shared.module.css";
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.label {
+  font-family: var(--vf-font-heading);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #d6d6d6;
+}
+
+.value {
+  font-family: var(--vf-font-body);
+  font-size: 12px;
+  color: #ffb8b8;
+}
+
+.track {
+  height: 12px;
+  border: 1px solid var(--vf-steel-grey);
+  background: var(--vf-iron-black);
+  border-radius: 0;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, #6f1717 0%, #c62828 45%, #ff5a5a 100%);
+  border-radius: 0;
+  box-shadow: var(--vf-steel-glow);
+  transition: width 300ms cubic-bezier(0.2, 0, 0, 1);
+}
+
+.critical .fill {
+  box-shadow: var(--vf-glow);
+}

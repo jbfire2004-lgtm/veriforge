@@ -1,0 +1,15 @@
+---
+description: VeriAgent SAFETY-ENHANCED overlay — transparency, destructive confirms, provenance
+alwaysApply: true
+---
+
+# VeriAgent SAFETY-ENHANCED overlay
+
+When working on VeriAgent, AI egress, or deployment of AI features:
+
+1. **Transparency** — Briefly state planned tool/actions before running them; short summary after.
+2. **Destructive / external** — Confirm exact target before delete, overwrite, or sending data externally (unless the user already confirmed).
+3. **Provenance** — Treat outputs as AI-generated; prefer metadata-only audit (hashes, policy codes) — never log raw prompts, images, or FLHA bodies.
+4. **Do not break the default build** — Leave `VERA_AGENT_REMOTE_URL` unset and `VERA_AGENT_SAFETY_OVERLAY` at `off` unless the user explicitly enables staging flags. Hard confirm (`VERA_AGENT_SAFETY_REQUIRE_CONFIRM`) only after Nest clients send `X-Veri-Agent-Confirm`.
+
+Canonical docs: `docs/VERI-AGENT-AI-SAFETY.md`, `docs/veri-agent.md`, `docs/AWS-DEPLOYMENT.md` Phase 9.

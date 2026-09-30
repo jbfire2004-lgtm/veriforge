@@ -1,0 +1,48 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.equipmentLifecycle = void 0;
+const builder_1 = require("../builder");
+exports.equipmentLifecycle = (0, builder_1.buildWorkflow)({
+    id: "equipment.lifecycle",
+    title: "Equipment Lifecycle",
+    category: "equipment",
+    initialState: "draft",
+    terminalStates: ["archived"],
+    modules: ["Equipment", "Inspections", "Competency", "Compliance", "Field"],
+    steps: [
+        { id: "create", label: "Equipment creation", permissions: ["COMPANY_ADMIN"], required: true },
+        { id: "linkCompany", label: "Link to company", permissions: ["COMPANY_ADMIN"], required: true },
+        { id: "assignProject", label: "Assign to project", permissions: ["SUPERVISOR"] },
+        { id: "preUseInspection", label: "Pre-use inspection", permissions: ["SUPERVISOR"], complianceChecks: ["inspection.pass"], offlineCapable: true },
+        { id: "scheduledInspection", label: "Scheduled inspection", permissions: ["SUPERVISOR"], offlineCapable: true },
+        { id: "lockout", label: "Lockout workflow", permissions: ["SUPERVISOR"] },
+        { id: "competencyReq", label: "Competency requirements", complianceChecks: ["competency.valid"] },
+        { id: "trainingReq", label: "Training requirements", complianceChecks: ["training.valid"] },
+        { id: "qrOnline", label: "QR scan (online)", permissions: ["SUPERVISOR"] },
+        { id: "qrOffline", label: "QR scan (offline)", permissions: ["SUPERVISOR"], offlineCapable: true },
+        { id: "walletUpdate", label: "Wallet updates", permissions: ["COMPANY_ADMIN"] },
+        { id: "leaveProject", label: "Leave project", permissions: ["SUPERVISOR"] },
+        { id: "leaveCompany", label: "Leave company", permissions: ["COMPANY_ADMIN"] },
+    ],
+    transitions: [
+        { from: "draft", to: "created", event: "equipment.create" },
+        { from: "created", to: "linked", event: "equipment.linkCompany" },
+        { from: "linked", to: "assigned", event: "equipment.assignProject" },
+        { from: "assigned", to: "preUseRequired", event: "equipment.requirePreUse" },
+        { from: "preUseRequired", to: "preUseActive", event: "inspection.preUseStart" },
+        { from: "preUseActive", to: "operational", event: "inspection.preUsePass", guards: ["inspection.pass"] },
+        { from: "preUseActive", to: "failed", event: "inspection.fail", guards: ["inspection.fail"] },
+        { from: "preUseRequired", to: "failed", event: "inspection.fail", guards: ["inspection.fail"] },
+        { from: "operational", to: "scheduledDue", event: "inspection.scheduleDue" },
+        { from: "scheduledDue", to: "operational", event: "inspection.scheduledPass" },
+        { from: "operational", to: "lockedOut", event: "inspection.fail", guards: ["inspection.fail"] },
+        { from: "lockedOut", to: "operational", event: "inspection.cleared" },
+        { from: "operational", to: "nonCompliant", event: "compliance.fail" },
+        { from: "operational", to: "offlineQueued", event: "equipment.qrOffline", guards: ["offline.mode"] },
+        { from: "offlineQueued", to: "operational", event: "sync.complete" },
+        { from: "operational", to: "leavingProject", event: "equipment.leaveProject" },
+        { from: "leavingProject", to: "linked", event: "equipment.unassign" },
+        { from: "linked", to: "archived", event: "equipment.archive" },
+    ],
+});
+//# sourceMappingURL=equipment.js.map

@@ -1,0 +1,34 @@
+services:
+  capa-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_capa
+      POSTGRES_PASSWORD: vera_capa_secret
+      POSTGRES_DB: vera_capa
+    ports:
+      - "5440:5432"
+    volumes:
+      - capa_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_capa -d vera_capa"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  corrective-action-service:
+    build: .
+    ports:
+      - "3008:3008"
+    environment:
+      NODE_ENV: production
+      PORT: 3008
+      DATABASE_URL: postgresql://vera_capa:vera_capa_secret@capa-db:5432/vera_capa?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+      ATTACHMENT_SERVICE_URL: http://host.docker.internal:3004/attachment
+    depends_on:
+      capa-db:
+        condition: service_healthy
+
+volumes:
+  capa_pg_data:

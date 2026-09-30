@@ -1,0 +1,1 @@
+{"version":3,"file":"cross-module-automation.d.ts","sourceRoot":"","sources":["../../src/engines/cross-module-automation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,qBAAqB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAG9E,qBAAa,2BAA2B;IACtC,GAAG,CAAC,GAAG,EAAE,sBAAsB,GAAG,qBAAqB;CAsExD"}

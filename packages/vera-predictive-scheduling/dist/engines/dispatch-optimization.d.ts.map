@@ -1,0 +1,1 @@
+{"version":3,"file":"dispatch-optimization.d.ts","sourceRoot":"","sources":["../../src/engines/dispatch-optimization.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,oBAAoB,EAAE,sBAAsB,EAAE,MAAM,UAAU,CAAC;AAG7E,qBAAa,0BAA0B;IACrC,OAAO,CAAC,GAAG,EAAE,sBAAsB,GAAG,oBAAoB;CA4D3D"}

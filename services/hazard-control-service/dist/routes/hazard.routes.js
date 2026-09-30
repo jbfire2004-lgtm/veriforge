@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.hazardRouter = void 0;
+const express_1 = require("express");
+const hazard_controller_1 = require("../controllers/hazard.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const hazard_control_validators_1 = require("../validators/hazard-control.validators");
+exports.hazardRouter = (0, express_1.Router)();
+exports.hazardRouter.use(auth_middleware_1.requireAuth);
+exports.hazardRouter.post('/', hazard_control_validators_1.createHazardValidators, error_handler_1.handleValidation, hazard_controller_1.hazardController.create);
+exports.hazardRouter.post('/map-controls', hazard_control_validators_1.mapControlsValidators, error_handler_1.handleValidation, hazard_controller_1.hazardController.mapControls);
+exports.hazardRouter.post('/sif-heca', hazard_control_validators_1.sifHecaValidators, error_handler_1.handleValidation, hazard_controller_1.hazardController.sifHeca);
+exports.hazardRouter.get('/:id', hazard_control_validators_1.idParamValidators, error_handler_1.handleValidation, hazard_controller_1.hazardController.getById);

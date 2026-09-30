@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.incidentRouter = void 0;
+const express_1 = require("express");
+const incident_controller_1 = require("../controllers/incident.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const incident_validators_1 = require("../validators/incident.validators");
+exports.incidentRouter = (0, express_1.Router)();
+exports.incidentRouter.use(auth_middleware_1.requireAuth);
+exports.incidentRouter.post('/', incident_validators_1.reportValidators, error_handler_1.handleValidation, incident_controller_1.incidentController.report);
+exports.incidentRouter.get('/', incident_validators_1.listValidators, error_handler_1.handleValidation, incident_controller_1.incidentController.list);
+exports.incidentRouter.post('/offline/sync', incident_validators_1.offlineSyncValidators, error_handler_1.handleValidation, incident_controller_1.incidentController.syncOffline);
+exports.incidentRouter.get('/:id', incident_validators_1.idParamValidators, error_handler_1.handleValidation, incident_controller_1.incidentController.getById);
+exports.incidentRouter.post('/:id/investigate', auth_middleware_1.requireInvestigator, incident_validators_1.investigateValidators, error_handler_1.handleValidation, incident_controller_1.incidentController.investigate);
+exports.incidentRouter.post('/:id/close', auth_middleware_1.requireInvestigator, incident_validators_1.closeValidators, error_handler_1.handleValidation, incident_controller_1.incidentController.close);
+exports.incidentRouter.post('/:id/link-corrective-actions', incident_validators_1.linkCapaValidators, error_handler_1.handleValidation, incident_controller_1.incidentController.linkCorrectiveActions);
+exports.incidentRouter.post('/:id/witnesses', incident_validators_1.witnessValidators, error_handler_1.handleValidation, incident_controller_1.incidentController.addWitness);

@@ -1,0 +1,491 @@
+version: "3.9"
+
+x-jwt-env: &jwt-env
+  JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+  AUTH_VALIDATE_URL: http://auth-service:3001/auth/validate-token
+
+x-service-env: &service-env
+  <<: *jwt-env
+  NODE_ENV: production
+  LOG_LEVEL: info
+  CORS_ORIGIN: "*"
+  NATS_URL: nats://nats:4222
+  REDIS_URL: redis://redis:6379
+  CONFIG_SERVICE_URL: http://config-service:3034
+  EVENT_BUS_ENABLED: "true"
+
+x-db-depends: &db-depends
+  db:
+    condition: service_healthy
+
+services:
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    environment:
+      <<: *jwt-env
+      NODE_ENV: production
+      PORT: 8080
+      AUTH_SERVICE_URL: http://auth-service:3001
+      RBAC_SERVICE_URL: http://rbac-service:3002
+      AUDIT_SERVICE_URL: http://audit-service:3003
+      ATTACHMENT_SERVICE_URL: http://attachment-service:3004
+      OFFLINE_SERVICE_URL: http://offline-service:3005
+      HAZARD_CONTROL_SERVICE_URL: http://hazard-control-service:3006
+      JHA_SERVICE_URL: http://jha-service:3007
+      CORRECTIVE_ACTION_SERVICE_URL: http://corrective-action-service:3008
+      COMPANY_SAFETY_SERVICE_URL: http://company-safety-service:3009
+      PROJECT_SAFETY_SERVICE_URL: http://project-safety-service:3010
+      WORKER_SAFETY_SERVICE_URL: http://worker-safety-service:3011
+      TRAINING_SERVICE_URL: http://training-service:3012
+      EQUIPMENT_SAFETY_SERVICE_URL: http://equipment-safety-service:3013
+      ACCESS_CONTROL_SERVICE_URL: http://access-control-service:3014
+      SAFETY_STATIONS_SERVICE_URL: http://safety-stations-service:3015
+      SDS_SERVICE_URL: http://sds-service:3016
+      EMERGENCY_SERVICE_URL: http://emergency-response-service:3017
+      PM_PROJECT_SERVICE_URL: http://pm-project-service:3018
+      PM_WORK_PACKAGE_SERVICE_URL: http://pm-work-package-service:3019
+      PM_TASK_SERVICE_URL: http://pm-task-service:3020
+      PM_SCHEDULE_SERVICE_URL: http://pm-schedule-service:3021
+      CAIL_INGESTION_SERVICE_URL: http://cail-ingestion-service:3022
+      CAIL_SCORING_SERVICE_URL: http://cail-scoring-service:3023
+      CAIL_PREDICTION_SERVICE_URL: http://cail-prediction-service:3024
+      CAIL_RECOMMENDATION_SERVICE_URL: http://cail-recommendation-service:3025
+      CAIL_EXPLAINABILITY_SERVICE_URL: http://cail-explainability-service:3026
+      CAIL_REALTIME_SERVICE_URL: http://cail-realtime-service:3027
+      INSPECTION_SERVICE_URL: http://inspection-service:3028
+      INCIDENT_SERVICE_URL: http://incident-service:3029
+      PERMIT_SERVICE_URL: http://permit-service:3030
+      CAIL_MODEL_TRAINING_SERVICE_URL: http://cail-model-training-service:3031
+      CAIL_MODEL_VERSIONING_SERVICE_URL: http://cail-model-versioning-service:3032
+      CAIL_MODEL_DRIFT_SERVICE_URL: http://cail-model-drift-service:3033
+      CONFIG_SERVICE_URL: http://config-service:3034
+      BACKEND_SERVICE_URL: http://host.docker.internal:3000
+      AUDIT_SERVICE_KEY: dev-audit-ingest-secret
+      RBAC_ENABLED: "true"
+    depends_on:
+      - auth-service
+      - rbac-service
+
+  auth-service:
+    build: ./auth-service
+    environment:
+      <<: *service-env
+      PORT: 3001
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_auth?schema=public
+      JWT_REFRESH_SECRET: change-me-refresh-secret-min-32-chars-long
+      JWT_ACCESS_EXPIRES_IN: 15m
+      JWT_REFRESH_EXPIRES_DAYS: 7
+      BCRYPT_ROUNDS: 12
+      COOKIE_SECURE: "false"
+    depends_on:
+      <<: *db-depends
+
+  rbac-service:
+    build: ./rbac-service
+    environment:
+      <<: *service-env
+      PORT: 3002
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_rbac?schema=public
+    depends_on:
+      <<: *db-depends
+      auth-service:
+        condition: service_started
+
+  audit-service:
+    build: ./audit-service
+    environment:
+      <<: *service-env
+      PORT: 3003
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_audit?schema=public
+      AUDIT_SERVICE_KEY: dev-audit-ingest-secret
+    depends_on:
+      <<: *db-depends
+
+  attachment-service:
+    build: ./attachment-service
+    environment:
+      <<: *service-env
+      PORT: 3004
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_attachment?schema=public
+      STORAGE_DRIVER: local
+      LOCAL_STORAGE_PATH: /data/attachments
+    volumes:
+      - attachments:/data/attachments
+    depends_on:
+      <<: *db-depends
+
+  offline-service:
+    build: ./offline-service
+    environment:
+      <<: *service-env
+      PORT: 3005
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_offline?schema=public
+      SYNC_WORKER_ENABLED: "false"
+    depends_on:
+      <<: *db-depends
+
+  hazard-control-service:
+    build: ./hazard-control-service
+    environment:
+      <<: *service-env
+      PORT: 3006
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_hazard?schema=public
+    depends_on:
+      <<: *db-depends
+
+  jha-service:
+    build: ./jha-service
+    environment:
+      <<: *service-env
+      PORT: 3007
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_jha?schema=public
+      CAPA_SERVICE_URL: http://corrective-action-service:3008
+    depends_on:
+      <<: *db-depends
+      hazard-control-service:
+        condition: service_started
+
+  corrective-action-service:
+    build: ./corrective-action-service
+    environment:
+      <<: *service-env
+      PORT: 3008
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_capa?schema=public
+      ATTACHMENT_SERVICE_URL: http://attachment-service:3004
+    depends_on:
+      <<: *db-depends
+
+  company-safety-service:
+    build: ./company-safety-service
+    environment:
+      <<: *service-env
+      PORT: 3009
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_company?schema=public
+    depends_on:
+      <<: *db-depends
+
+  project-safety-service:
+    build: ./project-safety-service
+    environment:
+      <<: *service-env
+      PORT: 3010
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_project?schema=public
+    depends_on:
+      <<: *db-depends
+
+  worker-safety-service:
+    build: ./worker-safety-service
+    environment:
+      <<: *service-env
+      PORT: 3011
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_worker?schema=public
+    depends_on:
+      <<: *db-depends
+
+  training-service:
+    build: ./training-service
+    environment:
+      <<: *service-env
+      PORT: 3012
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_training?schema=public
+      ATTACHMENT_SERVICE_URL: http://attachment-service:3004
+    depends_on:
+      <<: *db-depends
+
+  equipment-safety-service:
+    build: ./equipment-safety-service
+    environment:
+      <<: *service-env
+      PORT: 3013
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_equipment?schema=public
+    depends_on:
+      <<: *db-depends
+
+  access-control-service:
+    build: ./access-control-service
+    environment:
+      <<: *service-env
+      PORT: 3014
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_access?schema=public
+      WORKER_SAFETY_SERVICE_URL: http://worker-safety-service:3011
+      EQUIPMENT_SAFETY_SERVICE_URL: http://equipment-safety-service:3013
+      TRAINING_SERVICE_URL: http://training-service:3012
+      PROJECT_SAFETY_SERVICE_URL: http://project-safety-service:3010
+    depends_on:
+      <<: *db-depends
+      worker-safety-service:
+        condition: service_started
+      equipment-safety-service:
+        condition: service_started
+      project-safety-service:
+        condition: service_started
+
+  safety-stations-service:
+    build: ./safety-stations-service
+    environment:
+      <<: *service-env
+      PORT: 3015
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_stations?schema=public
+      WORKER_SAFETY_SERVICE_URL: http://worker-safety-service:3011
+      EQUIPMENT_SAFETY_SERVICE_URL: http://equipment-safety-service:3013
+      JHA_SERVICE_URL: http://jha-service:3007
+      ACCESS_CONTROL_SERVICE_URL: http://access-control-service:3014
+    depends_on:
+      <<: *db-depends
+      access-control-service:
+        condition: service_started
+
+  sds-service:
+    build: ./sds-service
+    environment:
+      <<: *service-env
+      PORT: 3016
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_sds?schema=public
+    depends_on:
+      <<: *db-depends
+
+  emergency-response-service:
+    build: ./emergency-response-service
+    environment:
+      <<: *service-env
+      PORT: 3017
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_emergency?schema=public
+      ACCESS_CONTROL_SERVICE_URL: http://access-control-service:3014
+      SAFETY_STATIONS_SERVICE_URL: http://safety-stations-service:3015
+    depends_on:
+      <<: *db-depends
+      access-control-service:
+        condition: service_started
+
+  pm-project-service:
+    build: ./pm-project-service
+    environment:
+      <<: *service-env
+      PORT: 3018
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_pm_project?schema=public
+      PROJECT_SAFETY_SERVICE_URL: http://project-safety-service:3010
+    depends_on:
+      <<: *db-depends
+
+  pm-work-package-service:
+    build: ./pm-work-package-service
+    environment:
+      <<: *service-env
+      PORT: 3019
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_work_package?schema=public
+      PM_PROJECT_SERVICE_URL: http://pm-project-service:3018
+    depends_on:
+      <<: *db-depends
+      pm-project-service:
+        condition: service_started
+
+  pm-task-service:
+    build: ./pm-task-service
+    environment:
+      <<: *service-env
+      PORT: 3020
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_pm_task?schema=public
+      PM_WORK_PACKAGE_SERVICE_URL: http://pm-work-package-service:3019
+    depends_on:
+      <<: *db-depends
+      pm-work-package-service:
+        condition: service_started
+
+  pm-schedule-service:
+    build: ./pm-schedule-service
+    environment:
+      <<: *service-env
+      PORT: 3021
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_pm_schedule?schema=public
+      PM_PROJECT_SERVICE_URL: http://pm-project-service:3018
+      PM_TASK_SERVICE_URL: http://pm-task-service:3020
+      CAIL_SERVICE_URL: http://cail-realtime-service:3027/cail/realtime
+    depends_on:
+      <<: *db-depends
+      pm-task-service:
+        condition: service_started
+
+  cail-ingestion-service:
+    build: ./cail-ingestion-service
+    environment:
+      <<: *service-env
+      PORT: 3022
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_cail_ingest?schema=public
+    depends_on:
+      <<: *db-depends
+
+  cail-scoring-service:
+    build: ./cail-scoring-service
+    environment:
+      <<: *service-env
+      PORT: 3023
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_cail_score?schema=public
+    depends_on:
+      <<: *db-depends
+
+  cail-prediction-service:
+    build: ./cail-prediction-service
+    environment:
+      <<: *service-env
+      PORT: 3024
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_cail_predict?schema=public
+    depends_on:
+      <<: *db-depends
+
+  cail-recommendation-service:
+    build: ./cail-recommendation-service
+    environment:
+      <<: *service-env
+      PORT: 3025
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_cail_recommend?schema=public
+    depends_on:
+      <<: *db-depends
+
+  cail-explainability-service:
+    build: ./cail-explainability-service
+    environment:
+      <<: *service-env
+      PORT: 3026
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_cail_explain?schema=public
+    depends_on:
+      <<: *db-depends
+
+  cail-realtime-service:
+    build: ./cail-realtime-service
+    environment:
+      <<: *service-env
+      PORT: 3027
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_cail_realtime?schema=public
+    depends_on:
+      <<: *db-depends
+      nats:
+        condition: service_started
+
+  inspection-service:
+    build: ./inspection-service
+    environment:
+      <<: *service-env
+      PORT: 3028
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_inspection?schema=public
+      CORRECTIVE_ACTION_SERVICE_URL: http://corrective-action-service:3008
+      HAZARD_CONTROL_SERVICE_URL: http://hazard-control-service:3006
+      EQUIPMENT_SAFETY_SERVICE_URL: http://equipment-safety-service:3013
+    depends_on:
+      <<: *db-depends
+
+  incident-service:
+    build: ./incident-service
+    environment:
+      <<: *service-env
+      PORT: 3029
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_incident?schema=public
+      CORRECTIVE_ACTION_SERVICE_URL: http://corrective-action-service:3008
+      WORKER_SAFETY_SERVICE_URL: http://worker-safety-service:3011
+      EMERGENCY_SERVICE_URL: http://emergency-response-service:3017
+    depends_on:
+      <<: *db-depends
+
+  permit-service:
+    build: ./permit-service
+    environment:
+      <<: *service-env
+      PORT: 3030
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_permit?schema=public
+      JHA_SERVICE_URL: http://jha-service:3007
+      TRAINING_SERVICE_URL: http://training-service:3012
+      SDS_SERVICE_URL: http://sds-service:3016
+      HAZARD_CONTROL_SERVICE_URL: http://hazard-control-service:3006
+      PM_TASK_SERVICE_URL: http://pm-task-service:3020
+    depends_on:
+      <<: *db-depends
+      pm-task-service:
+        condition: service_started
+
+  cail-model-training-service:
+    build: ./cail-model-training-service
+    environment:
+      <<: *service-env
+      PORT: 3031
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_cail_train?schema=public
+      CAIL_INGESTION_SERVICE_URL: http://cail-ingestion-service:3022
+    depends_on:
+      <<: *db-depends
+      nats:
+        condition: service_started
+
+  cail-model-versioning-service:
+    build: ./cail-model-versioning-service
+    environment:
+      <<: *service-env
+      PORT: 3032
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_cail_version?schema=public
+      CAIL_MODEL_TRAINING_SERVICE_URL: http://cail-model-training-service:3031
+    depends_on:
+      <<: *db-depends
+      cail-model-training-service:
+        condition: service_started
+
+  cail-model-drift-service:
+    build: ./cail-model-drift-service
+    environment:
+      <<: *service-env
+      PORT: 3033
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_cail_drift?schema=public
+      CAIL_INGESTION_SERVICE_URL: http://cail-ingestion-service:3022
+    depends_on:
+      <<: *db-depends
+      nats:
+        condition: service_started
+
+  config-service:
+    build: ./config-service
+    environment:
+      <<: *service-env
+      PORT: 3034
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/vera_config?schema=public
+    depends_on:
+      <<: *db-depends
+
+  nats:
+    image: nats:2.10-alpine
+    ports:
+      - "4222:4222"
+      - "8222:8222"
+    command: ["-js", "-m", "8222"]
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8222/healthz"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+      - ./docker/postgres/init-databases.sql:/docker-entrypoint-initdb.d/01-init-databases.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  dbdata:
+  attachments:

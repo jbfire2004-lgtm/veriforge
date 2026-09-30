@@ -1,0 +1,77 @@
+name: Go Live Smoke
+
+on:
+  pull_request:
+    paths:
+      - 'backend/**'
+      - 'vera-frontend/**'
+      - 'scripts/go-live-smoke.mjs'
+      - 'scripts/onboard-tenant.mjs'
+      - '.github/workflows/go-live-smoke.yml'
+  workflow_dispatch:
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: vera
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d vera"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vera?schema=public
+      SHADOW_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/vera_shadow?schema=public
+      JWT_SECRET: ci-smoke-secret-minimum-32-characters
+      NODE_ENV: test
+      SEED_USER_PASSWORD: hashedpassword123
+      SMOKE_BASE_URL: http://127.0.0.1:3001
+      SMOKE_PASSWORD: hashedpassword123
+      SMOKE_ADMIN_EMAIL: admin@vera.com
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci --legacy-peer-deps
+
+      - name: Create shadow database
+        run: psql "postgresql://postgres:postgres@localhost:5432/postgres" -c "CREATE DATABASE vera_shadow;"
+
+      - name: Apply migrations
+        working-directory: backend
+        run: npx prisma migrate deploy && npx prisma generate
+
+      - name: Run onboarding seed automation
+        run: node scripts/onboard-tenant.mjs
+
+      - name: Start backend
+        working-directory: backend
+        run: nohup npm run start:dev > /tmp/vera-backend.log 2>&1 &
+
+      - name: Wait for backend ready
+        run: |
+          for i in {1..50}; do
+            if curl -sf http://127.0.0.1:3001/ready >/dev/null; then
+              echo "backend_ready"
+              exit 0
+            fi
+            sleep 3
+          done
+          exit 1
+
+      - name: Run go-live smoke suite
+        run: node scripts/go-live-smoke.mjs

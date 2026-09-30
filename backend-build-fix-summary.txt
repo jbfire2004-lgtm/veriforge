@@ -1,0 +1,103 @@
+Backend TypeScript Build Error Fix — Summary
+================================================
+Date: 2026-07-17
+Target: `nest build` in C:\Projects\veri-temp\backend
+Source error dump: C:\Projects\veri-temp\backend-build-errors.txt (74 reported errors)
+
+IMPORTANT ENVIRONMENT NOTE
+--------------------------
+The Shell tool was completely unresponsive for this entire session (every invocation,
+including trivial commands like `echo`, `whoami`, `Get-Location`, returned "no exit
+status" with zero output). This was confirmed to be an environment-wide outage, not a
+command-specific issue, by also delegating to an independent shell-execution subagent,
+which hit the identical failure on the exact same commands. As a result, `nest build`
+/ `tsc` could NOT be executed or re-verified in this session, despite repeated retries
+(including a delayed retry after an explicit wait).
+
+Because live compilation was unavailable, every one of the 74 reported errors was
+instead verified statically:
+  - Located the exact current file/line referenced by the error.
+  - Cross-checked the referenced identifiers, enum members, and Prisma model fields
+    against the live `prisma/schema.prisma` and the generated client at
+    `backend/node_modules/.prisma/client/index.d.ts`.
+  - Confirmed whether the reported code pattern still exists as described.
+
+FINDING
+-------
+All 74 errors in the dump were already resolved in the current working tree. Every
+single location checked out as type-correct against the current schema/generated
+Prisma client. Representative examples of why each error class no longer reproduces:
+
+  - pm-company-safety-context.service.ts: `zoneType` union already includes
+    'confined_space' | 'general_work' | 'high_risk' | 'sif_high_energy', matching the
+    Prisma `PmAccessZoneType` enum.
+  - pm-capa-auto-generate.service.ts: `f.failureType === 'safety_device'` — valid
+    `PmEquipmentFailureType` member (dump referenced a stale `'critical'` comparison
+    that is no longer in the code).
+  - pm-emergency.controller.ts / pm-equipment.controller.ts / pm-safety-events.
+    controller.ts / pm-safety-meetings.controller.ts / pm-training.controller.ts /
+    pm-inspections.controller.ts: offline-sync/spread bodies already use
+    `body as unknown as Parameters<...>[1]` or `...(body as object)` instead of the
+    unsafe `as never` casts the dump complained about (TS2698/TS2352/TS2345 no longer
+    apply).
+  - pm-inspections.controller.ts: no duplicate `intelligence` identifier exists;
+    the CAIL service is injected as `cailIntelligence`.
+  - pm-offline-mode/*: `PmOfflineCache`, `PmOfflineConflict`, `PmOfflineAuditLog`
+    models and the `PmOfflineSyncStatus` enum are all present and exported from the
+    generated Prisma client (`prisma generate` output is in sync with
+    `schema.prisma`), so `PrismaService` (which extends `PrismaClient`) already
+    exposes `pmOfflineCache` / `pmOfflineConflict` / `pmOfflineAuditLog` delegates.
+  - pm-project-management.service.ts: `orderBy` on `PmSiteEmergencyLock` already uses
+    `lockedAt` (a real field), not `createdAt`.
+  - pm-safety-meetings-topic-library.service.ts: already selects
+    `hecaScore.hecaCategoryCode` (not the nonexistent `categoryCode`).
+  - pm-safety-meetings.service.ts: `validateWorkerEquipment(workerId, meetingId)` is
+    called with the correct `(number, string)` argument order matching its signature.
+  - pm-safety-stations.service.ts / station-jha.engine.ts: `stationType`/`networkMode`
+    parameter types now reference the engine's exported input type directly; muster
+    `orderBy` uses `triggeredAt`; `MusterCheckin.create` uses `method`, not `notes`;
+    JHA signature lookups use `signerUserId`/`role` (no `workerId` on that model).
+  - pm-site-access-control.*: offline-sync bodies cast via `as unknown as
+    Parameters<...>[1]`; role comparisons use `'SUPERVISOR'` (uppercase, matching
+    `JhaFlhaSignatureRole`).
+  - pm-training-cail-intelligence.service.ts: uses `hecaCategoryKey` (correct field),
+    not the nonexistent `hazardCategoryKey`.
+  - pm-unified-corrective-action*.ts: `assign()` accepts
+    `'primary' | 'secondary' | 'delegate' | 'verifier'`, matching
+    `PmCapaAssigneeRole`; deficiency queries no longer filter on the nonexistent
+    `correctiveActionId`.
+  - pm-unified-hazard-control-cail.service.ts: `chronicHazardDetection` is declared
+    `async` and awaits `pmUnifiedHazard.findMany` correctly; no top-level-await issue.
+  - pm-unified-safety-intelligence.service.ts: `openStatuses.notIn` is a mutable
+    `Array<'verified' | 'closed' | 'cancelled'>` (not a `readonly` tuple); the drift
+    pattern is conditionally spread (`...(driftPattern ? [driftPattern] : [])`)
+    instead of spreading a non-iterable value.
+  - pm-worker-safety-cail-intelligence.service.ts: uses `general_safety` (valid
+    `PmCompanyTrainingCategory` member) and the `EquipmentAssignment` model/relation
+    (which does have `workerId` and `equipment.catalogCategory`), not
+    `EquipmentProjectAssignment`.
+  - pm-worker-safety-profile.service.ts: `SafetyMeetingStatus` filters use
+    `'completed' | 'reviewed'` (valid enum members), not `'closed'`.
+  - safety-management/sds/sds.controller.ts: `addInventory` request body includes
+    `companyId`, matching `SdsService.addInventoryItem`'s required parameter.
+
+FILES CHANGED
+-------------
+None. No source files required modification — every reported error location was
+already type-correct in the current tree.
+
+BUILD STATUS
+------------
+`nest build` was NOT executed in this session due to the Shell/tool-execution
+environment being unresponsive for the full duration of the task (confirmed via
+repeated direct attempts and one independent subagent attempt, all failing
+identically). Exit code and error count therefore could not be captured live this
+run.
+
+Recommendation: once the shell/tool-execution environment is restored, run:
+  cd C:\Projects\veri-temp\backend
+  node node_modules/@nestjs/cli/bin/nest.js build
+to obtain a live exit code. Based on the exhaustive static verification above
+(every dump error location cross-checked against schema.prisma and the generated
+Prisma client), the expected result is exit code 0 with 0 errors — but this should
+be confirmed with a live build as soon as possible.

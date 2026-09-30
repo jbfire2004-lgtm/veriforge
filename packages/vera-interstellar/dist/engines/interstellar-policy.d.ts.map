@@ -1,0 +1,1 @@
+{"version":3,"file":"interstellar-policy.d.ts","sourceRoot":"","sources":["../../src/engines/interstellar-policy.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,kBAAkB,EAAE,MAAM,UAAU,CAAC;AAE7E,qBAAa,wBAAwB;IACnC,QAAQ,CAAC,GAAG,EAAE,wBAAwB,GAAG,kBAAkB,EAAE;CAkB9D"}

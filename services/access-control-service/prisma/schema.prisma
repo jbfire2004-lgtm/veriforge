@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AccessResult {
+  granted
+  denied
+}
+
+enum OverrideType {
+  supervisor
+  emergency
+  maintenance
+  temporary
+}
+
+model AccessPoint {
+  id        String   @id @default(uuid()) @db.Uuid
+  companyId String   @map("company_id") @db.Uuid
+  projectId String?  @map("project_id") @db.Uuid
+  zoneId    String?  @map("zone_id") @db.Uuid
+  name      String
+  rules     Json     @default("{}") @db.JsonB
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  attempts AccessAttempt[]
+
+  @@index([companyId])
+  @@index([companyId, projectId])
+  @@map("access_points")
+}
+
+model EmergencyLockout {
+  id         String    @id @default(uuid()) @db.Uuid
+  companyId  String    @map("company_id") @db.Uuid
+  projectId  String?   @map("project_id") @db.Uuid
+  reason     String
+  active     Boolean   @default(true)
+  lockedAt   DateTime  @default(now()) @map("locked_at")
+  unlockedAt DateTime? @map("unlocked_at")
+  lockedBy   String    @map("locked_by") @db.Uuid
+
+  @@index([companyId, active])
+  @@index([companyId, projectId, active])
+  @@map("emergency_lockouts")
+}
+
+model AccessAttempt {
+  id            String       @id @default(uuid()) @db.Uuid
+  companyId     String       @map("company_id") @db.Uuid
+  accessPointId String       @map("access_point_id") @db.Uuid
+  workerId      String       @map("worker_id") @db.Uuid
+  equipmentId   String?      @map("equipment_id") @db.Uuid
+  timestamp     DateTime     @default(now())
+  result        AccessResult
+  reason        String?
+
+  accessPoint AccessPoint      @relation(fields: [accessPointId], references: [id], onDelete: Cascade)
+  overrides   AccessOverride[]
+
+  @@index([companyId])
+  @@index([workerId])
+  @@index([equipmentId])
+  @@index([accessPointId, timestamp])
+  @@map("access_attempts")
+}
+
+model AccessOverride {
+  id              String       @id @default(uuid()) @db.Uuid
+  accessAttemptId String       @map("access_attempt_id") @db.Uuid
+  overrideType    OverrideType @map("override_type")
+  approvedBy      String       @map("approved_by") @db.Uuid
+  approvedAt      DateTime     @default(now()) @map("approved_at")
+  expiry          DateTime?
+
+  accessAttempt AccessAttempt @relation(fields: [accessAttemptId], references: [id], onDelete: Cascade)
+
+  @@index([accessAttemptId])
+  @@index([approvedBy])
+  @@map("access_overrides")
+}

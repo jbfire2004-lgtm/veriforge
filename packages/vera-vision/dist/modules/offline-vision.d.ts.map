@@ -1,0 +1,1 @@
+{"version":3,"file":"offline-vision.d.ts","sourceRoot":"","sources":["../../src/modules/offline-vision.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,mBAAmB,EAAE,oBAAoB,EAAE,MAAM,UAAU,CAAC;AAC1E,OAAO,EAAuB,KAAK,eAAe,EAAE,MAAM,qBAAqB,CAAC;AAEhF,0EAA0E;AAC1E,wBAAsB,cAAc,CAClC,KAAK,EAAE,mBAAmB,EAC1B,OAAO,EAAE,eAAe,GACvB,OAAO,CAAC,oBAAoB,CAAC,CAS/B"}

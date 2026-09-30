@@ -1,0 +1,21 @@
+.wrap {
+  composes: tokens from "./shared.module.css";
+  border: 1px solid var(--vf-steel-grey);
+  background: var(--vf-iron-black);
+  background-image: var(--vf-metallic);
+  border-radius: 0;
+  padding: 14px;
+  box-shadow: var(--vf-steel-glow);
+}
+
+.title {
+  margin: 0 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 2px solid var(--vf-forge-red);
+  font-family: var(--vf-font-heading);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--vf-safety-white);
+}

@@ -1,0 +1,39 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum ScheduleStatus {
+  scheduled
+  conflict
+  safety_blocked
+  completed
+  cancelled
+}
+
+model ProjectSchedule {
+  id          String         @id @default(uuid()) @db.Uuid
+  companyId   String         @map("company_id") @db.Uuid
+  projectId   String         @map("project_id") @db.Uuid
+  taskId      String?        @map("task_id") @db.Uuid
+  workerId    String?        @map("worker_id") @db.Uuid
+  equipmentId String?        @map("equipment_id") @db.Uuid
+  startTime   DateTime       @map("start_time")
+  endTime     DateTime       @map("end_time")
+  status      ScheduleStatus @default(scheduled)
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  @@index([companyId])
+  @@index([projectId])
+  @@index([companyId, projectId])
+  @@index([workerId, startTime])
+  @@index([equipmentId, startTime])
+  @@index([taskId])
+  @@index([status])
+  @@map("project_schedules")
+}

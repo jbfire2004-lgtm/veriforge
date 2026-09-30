@@ -1,0 +1,1 @@
+{"version":3,"file":"data-automation.d.ts","sourceRoot":"","sources":["../../src/engines/data-automation.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,qBAAqB,EAAE,MAAM,UAAU,CAAC;AAG9E,qBAAa,oBAAoB;IAC/B,GAAG,CAAC,GAAG,EAAE,sBAAsB,GAAG,qBAAqB;CAsDxD"}

@@ -1,0 +1,340 @@
+/**
+ * VeriForge forged-metal theme debug toolkit
+ *
+ * Enable on <html> or any ancestor:
+ *   <html class="vf-debug"> … </html>
+ *   or add individual flags: vf-debug-color, vf-debug-angular, etc.
+ *
+ * Never ship with vf-debug enabled in production.
+ */
+
+/* —— 1. COLOR DEBUGGING —— */
+
+.vf-debug .debug-color-outline,
+.vf-debug-color .debug-color-outline,
+.debug-color-outline {
+  outline-offset: 2px;
+}
+
+/* forgeRed */
+.vf-debug [style*="#C62828"],
+.vf-debug [style*="#c62828"],
+.vf-debug [class*="forge-red"],
+.vf-debug [class*="C62828"],
+.vf-debug-color [data-vf-token="forgeRed"],
+.debug-color-outline[data-vf-token="forgeRed"] {
+  outline: 2px solid #c62828 !important;
+  box-shadow: inset 0 0 0 1px rgba(198, 40, 40, 0.45) !important;
+}
+
+/* steelGrey */
+.vf-debug [style*="#424242"],
+.vf-debug [class*="steel-grey"],
+.vf-debug [class*="424242"],
+.vf-debug-color [data-vf-token="steelGrey"],
+.debug-color-outline[data-vf-token="steelGrey"] {
+  outline: 2px dashed #424242 !important;
+}
+
+/* ironBlack */
+.vf-debug [style*="#0D0D0D"],
+.vf-debug [style*="#0d0d0d"],
+.vf-debug [class*="iron-black"],
+.vf-debug [class*="0D0D0D"],
+.vf-debug-color [data-vf-token="ironBlack"],
+.debug-color-outline[data-vf-token="ironBlack"] {
+  outline: 2px solid #0d0d0d !important;
+  outline-offset: 3px;
+}
+
+/* safetyWhite */
+.vf-debug [style*="#FAFAFA"],
+.vf-debug [style*="#fafafa"],
+.vf-debug [class*="safety-white"],
+.vf-debug-color [data-vf-token="safetyWhite"],
+.debug-color-outline[data-vf-token="safetyWhite"] {
+  outline: 2px dotted #fafafa !important;
+}
+
+/* Explicit helper classes */
+.debug-color-forgeRed {
+  outline: 2px solid #c62828 !important;
+}
+.debug-color-steelGrey {
+  outline: 2px dashed #424242 !important;
+}
+.debug-color-ironBlack {
+  outline: 2px solid #0d0d0d !important;
+}
+.debug-color-safetyWhite {
+  outline: 2px dotted #fafafa !important;
+}
+
+/* —— 2. GEOMETRY DEBUGGING —— */
+
+.vf-debug .debug-angular,
+.vf-debug-angular .debug-angular,
+.debug-angular {
+  position: relative;
+}
+
+/**
+ * Any computed rounded corner is an ERROR under forged-metal rules.
+ * Mark common Tailwind / utility offenders.
+ */
+.vf-debug [class*="rounded-sm"],
+.vf-debug [class*="rounded-md"],
+.vf-debug [class*="rounded-lg"],
+.vf-debug [class*="rounded-xl"],
+.vf-debug [class*="rounded-2xl"],
+.vf-debug [class*="rounded-3xl"],
+.vf-debug [class*="rounded-full"],
+.vf-debug [class*="rounded-t"],
+.vf-debug [class*="rounded-b"],
+.vf-debug [class*="rounded-l"],
+.vf-debug [class*="rounded-r"],
+.vf-debug-angular [class*="rounded-"]:not([class*="rounded-none"]),
+.debug-angular[class*="rounded-"]:not([class*="rounded-none"]) {
+  outline: 3px solid #ff1744 !important;
+  outline-offset: 1px !important;
+  background-image: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 23, 68, 0.12),
+    rgba(255, 23, 68, 0.12) 6px,
+    transparent 6px,
+    transparent 12px
+  ) !important;
+}
+
+.vf-debug [class*="rounded-"]:not([class*="rounded-none"])::after,
+.vf-debug-angular [class*="rounded-"]:not([class*="rounded-none"])::after {
+  content: "⚠ ROUNDED (ERROR)";
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 9999;
+  font-family: "Orbitron", sans-serif;
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #fff;
+  background: #ff1744;
+  padding: 2px 6px;
+  pointer-events: none;
+}
+
+/* —— 3. MOTION DEBUGGING —— */
+
+.vf-debug .debug-motion,
+.vf-debug-motion .debug-motion,
+.debug-motion {
+  outline-offset: 2px;
+}
+
+.vf-debug .vf-m-angular-slide,
+.vf-debug [class*="angular-slide"],
+.vf-debug-motion [data-vf-motion="angularSlide"],
+.debug-motion[data-vf-motion="angularSlide"] {
+  outline: 2px solid #2196f3 !important; /* blue */
+}
+
+.vf-debug .vf-m-metallic-fade,
+.vf-debug [class*="metallic-fade"],
+.vf-debug-motion [data-vf-motion="metallicFade"],
+.debug-motion[data-vf-motion="metallicFade"] {
+  outline: 2px solid #9e9e9e !important; /* grey */
+}
+
+.vf-debug .vf-m-industrial-drop,
+.vf-debug [class*="industrial-drop"],
+.vf-debug .vf-m-modal-drop-in,
+.vf-debug-motion [data-vf-motion="industrialDrop"],
+.debug-motion[data-vf-motion="industrialDrop"] {
+  outline: 2px solid #ffeb3b !important; /* yellow */
+}
+
+.vf-debug .vf-m-red-glow-pulse,
+.vf-debug [class*="red-glow"],
+.vf-debug-motion [data-vf-motion="redGlowPulse"],
+.debug-motion[data-vf-motion="redGlowPulse"] {
+  outline: 2px solid #c62828 !important; /* red */
+}
+
+.debug-motion-angularSlide {
+  outline: 2px solid #2196f3 !important;
+}
+.debug-motion-metallicFade {
+  outline: 2px solid #9e9e9e !important;
+}
+.debug-motion-industrialDrop {
+  outline: 2px solid #ffeb3b !important;
+}
+.debug-motion-redGlowPulse {
+  outline: 2px solid #c62828 !important;
+}
+
+/* —— 4. COMPONENT DEBUGGING —— */
+
+.vf-debug .debug-component,
+.vf-debug-component .debug-component,
+.debug-component {
+  outline-offset: 0;
+}
+
+.vf-debug button[class*="VFButton"],
+.vf-debug [data-vf-component="VFButton"],
+.vf-debug-component [data-vf-component="VFButton"],
+.debug-component[data-vf-component="VFButton"] {
+  border: 2px solid #c62828 !important; /* red */
+}
+
+.vf-debug [data-card],
+.vf-debug [data-vf-component="VFCard"],
+.vf-debug-component [data-vf-component="VFCard"],
+.debug-component[data-vf-component="VFCard"] {
+  border: 2px solid #424242 !important; /* steel */
+}
+
+.vf-debug [data-vf-component="VFPanel"],
+.vf-debug-component [data-vf-component="VFPanel"],
+.debug-component[data-vf-component="VFPanel"] {
+  border: 2px solid #0d0d0d !important; /* black */
+  box-shadow: inset 0 0 0 1px #424242 !important;
+}
+
+.vf-debug [role="dialog"],
+.vf-debug [data-vf-component="VFModal"],
+.vf-debug-component [data-vf-component="VFModal"],
+.debug-component[data-vf-component="VFModal"] {
+  border: 2px solid transparent !important;
+  border-image: linear-gradient(135deg, #1a1a1a, #2e2e2e, #424242) 1 !important; /* metallic */
+}
+
+/* —— 5. LAYOUT DEBUGGING —— */
+
+.vf-debug .debug-layout-grid,
+.vf-debug-layout .debug-layout-grid,
+.debug-layout-grid {
+  background-image:
+    linear-gradient(to right, rgba(66, 66, 66, 0.55) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(66, 66, 66, 0.55) 1px, transparent 1px);
+  background-size: 16px 16px;
+  background-color: transparent;
+}
+
+.vf-debug .debug-layout-grid[data-vf-misaligned="true"],
+.vf-debug-layout [data-vf-misaligned="true"],
+.debug-layout-grid[data-vf-misaligned="true"] {
+  background-image:
+    linear-gradient(to right, rgba(198, 40, 40, 0.85) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(198, 40, 40, 0.85) 1px, transparent 1px);
+  background-size: 16px 16px;
+  outline: 2px solid #c62828 !important;
+}
+
+.vf-debug-layout .veriforge-theme,
+.vf-debug .veriforge-theme.debug-layout-grid {
+  background-image:
+    linear-gradient(135deg, #1a1a1a 0%, #2e2e2e 50%, #424242 100%),
+    linear-gradient(to right, rgba(66, 66, 66, 0.35) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(66, 66, 66, 0.35) 1px, transparent 1px);
+  background-size: auto, 16px 16px, 16px 16px;
+}
+
+/* —— 6. ROUTING DEBUGGING —— */
+
+.vf-debug .debug-route,
+.vf-debug-route .debug-route,
+.debug-route {
+  outline-offset: 3px;
+}
+
+.vf-debug [data-vf-route],
+.vf-debug-route [data-vf-route],
+.debug-route[data-vf-route] {
+  outline: 2px solid #2196f3 !important; /* angularSlide active */
+}
+
+.vf-debug [data-vf-route][class*="metallic"],
+.vf-debug-route [data-vf-fade="active"],
+.debug-route[data-vf-fade="active"] {
+  box-shadow: inset 0 0 0 2px #9e9e9e !important; /* metallicFade active */
+}
+
+.vf-debug [data-vf-critical="true"],
+.vf-debug-route [data-vf-critical="true"] {
+  outline-color: #c62828 !important;
+}
+
+/* —— 7. MOBILE DEBUGGING —— */
+
+.vf-debug .debug-mobile-hitbox,
+.vf-debug-mobile .debug-mobile-hitbox,
+.debug-mobile-hitbox {
+  position: relative;
+}
+
+.vf-debug-mobile a,
+.vf-debug-mobile button,
+.vf-debug .debug-mobile-hitbox a,
+.vf-debug .debug-mobile-hitbox button {
+  outline-offset: 0;
+}
+
+/* Correct tap zone ≥ 44×44 */
+.vf-debug-mobile a,
+.vf-debug-mobile button,
+.debug-mobile-hitbox a,
+.debug-mobile-hitbox button {
+  outline: 2px solid #424242 !important; /* steel-grey = correct (assumed) */
+}
+
+/**
+ * Mark likely-too-small hit targets (heuristic via min size utilities).
+ * Elements with explicit tiny padding / icon-only without min size → red.
+ */
+.vf-debug-mobile [class*="h-6"],
+.vf-debug-mobile [class*="h-7"],
+.vf-debug-mobile [class*="h-8"],
+.vf-debug-mobile [class*="w-6"],
+.vf-debug-mobile [class*="w-7"],
+.vf-debug-mobile [class*="w-8"],
+.vf-debug-mobile .debug-mobile-hitbox--small,
+.debug-mobile-hitbox--small {
+  outline: 2px solid #c62828 !important; /* red = too small */
+  outline-offset: 1px !important;
+}
+
+.vf-debug-mobile .debug-mobile-hitbox--ok,
+.debug-mobile-hitbox--ok {
+  outline: 2px solid #424242 !important;
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* —— Legend overlay (optional) —— */
+
+.vf-debug::before,
+.vf-debug-color::before,
+.vf-debug-angular::before,
+.vf-debug-motion::before,
+.vf-debug-component::before,
+.vf-debug-layout::before,
+.vf-debug-route::before,
+.vf-debug-mobile::before {
+  content: "VF DEBUG ON";
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  z-index: 2147483646;
+  font-family: "Orbitron", sans-serif;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #fafafa;
+  background: #c62828;
+  border: 1px solid #424242;
+  padding: 6px 10px;
+  pointer-events: none;
+  border-radius: 0;
+}

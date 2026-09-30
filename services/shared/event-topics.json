@@ -1,0 +1,56 @@
+{
+  "safety": {
+    "jha": ["safety.jha.created", "safety.jha.signed", "safety.jha.approved"],
+    "inspection": [
+      "safety.inspection.created",
+      "safety.inspection.submitted",
+      "safety.inspection.failed",
+      "safety.inspection.passed"
+    ],
+    "incident": [
+      "safety.incident.reported",
+      "safety.incident.investigated",
+      "safety.incident.closed"
+    ],
+    "corrective": [
+      "safety.corrective.created",
+      "safety.corrective.assigned",
+      "safety.corrective.verified",
+      "safety.corrective.closed"
+    ],
+    "equipment": [
+      "safety.equipment.registered",
+      "safety.equipment.inspection_due",
+      "safety.equipment.blocked"
+    ],
+    "emergency": [
+      "safety.emergency.declared",
+      "safety.emergency.resolved"
+    ],
+    "hazard": ["safety.hazard.created", "safety.control.applied"]
+  },
+  "access": {
+    "site": ["access.site.requested", "access.site.granted", "access.site.denied"],
+    "station": ["access.station.checkin", "access.station.checkout"],
+    "training": ["access.training.completed", "access.training.expired"]
+  },
+  "pm": {
+    "project": ["pm.project.created", "pm.project.updated"],
+    "work_package": ["pm.work_package.created", "pm.work_package.gated"],
+    "task": ["pm.task.started", "pm.task.completed", "pm.task.gate_blocked"],
+    "schedule": ["pm.schedule.conflict", "pm.schedule.delay_predicted"],
+    "permit": ["pm.permit.requested", "pm.permit.approved", "pm.permit.active"]
+  },
+  "cail": {
+    "ingest": ["cail.ingest.received", "cail.ingest.normalized"],
+    "score": ["cail.score.computed"],
+    "predict": ["cail.predict.generated"],
+    "recommend": ["cail.recommend.generated"],
+    "drift": ["cail.drift.detected"],
+    "model": ["cail.model.trained", "cail.model.promoted", "cail.model.rolled_back"]
+  },
+  "platform": {
+    "offline": ["platform.offline.sync_batch", "platform.offline.conflict"],
+    "audit": ["platform.audit.recorded"]
+  }
+}

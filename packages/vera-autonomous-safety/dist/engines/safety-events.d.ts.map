@@ -1,0 +1,1 @@
+{"version":3,"file":"safety-events.d.ts","sourceRoot":"","sources":["../../src/engines/safety-events.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,kBAAkB,EAAE,MAAM,UAAU,CAAC;AAEnD,8DAA8D;AAC9D,qBAAa,iBAAiB;IAC5B,UAAU,CAAC,GAAG,EAAE,kBAAkB,EAAE,KAAK,EAAE,MAAM,EAAE,IAAI,CAAC,EAAE,MAAM,CAAC,MAAM,EAAE,OAAO,CAAC,GAAG,kBAAkB;CAkBvG"}

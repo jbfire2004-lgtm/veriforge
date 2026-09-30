@@ -1,0 +1,34 @@
+services:
+  offline-db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: vera_offline
+      POSTGRES_PASSWORD: vera_offline_secret
+      POSTGRES_DB: vera_offline
+    ports:
+      - "5437:5432"
+    volumes:
+      - offline_pg_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vera_offline -d vera_offline"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  offline-service:
+    build: .
+    ports:
+      - "3005:3005"
+    environment:
+      NODE_ENV: production
+      PORT: 3005
+      DATABASE_URL: postgresql://vera_offline:vera_offline_secret@offline-db:5432/vera_offline?schema=public
+      JWT_ACCESS_SECRET: change-me-access-secret-min-32-chars-long
+      SYNC_WORKER_ENABLED: "true"
+      AUTH_VALIDATE_URL: http://host.docker.internal:3001/auth/validate-token
+    depends_on:
+      offline-db:
+        condition: service_healthy
+
+volumes:
+  offline_pg_data:

@@ -1,0 +1,31 @@
+# Default privacy / AI posture for VeriAgent (mount or bake into ConfigMap)
+privacyMode: strict # strict | balanced
+region: ca-central-1
+
+llm:
+  enabled: true
+  allowImageEgress: false
+  endpointEnv: VERA_LLM_ENDPOINT
+  apiKeyEnv: VERA_LLM_API_KEY
+  model: gpt-4o-mini
+  noTraining: true
+  zeroRetention: true
+
+paths:
+  redactionRules: /app/config/redaction-rules.json
+  policiesDir: /app/config/policies
+  tenantPolicyMap: /app/config/policies/tenant-overrides.json
+  orchestration: /app/config/orchestration.json
+  security: /app/config/security.json
+  translationStrict: /app/config/translation/strict.json
+  translationRelaxed: /app/config/translation/relaxed.json
+
+observability:
+  metricsEnabled: true
+  tracingEnabled: true
+  otlpEndpointEnv: OTEL_EXPORTER_OTLP_ENDPOINT
+  serviceName: veri-agent-service
+
+rateLimit:
+  perTenantPerMinute: 120
+  perUserPerMinute: 60

@@ -1,0 +1,22 @@
+{
+  "name": "@vera/civilization",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vera Universal Civilization Engine (UCE)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@vera/interstellar": "file:../vera-interstellar",
+    "@vera/interplanetary": "file:../vera-interplanetary",
+    "@vera/marketplace": "file:../vera-marketplace",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,5 +1,13 @@
 {
+  "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
   "sourceRoot": "src",
-  "entryFile": "main"
+  "compilerOptions": {
+    "assets": [
+      {
+        "include": "fall-clearance/data/**/*",
+        "watchAssets": true
+      }
+    ]
+  }
 }

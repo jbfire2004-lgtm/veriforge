@@ -1,0 +1,1 @@
+{"version":3,"file":"global-training-intelligence.d.ts","sourceRoot":"","sources":["../../src/engines/global-training-intelligence.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,0BAA0B,EAAE,mBAAmB,EAAE,MAAM,UAAU,CAAC;AAEhF,qBAAa,gCAAgC;IAC3C,OAAO,CAAC,GAAG,EAAE,mBAAmB,GAAG,0BAA0B;CAoB9D"}

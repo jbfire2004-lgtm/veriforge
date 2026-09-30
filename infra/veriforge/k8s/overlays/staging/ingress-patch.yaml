@@ -1,0 +1,30 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: veriforge
+spec:
+  rules:
+    - host: staging.veriglobal.ca
+      http:
+        paths:
+          - path: /webhooks(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: veriforge-api
+                port:
+                  number: 3020
+          - path: /api(/|$)(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: veriforge-api
+                port:
+                  number: 3020
+          - path: /()(.*)
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: veriforge-frontend
+                port:
+                  number: 80

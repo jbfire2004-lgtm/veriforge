@@ -1,0 +1,126 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Worker {
+  id                String            @id @default(cuid())
+  firstName         String
+  lastName          String
+  companyId         String
+  orientationStatus OrientationStatus @default(missing)
+  orientationDate   DateTime?
+  lifecycleState    LifecycleState    @default(not_seen)
+  lastHeartbeat     DateTime?
+  certifications    Certification[]
+  heartbeats        HeartbeatEvent[]
+  presenceLogs      PresenceLog[]
+  supervisorConfirmations SupervisorConfirmation[]
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  @@index([companyId])
+  @@index([lifecycleState])
+  @@index([lastHeartbeat])
+}
+
+model Certification {
+  id        String     @id @default(cuid())
+  workerId  String
+  type      String
+  expiry    DateTime?
+  status    CertStatus @default(valid)
+  worker    Worker     @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+
+  @@index([workerId])
+  @@index([status])
+}
+
+model ExpiryRuleSet {
+  id                      String   @id @default(cuid())
+  orientationExpiryDays   Int      @default(90)
+  certificationExpiryDays Int      @default(365)
+  notSeenDays             Int      @default(30)
+  autoDeactivate          Boolean  @default(true)
+  autoNotify              Boolean  @default(true)
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+}
+
+model HeartbeatEvent {
+  id        String   @id @default(cuid())
+  workerId  String
+  worker    Worker   @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@index([workerId, createdAt])
+}
+
+model PresencePoint {
+  id           String        @id @default(cuid())
+  name         String
+  location     String
+  code         String        @unique
+  active       Boolean       @default(true)
+  presenceLogs PresenceLog[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  @@index([active])
+}
+
+model PresenceLog {
+  id              String        @id @default(cuid())
+  workerId        String
+  presencePointId String
+  scannedAt       DateTime      @default(now())
+  worker          Worker        @relation(fields: [workerId], references: [id], onDelete: Cascade)
+  presencePoint   PresencePoint @relation(fields: [presencePointId], references: [id], onDelete: Cascade)
+
+  @@index([workerId, scannedAt])
+  @@index([presencePointId, scannedAt])
+}
+
+model SupervisorConfirmation {
+  id           String                     @id @default(cuid())
+  workerId     String
+  supervisorId String
+  status       SupervisorConfirmationStatus @default(pending)
+  requestedAt  DateTime                   @default(now())
+  respondedAt  DateTime?
+  worker       Worker                     @relation(fields: [workerId], references: [id], onDelete: Cascade)
+
+  @@index([supervisorId, status])
+  @@index([workerId, status])
+}
+
+enum OrientationStatus {
+  valid
+  expired
+  missing
+}
+
+enum LifecycleState {
+  active
+  inactive
+  expired
+  missing_docs
+  not_seen
+}
+
+enum CertStatus {
+  valid
+  expired
+}
+
+enum SupervisorConfirmationStatus {
+  pending
+  confirmed_on_site
+  not_on_site
+}

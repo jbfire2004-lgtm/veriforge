@@ -1,0 +1,22 @@
+{
+  "name": "@vera/interplanetary",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Vera Interplanetary Operations Engine (VIOE)",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": ["dist"],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "prepare": "npm run build"
+  },
+  "dependencies": {
+    "@vera/global-network": "file:../vera-global-network",
+    "@vera/industry-ecosystem": "file:../vera-industry-ecosystem",
+    "@vera/marketplace": "file:../vera-marketplace",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "typescript": "^5.3.3"
+  }
+}

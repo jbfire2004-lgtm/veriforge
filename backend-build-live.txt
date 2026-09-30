@@ -1,0 +1,5 @@
+﻿(nest build produced no stdout/stderr on success)
+NODE_OPTIONS=--max-old-space-size=8192
+result=success
+
+EXIT_CODE=0

@@ -1,0 +1,1 @@
+{"version":3,"file":"automation-conflicts.d.ts","sourceRoot":"","sources":["../../src/engines/automation-conflicts.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,kBAAkB,EAAE,gBAAgB,EAAE,MAAM,UAAU,CAAC;AAErE,qBAAa,0BAA0B;IACrC,OAAO,CAAC,OAAO,EAAE,gBAAgB,EAAE,GAAG;QACpC,QAAQ,EAAE,gBAAgB,EAAE,CAAC;QAC7B,SAAS,EAAE,kBAAkB,EAAE,CAAC;KACjC;CA0CF"}

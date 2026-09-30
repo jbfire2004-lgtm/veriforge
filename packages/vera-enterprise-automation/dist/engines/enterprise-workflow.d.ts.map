@@ -1,0 +1,1 @@
+{"version":3,"file":"enterprise-workflow.d.ts","sourceRoot":"","sources":["../../src/engines/enterprise-workflow.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,sBAAsB,EAAE,wBAAwB,EAAE,MAAM,UAAU,CAAC;AAGjF,qBAAa,wBAAwB;IACnC,GAAG,CAAC,GAAG,EAAE,sBAAsB,EAAE,SAAS,CAAC,EAAE,MAAM,GAAG,wBAAwB;CA6C/E"}

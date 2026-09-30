@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "veri-agent.fullname" . }}
+  labels:
+    {{- include "veri-agent.labels" . | nindent 4 }}
+data:
+  NODE_ENV: "production"
+  PORT: {{ .Values.service.port | quote }}
+  HOST: "0.0.0.0"
+  LOG_LEVEL: {{ .Values.env.LOG_LEVEL | quote }}
+  VERA_AGENT_REGION: {{ .Values.region | quote }}
+  VERA_AGENT_PRIVACY_MODE: {{ .Values.privacyMode | quote }}
+  VERA_AGENT_LLM_ENABLED: {{ .Values.llmEnabled | quote }}
+  VERA_AGENT_ALLOW_IMAGE_EGRESS: {{ .Values.allowImageEgress | quote }}
+  RATE_LIMIT_PER_MINUTE: {{ .Values.rateLimitPerMinute | quote }}
+  REDIS_ENABLED: {{ .Values.env.REDIS_ENABLED | quote }}
+  JWT_ISSUER: {{ .Values.env.JWT_ISSUER | quote }}
+  JWT_AUDIENCE: {{ .Values.env.JWT_AUDIENCE | quote }}
+  AUTH_DEV_BYPASS: {{ .Values.env.AUTH_DEV_BYPASS | quote }}
+  OTEL_SERVICE_NAME: {{ .Values.env.OTEL_SERVICE_NAME | quote }}
+  OTEL_METRICS_ENABLED: {{ .Values.env.OTEL_METRICS_ENABLED | quote }}
+  OTEL_TRACING_ENABLED: {{ .Values.env.OTEL_TRACING_ENABLED | quote }}
+  VERA_AGENT_REDACTION_RULES_PATH: "/app/config/redaction-rules.json"
+  VERA_AGENT_POLICIES_DIR: "/app/config/policies"
+  VERA_AGENT_TENANT_POLICY_MAP: "/app/config/policies/tenant-overrides.json"
+  VERA_AGENT_ORCHESTRATION_CONFIG: "/app/config/orchestration.json"
+  VERA_AGENT_SECURITY_CONFIG: "/app/config/security.json"
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "veri-agent.fullname" . }}-tenant-overrides
+  labels:
+    {{- include "veri-agent.labels" . | nindent 4 }}
+data:
+  tenant-overrides.json: |
+{{ .Values.tenantOverrides | toJson | indent 4 }}

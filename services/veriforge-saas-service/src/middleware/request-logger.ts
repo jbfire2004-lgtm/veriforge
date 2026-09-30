@@ -1,0 +1,18 @@
+import type { Request, Response, NextFunction } from 'express';
+import { logger } from '../utils/logger';
+
+export function requestLogger(req: Request, res: Response, next: NextFunction) {
+  const start = Date.now();
+  res.on('finish', () => {
+    logger.info('http', {
+      method: req.method,
+      path: req.path,
+      status: res.statusCode,
+      ms: Date.now() - start,
+      orgId: req.orgId,
+      userId: req.userId,
+      correlationId: req.correlationId,
+    });
+  });
+  next();
+}

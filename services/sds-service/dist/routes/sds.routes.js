@@ -1,0 +1,14 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.sdsRouter = void 0;
+const express_1 = require("express");
+const sds_controller_1 = require("../controllers/sds.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const sds_validators_1 = require("../validators/sds.validators");
+exports.sdsRouter = (0, express_1.Router)();
+exports.sdsRouter.use(auth_middleware_1.requireAuth);
+exports.sdsRouter.post('/', sds_validators_1.createValidators, error_handler_1.handleValidation, sds_controller_1.sdsController.create);
+exports.sdsRouter.post('/:id/acknowledge', sds_validators_1.acknowledgeValidators, error_handler_1.handleValidation, sds_controller_1.sdsController.acknowledge);
+exports.sdsRouter.get('/worker/:id', sds_validators_1.workerValidators, error_handler_1.handleValidation, sds_controller_1.sdsController.getWorker);
+exports.sdsRouter.get('/:id', sds_validators_1.getValidators, error_handler_1.handleValidation, sds_controller_1.sdsController.getById);

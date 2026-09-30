@@ -1,0 +1,558 @@
+﻿
+> backend@0.0.1 build
+> nest build
+
+npm : [96msrc/pm-company-safety-context/pm-company-safety-context.service.ts[0m:[93m265[0m:[93m9[0m - 
+[91merror[0m[90m TS2322: [0mType '"confined_space"' is not assignable to type '"general_work" | "high_risk" | 
+"sif_high_energy"'.
+At C:\Tempfix\ps-script-4984022c-78e0-4a22-8358-f254b9e76e23.ps1:83 char:1
++ npm run build --prefix backend 2>&1 | Out-File -FilePath "C:\Vera\bac ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: ([96msrc/pm-com..._high_energy"'.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+
+[7m265[0m         zoneType: 'confined_space' as const,
+[7m   [0m [91m        ~~~~~~~~[0m
+
+  [96msrc/pm-company-safety-context/pm-company-safety-context.service.ts[0m:[93m242[0m:[93m9[0m
+    [7m242[0m         zoneType: 'general_work' as const,
+    [7m   [0m [96m        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+    The expected type comes from property 'zoneType' which is declared here on type '{ templateCode: string; zoneType: 
+"general_work"; title: string; requiresJha: boolean; highRisk: boolean; } | { templateCode: string; zoneType: 
+"high_risk"; title: string; requiresJha: boolean; highRisk: boolean; } | { ...; }'
+[96msrc/pm-corrective-actions/pm-capa-auto-generate.service.ts[0m:[93m237[0m:[93m17[0m - [91merror[0m[90m 
+TS2367: [0mThis comparison appears to be unintentional because the types 'PmEquipmentFailureType' and '"critical"' 
+have no overlap.
+
+[7m237[0m       severity: f.failureType === 'critical' ? 'critical' : 'high',
+[7m   [0m [91m                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-emergency-response/pm-emergency.controller.ts[0m:[93m56[0m:[93m60[0m - [91merror[0m[90m TS2345: 
+[0mArgument of type '{ projectId: number; checkins?: Record<string, unknown>[]; events?: Record<string, unknown>[]; 
+}' is not assignable to parameter of type '{ checkins?: { musterEventId: string; workerId: number; clientSyncId?: 
+string; lat?: number; lng?: number; }[]; events?: Record<string, unknown>[]; }'.
+  Types of property 'checkins' are incompatible.
+    Type 'Record<string, unknown>[]' is not assignable to type '{ musterEventId: string; workerId: number; 
+clientSyncId?: string; lat?: number; lng?: number; }[]'.
+      Type 'Record<string, unknown>' is missing the following properties from type '{ musterEventId: string; workerId: 
+number; clientSyncId?: string; lat?: number; lng?: number; }': musterEventId, workerId
+
+[7m56[0m     return this.emergency.applyOfflineSync(body.projectId, body, req.user.id);
+[7m  [0m [91m                                                           ~~~~[0m
+[96msrc/pm-equipment-safety/pm-equipment-cail-intelligence.service.ts[0m:[93m174[0m:[93m47[0m - 
+[91merror[0m[90m TS2322: [0mType '"overdue"' is not assignable to type 'PmCorrectiveActionStatus'.
+
+[7m174[0m         status: { in: ['open', 'in_progress', 'overdue'] },
+[7m   [0m [91m                                              ~~~~~~~~~[0m
+[96msrc/pm-equipment-safety/pm-equipment.controller.ts[0m:[93m97[0m:[93m7[0m - [91merror[0m[90m TS2698: 
+[0mSpread types may only be created from object types.
+
+[7m97[0m       ...(body as never),
+[7m  [0m [91m      ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-equipment-safety/pm-equipment.controller.ts[0m:[93m111[0m:[93m9[0m - [91merror[0m[90m TS2698: 
+[0mSpread types may only be created from object types.
+
+[7m111[0m       { ...(body as never), equipmentId: id },
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-equipment-safety/pm-equipment.controller.ts[0m:[93m124[0m:[93m9[0m - [91merror[0m[90m TS2698: 
+[0mSpread types may only be created from object types.
+
+[7m124[0m       { ...(body as never), equipmentId: id },
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-equipment-safety/pm-equipment.controller.ts[0m:[93m136[0m:[93m9[0m - [91merror[0m[90m TS2698: 
+[0mSpread types may only be created from object types.
+
+[7m136[0m       { ...(body as never), equipmentId: id },
+[7m   [0m [91m        ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-inspections/pm-inspections-equipment.service.ts[0m:[93m43[0m:[93m7[0m - [91merror[0m[90m TS2367: 
+[0mThis comparison appears to be unintentional because the types 'LinkComplianceStatus' and '"EXPIRED"' have no 
+overlap.
+
+[7m43[0m       inspection.equipment.complianceStatus === 'EXPIRED' ||
+[7m  [0m [91m      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-inspections/pm-inspections.controller.ts[0m:[93m50[0m:[93m22[0m - [91merror[0m[90m TS2300: 
+[0mDuplicate identifier 'intelligence'.
+
+[7m50[0m     private readonly intelligence: PmInspectionsCailIntelligenceService,
+[7m  [0m [91m                     ~~~~~~~~~~~~[0m
+[96msrc/pm-inspections/pm-inspections.controller.ts[0m:[93m133[0m:[93m3[0m - [91merror[0m[90m TS2300: 
+[0mDuplicate identifier 'intelligence'.
+
+[7m133[0m   intelligence(@Param('projectId') projectId: string) {
+[7m   [0m [91m  ~~~~~~~~~~~~[0m
+[96msrc/pm-inspections/pm-inspections.controller.ts[0m:[93m162[0m:[93m7[0m - [91merror[0m[90m TS2698: 
+[0mSpread types may only be created from object types.
+
+[7m162[0m       ...(body as never),
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-cail-intelligence.service.ts[0m:[93m13[0m:[93m19[0m - [91merror[0m[90m 
+TS2339: [0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m13[0m       this.prisma.pmOfflineCache.count({
+[7m  [0m [91m                  ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-cail-intelligence.service.ts[0m:[93m19[0m:[93m19[0m - [91merror[0m[90m 
+TS2339: [0mProperty 'pmOfflineConflict' does not exist on type 'PrismaService'.
+
+[7m19[0m       this.prisma.pmOfflineConflict.count({
+[7m  [0m [91m                  ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-cail-intelligence.service.ts[0m:[93m22[0m:[93m19[0m - [91merror[0m[90m 
+TS2339: [0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m22[0m       this.prisma.pmOfflineCache.count({
+[7m  [0m [91m                  ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-cail-intelligence.service.ts[0m:[93m25[0m:[93m19[0m - [91merror[0m[90m 
+TS2339: [0mProperty 'pmOfflineAuditLog' does not exist on type 'PrismaService'.
+
+[7m25[0m       this.prisma.pmOfflineAuditLog.count({ where }),
+[7m  [0m [91m                  ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-cail-intelligence.service.ts[0m:[93m28[0m:[93m44[0m - [91merror[0m[90m 
+TS2339: [0mProperty 'pmOfflineAuditLog' does not exist on type 'PrismaService'.
+
+[7m28[0m     const syncAttempts = await this.prisma.pmOfflineAuditLog.count({
+[7m  [0m [91m                                           ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-cail-intelligence.service.ts[0m:[93m31[0m:[93m43[0m - [91merror[0m[90m 
+TS2339: [0mProperty 'pmOfflineAuditLog' does not exist on type 'PrismaService'.
+
+[7m31[0m     const syncSuccess = await this.prisma.pmOfflineAuditLog.count({
+[7m  [0m [91m                                          ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-cail-intelligence.service.ts[0m:[93m63[0m:[93m24[0m - [91merror[0m[90m 
+TS2339: [0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m63[0m     return this.prisma.pmOfflineCache.count({
+[7m  [0m [91m                       ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m6[0m:[93m10[0m - [91merror[0m[90m TS2305: 
+[0mModule '"@prisma/client"' has no exported member 'PmOfflineSyncStatus'.
+
+[7m6[0m import { PmOfflineSyncStatus, Prisma } from '@prisma/client';
+[7m [0m [91m         ~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m42[0m:[93m23[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineAuditLog' does not exist on type 'PrismaService'.
+
+[7m42[0m     await this.prisma.pmOfflineAuditLog.create({
+[7m  [0m [91m                      ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m83[0m:[93m24[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m83[0m     return this.prisma.pmOfflineCache.upsert({
+[7m  [0m [91m                       ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m126[0m:[93m45[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineConflict' does not exist on type 'PrismaService'.
+
+[7m126[0m     const openConflicts = await this.prisma.pmOfflineConflict.count({
+[7m   [0m [91m                                            ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m184[0m:[93m42[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m184[0m       const existing = await this.prisma.pmOfflineCache.findUnique({
+[7m   [0m [91m                                         ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m311[0m:[93m50[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineConflict' does not exist on type 'PrismaService'.
+
+[7m311[0m     const remainingConflicts = await this.prisma.pmOfflineConflict.count({
+[7m   [0m [91m                                                 ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m342[0m:[93m40[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineConflict' does not exist on type 'PrismaService'.
+
+[7m342[0m     const conflict = await this.prisma.pmOfflineConflict.create({
+[7m   [0m [91m                                       ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m353[0m:[93m25[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m353[0m       await this.prisma.pmOfflineCache.update({
+[7m   [0m [91m                        ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m370[0m:[93m40[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineConflict' does not exist on type 'PrismaService'.
+
+[7m370[0m     const conflict = await this.prisma.pmOfflineConflict.findUnique({
+[7m   [0m [91m                                       ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m384[0m:[93m39[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineConflict' does not exist on type 'PrismaService'.
+
+[7m384[0m     const updated = await this.prisma.pmOfflineConflict.update({
+[7m   [0m [91m                                      ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m394[0m:[93m25[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m394[0m       await this.prisma.pmOfflineCache.update({
+[7m   [0m [91m                        ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m432[0m:[93m19[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m432[0m       this.prisma.pmOfflineCache.findMany({
+[7m   [0m [91m                  ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m440[0m:[93m19[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineConflict' does not exist on type 'PrismaService'.
+
+[7m440[0m       this.prisma.pmOfflineConflict.findMany({
+[7m   [0m [91m                  ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m488[0m:[93m25[0m - [91merror[0m[90m TS2724: 
+[0m'"C:/Vera/backend/node_modules/.prisma/client/index".Prisma' has no exported member named 
+'PmOfflineCacheWhereInput'. Did you mean 'CailOfflineCacheWhereInput'?
+
+[7m488[0m     const where: Prisma.PmOfflineCacheWhereInput = {
+[7m   [0m [91m                        ~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m495[0m:[93m19[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m495[0m       this.prisma.pmOfflineCache.count({ where }),
+[7m   [0m [91m                  ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m496[0m:[93m19[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m496[0m       this.prisma.pmOfflineCache.count({
+[7m   [0m [91m                  ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m499[0m:[93m19[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m499[0m       this.prisma.pmOfflineCache.count({
+[7m   [0m [91m                  ~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m502[0m:[93m19[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineConflict' does not exist on type 'PrismaService'.
+
+[7m502[0m       this.prisma.pmOfflineConflict.count({
+[7m   [0m [91m                  ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m512[0m:[93m19[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineAuditLog' does not exist on type 'PrismaService'.
+
+[7m512[0m       this.prisma.pmOfflineAuditLog.count({
+[7m   [0m [91m                  ~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-offline-mode/pm-offline-mode.service.ts[0m:[93m521[0m:[93m40[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'pmOfflineCache' does not exist on type 'PrismaService'.
+
+[7m521[0m     const byModule = await this.prisma.pmOfflineCache.groupBy({
+[7m   [0m [91m                                       ~~~~~~~~~~~~~~[0m
+[96msrc/pm-project-management/pm-project-management.service.ts[0m:[93m75[0m:[93m18[0m - [91merror[0m[90m 
+TS2353: [0mObject literal may only specify known properties, and 'createdAt' does not exist in type 
+'PmSiteEmergencyLockOrderByWithRelationInput | PmSiteEmergencyLockOrderByWithRelationInput[]'.
+
+[7m75[0m       orderBy: { createdAt: 'desc' },
+[7m  [0m [91m                 ~~~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m353429[0m:[93m5[0m
+    [7m353429[0m     orderBy?: PmSiteEmergencyLockOrderByWithRelationInput | 
+PmSiteEmergencyLockOrderByWithRelationInput[]
+    [7m      [0m [96m    ~~~~~~~[0m
+    The expected type comes from property 'orderBy' which is declared here on type '{ select?: 
+PmSiteEmergencyLockSelect<DefaultArgs>; include?: PmSiteEmergencyLockInclude<DefaultArgs>; ... 5 more ...; distinct?: 
+PmSiteEmergencyLockScalarFieldEnum | PmSiteEmergencyLockScalarFieldEnum[]; }'
+[96msrc/pm-safety-events/pm-safety-events.controller.ts[0m:[93m102[0m:[93m7[0m - [91merror[0m[90m TS2698: 
+[0mSpread types may only be created from object types.
+
+[7m102[0m       ...(body as never),
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-safety-events/pm-safety-events.controller.ts[0m:[93m115[0m:[93m7[0m - [91merror[0m[90m TS2698: 
+[0mSpread types may only be created from object types.
+
+[7m115[0m       ...(body as never),
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-safety-meetings/pm-safety-meetings-topic-library.service.ts[0m:[93m112[0m:[93m57[0m - 
+[91merror[0m[90m TS2561: [0mObject literal may only specify known properties, but 'categoryCode' does not exist in 
+type 'HecaScoreSelect<DefaultArgs>'. Did you mean to write 'hecaCategoryCode'?
+
+[7m112[0m           select: { title: true, hecaScore: { select: { categoryCode: true } } },
+[7m   [0m [91m                                                        ~~~~~~~~~~~~[0m
+[96msrc/pm-safety-meetings/pm-safety-meetings-topic-library.service.ts[0m:[93m120[0m:[93m25[0m - 
+[91merror[0m[90m TS2339: [0mProperty 'hecaScore' does not exist on type '{ id: string; companyId: number; 
+projectId: number; siteId: number; workerId: number; equipmentId: number; sourceType: SifHecaSourceType; sourceId: 
+string; sourceItemId: string; ... 6 more ...; updatedAt: Date; }'.
+
+[7m120[0m           .map((e) => e.hecaScore?.categoryCode ?? e.title)
+[7m   [0m [91m                        ~~~~~~~~~[0m
+[96msrc/pm-safety-meetings/pm-safety-meetings.controller.ts[0m:[93m160[0m:[93m7[0m - [91merror[0m[90m TS2698: 
+[0mSpread types may only be created from object types.
+
+[7m160[0m       ...(body as never),
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-safety-meetings/pm-safety-meetings.controller.ts[0m:[93m227[0m:[93m7[0m - [91merror[0m[90m TS2698: 
+[0mSpread types may only be created from object types.
+
+[7m227[0m       ...(body as never),
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-safety-meetings/pm-safety-meetings.controller.ts[0m:[93m239[0m:[93m7[0m - [91merror[0m[90m TS2698: 
+[0mSpread types may only be created from object types.
+
+[7m239[0m       ...(body as never),
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-safety-meetings/pm-safety-meetings.service.ts[0m:[93m321[0m:[93m68[0m - [91merror[0m[90m TS2345: 
+[0mArgument of type 'string' is not assignable to parameter of type 'number'.
+
+[7m321[0m     const equipment = await this.validateWorkerEquipment(workerId, meetingId);
+[7m   [0m [91m                                                                   ~~~~~~~~~[0m
+[96msrc/pm-safety-meetings/pm-safety-meetings.service.ts[0m:[93m539[0m:[93m16[0m - [91merror[0m[90m TS2322: 
+[0mType 'number' is not assignable to type 'string'.
+
+[7m539[0m       where: { id: meetingId },
+[7m   [0m [91m               ~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m489001[0m:[93m5[0m
+    [7m489001[0m     id?: string
+    [7m      [0m [96m    ~~[0m
+    The expected type comes from property 'id' which is declared here on type 'SafetyMeetingWhereUniqueInput'
+[96msrc/pm-safety-stations/pm-safety-stations.service.ts[0m:[93m94[0m:[93m86[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'stationType' does not exist on type '{}'.
+
+[7m94[0m     stationType?: Parameters<typeof this.registrationEngine.validateRegistration>[0]['stationType'];
+[7m  [0m [91m                                                                                     ~~~~~~~~~~~~~[0m
+[96msrc/pm-safety-stations/pm-safety-stations.service.ts[0m:[93m97[0m:[93m86[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'networkMode' does not exist on type '{}'.
+
+[7m97[0m     networkMode?: Parameters<typeof this.registrationEngine.validateRegistration>[0]['networkMode'];
+[7m  [0m [91m                                                                                     ~~~~~~~~~~~~~[0m
+[96msrc/pm-safety-stations/pm-safety-stations.service.ts[0m:[93m261[0m:[93m9[0m - [91merror[0m[90m TS2353: 
+[0mObject literal may only specify known properties, and 'batteryLevel' does not exist in type 
+'SafetyStationSelect<DefaultArgs>'.
+
+[7m261[0m         batteryLevel: false,
+[7m   [0m [91m        ~~~~~~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m72154[0m:[93m5[0m
+    [7m72154[0m     select?: SafetyStationSelect<ExtArgs> | null
+    [7m     [0m [96m    ~~~~~~[0m
+    The expected type comes from property 'select' which is declared here on type '{ select?: 
+SafetyStationSelect<DefaultArgs>; include?: SafetyStationInclude<DefaultArgs>; where?: SafetyStationWhereInput; ... 4 
+more ...; distinct?: SafetyStationScalarFieldEnum | SafetyStationScalarFieldEnum[]; }'
+[96msrc/pm-safety-stations/pm-safety-stations.service.ts[0m:[93m539[0m:[93m18[0m - [91merror[0m[90m TS2353: 
+[0mObject literal may only specify known properties, and 'startedAt' does not exist in type 
+'MusterEventOrderByWithRelationInput | MusterEventOrderByWithRelationInput[]'.
+
+[7m539[0m       orderBy: { startedAt: 'desc' },
+[7m   [0m [91m                 ~~~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m246723[0m:[93m5[0m
+    [7m246723[0m     orderBy?: MusterEventOrderByWithRelationInput | MusterEventOrderByWithRelationInput[]
+    [7m      [0m [96m    ~~~~~~~[0m
+    The expected type comes from property 'orderBy' which is declared here on type '{ select?: 
+MusterEventSelect<DefaultArgs>; include?: MusterEventInclude<DefaultArgs>; where?: MusterEventWhereInput; ... 4 more 
+...; distinct?: MusterEventScalarFieldEnum | MusterEventScalarFieldEnum[]; }'
+[96msrc/pm-safety-stations/pm-safety-stations.service.ts[0m:[93m567[0m:[93m11[0m - [91merror[0m[90m TS2353: 
+[0mObject literal may only specify known properties, and 'notes' does not exist in type 
+'(Without<MusterCheckinCreateInput, MusterCheckinUncheckedCreateInput> & MusterCheckinUncheckedCreateInput) | 
+(Without<...> & MusterCheckinCreateInput)'.
+
+[7m567[0m           notes: `Station ${station.code}`,
+[7m   [0m [91m          ~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m248097[0m:[93m5[0m
+    [7m248097[0m     create: XOR<MusterCheckinCreateInput, MusterCheckinUncheckedCreateInput>
+    [7m      [0m [96m    ~~~~~~[0m
+    The expected type comes from property 'create' which is declared here on type '{ select?: 
+MusterCheckinSelect<DefaultArgs>; include?: MusterCheckinInclude<DefaultArgs>; where: MusterCheckinWhereUniqueInput; 
+create: (Without<...> & MusterCheckinUncheckedCreateInput) | (Without<...> & MusterCheckinCreateInput); update: 
+(Without<...> & MusterCheckinUncheckedUpdateInput) | (Without<...> & MusterCh...'
+[96msrc/pm-safety-stations/station-jha.engine.ts[0m:[93m70[0m:[93m20[0m - [91merror[0m[90m TS2339: 
+[0mProperty 'workerId' does not exist on type '{ id: string; jhaFlhaId: string; role: JhaFlhaSignatureRole; 
+signerUserId: number; signerName: string; signatureData: string; signedAt: Date; }'.
+
+[7m70[0m           (s) => s.workerId === input.workerId && s.role === 'WORKER',
+[7m  [0m [91m                   ~~~~~~~~[0m
+[96msrc/pm-safety-stations/station-jha.engine.ts[0m:[93m113[0m:[93m21[0m - [91merror[0m[90m TS2353: 
+[0mObject literal may only specify known properties, and 'workerId' does not exist in type 
+'JhaFlhaSignatureSelect<DefaultArgs>'.
+
+[7m113[0m           select: { workerId: true, role: true, signedAt: true },
+[7m   [0m [91m                    ~~~~~~~~[0m
+[96msrc/pm-site-access-control/pm-access.controller.ts[0m:[93m97[0m:[93m7[0m - [91merror[0m[90m TS2352: 
+[0mConversion of type '{ projectId: number; attempts?: Record<string, unknown>[]; overrides?: Record<string, 
+unknown>[]; }' to type '{ attempts?: { workerId: number; zoneCode?: string; equipmentId?: number; accessPointId?: 
+string; decision: PmAccessDecision; denialReasons?: string[]; checksJson?: Record<string, boolean>; clientSyncId?: 
+string; createdAt?: string; }[]; overrides?: Record<...>[]; }' may be a mistake because neither type sufficiently 
+overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'attempts' are incompatible.
+    Type 'Record<string, unknown>[]' is not comparable to type '{ workerId: number; zoneCode?: string; equipmentId?: 
+number; accessPointId?: string; decision: PmAccessDecision; denialReasons?: string[]; checksJson?: Record<string, 
+boolean>; clientSyncId?: string; createdAt?: string; }[]'.
+      Type 'Record<string, unknown>' is missing the following properties from type '{ workerId: number; zoneCode?: 
+string; equipmentId?: number; accessPointId?: string; decision: PmAccessDecision; denialReasons?: string[]; 
+checksJson?: Record<string, boolean>; clientSyncId?: string; createdAt?: string; }': workerId, decision
+
+[7m97[0m       body as Parameters<PmSiteAccessControlService['applyOfflineSync']>[1],
+[7m  [0m [91m      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-site-access-control/pm-site-access-control.controller.ts[0m:[93m161[0m:[93m7[0m - [91merror[0m[90m 
+TS2352: [0mConversion of type '{ projectId: number; attempts?: Record<string, unknown>[]; overrides?: Record<string, 
+unknown>[]; }' to type '{ attempts?: { workerId: number; zoneCode?: string; equipmentId?: number; accessPointId?: 
+string; decision: PmAccessDecision; denialReasons?: string[]; checksJson?: Record<string, boolean>; clientSyncId?: 
+string; createdAt?: string; }[]; overrides?: Record<...>[]; }' may be a mistake because neither type sufficiently 
+overlaps with the other. If this was intentional, convert the expression to 'unknown' first.
+  Types of property 'attempts' are incompatible.
+    Type 'Record<string, unknown>[]' is not comparable to type '{ workerId: number; zoneCode?: string; equipmentId?: 
+number; accessPointId?: string; decision: PmAccessDecision; denialReasons?: string[]; checksJson?: Record<string, 
+boolean>; clientSyncId?: string; createdAt?: string; }[]'.
+      Type 'Record<string, unknown>' is missing the following properties from type '{ workerId: number; zoneCode?: 
+string; equipmentId?: number; accessPointId?: string; decision: PmAccessDecision; denialReasons?: string[]; 
+checksJson?: Record<string, boolean>; clientSyncId?: string; createdAt?: string; }': workerId, decision
+
+[7m161[0m       body as Parameters<PmSiteAccessControlService['applyOfflineSync']>[1],
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-site-access-control/pm-site-access-control.service.ts[0m:[93m204[0m:[93m18[0m - [91merror[0m[90m 
+TS2367: [0mThis comparison appears to be unintentional because the types 'JhaFlhaSignatureRole' and '"supervisor"' 
+have no overlap.
+
+[7m204[0m           (s) => s.role === 'supervisor' || s.role === 'SUPERVISOR',
+[7m   [0m [91m                 ~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-training/pm-training-cail-intelligence.service.ts[0m:[93m66[0m:[93m28[0m - [91merror[0m[90m 
+TS2551: [0mProperty 'hazardCategoryKey' does not exist on type '{ id: string; workerId: number; profileId: string; 
+projectId: number; sourceType: PmWorkerHazardExposureSource; sourceId: string; hazardType: string; severity: number; 
+likelihood: number; sifPotential: boolean; hecaCategoryKey: string; exposedAt: Date; }'. Did you mean 
+'hecaCategoryKey'?
+
+[7m66[0m       hazards.map((h) => h.hazardCategoryKey).filter(Boolean),
+[7m  [0m [91m                           ~~~~~~~~~~~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m403192[0m:[93m7[0m
+    [7m403192[0m       hecaCategoryKey: string | null
+    [7m      [0m [96m      ~~~~~~~~~~~~~~~[0m
+    'hecaCategoryKey' is declared here.
+[96msrc/pm-training/pm-training.controller.ts[0m:[93m193[0m:[93m7[0m - [91merror[0m[90m TS2698: [0mSpread 
+types may only be created from object types.
+
+[7m193[0m       ...(body as never),
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-training/pm-training.controller.ts[0m:[93m204[0m:[93m7[0m - [91merror[0m[90m TS2698: [0mSpread 
+types may only be created from object types.
+
+[7m204[0m       ...(body as never),
+[7m   [0m [91m      ~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-unified-corrective-action/pm-unified-corrective-action-cail.service.ts[0m:[93m153[0m:[93m11[0m - 
+[91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'correctiveActionId' does not 
+exist in type 'PmInspectionDeficiencyWhereInput'.
+
+[7m153[0m           correctiveActionId: null,
+[7m   [0m [91m          ~~~~~~~~~~~~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m277325[0m:[93m5[0m
+    [7m277325[0m     where?: PmInspectionDeficiencyWhereInput
+    [7m      [0m [96m    ~~~~~[0m
+    The expected type comes from property 'where' which is declared here on type '{ select?: 
+PmInspectionDeficiencySelect<DefaultArgs>; include?: PmInspectionDeficiencyInclude<DefaultArgs>; ... 5 more ...; 
+distinct?: PmInspectionDeficiencyScalarFieldEnum | PmInspectionDeficiencyScalarFieldEnum[]; }'
+[96msrc/pm-unified-corrective-action/pm-unified-corrective-action.service.ts[0m:[93m506[0m:[93m62[0m - 
+[91merror[0m[90m TS2322: [0mType 'PmCapaAssigneeRole' is not assignable to type '"primary" | "secondary" | 
+"delegate"'.
+  Type '"verifier"' is not assignable to type '"primary" | "secondary" | "delegate"'.
+
+[7m506[0m         await this.capa.assign(actionId, { userId: s.userId, role: s.role }, actorId);
+[7m   [0m [91m                                                             ~~~~[0m
+
+  [96msrc/pm-corrective-actions/pm-corrective-actions.service.ts[0m:[93m213[0m:[93m49[0m
+    [7m213[0m     data: { userId?: number; workerId?: number; role?: 'primary' | 'secondary' | 'delegate' },
+    [7m   [0m [96m                                                ~~~~[0m
+    The expected type comes from property 'role' which is declared here on type '{ userId?: number; workerId?: number; 
+role?: "primary" | "secondary" | "delegate"; }'
+[96msrc/pm-unified-hazard-control/pm-unified-hazard-control-cail.service.ts[0m:[93m293[0m:[93m21[0m - 
+[91merror[0m[90m TS1308: [0m'await' expressions are only allowed within async functions and at the top levels of 
+modules.
+
+[7m293[0m     const hazards = await this.prisma.pmUnifiedHazard.findMany({
+[7m   [0m [91m                    ~~~~~[0m
+
+  [96msrc/pm-unified-hazard-control/pm-unified-hazard-control-cail.service.ts[0m:[93m288[0m:[93m3[0m
+Found 74 error(s).
+
+    [7m288[0m   chronicHazardDetection(filters: {
+    [7m   [0m [96m  ~~~~~~~~~~~~~~~~~~~~~~[0m
+    Did you mean to mark this function as 'async'?
+[96msrc/pm-unified-hazard-control/pm-unified-hazard-control-cail.service.ts[0m:[93m307[0m:[93m5[0m - 
+[91merror[0m[90m TS2739: [0mType '{ title: string; repeatCount: number; }[]' is missing the following properties 
+from type 'Promise<{ title: string; repeatCount: number; }[]>': then, catch, finally, [Symbol.toStringTag]
+
+[7m307[0m     return [...counts.entries()]
+[7m   [0m [91m    ~~~~~~[0m
+[96msrc/pm-unified-safety-intelligence/pm-unified-safety-intelligence.service.ts[0m:[93m195[0m:[93m46[0m - 
+[91merror[0m[90m TS2322: [0mType '{ notIn: readonly ["verified", "closed", "cancelled"]; }' is not assignable to 
+type 'EnumPmCorrectiveActionStatusFilter<"PmCorrectiveAction"> | PmCorrectiveActionStatus'.
+  Type '{ notIn: readonly ["verified", "closed", "cancelled"]; }' is not assignable to type 
+'EnumPmCorrectiveActionStatusFilter<"PmCorrectiveAction">'.
+    Types of property 'notIn' are incompatible.
+      Type 'readonly ["verified", "closed", "cancelled"]' is not assignable to type 'PmCorrectiveActionStatus[] | 
+FieldRef<"PmCorrectiveAction", "PmCorrectiveActionStatus[]">'.
+        The type 'readonly ["verified", "closed", "cancelled"]' is 'readonly' and cannot be assigned to the mutable 
+type 'PmCorrectiveActionStatus[]'.
+
+[7m195[0m         where: { projectId, deletedAt: null, status: openStatuses },
+[7m   [0m [91m                                             ~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m487529[0m:[93m5[0m
+    [7m487529[0m     status?: EnumPmCorrectiveActionStatusFilter<"PmCorrectiveAction"> | 
+$Enums.PmCorrectiveActionStatus
+    [7m      [0m [96m    ~~~~~~[0m
+    The expected type comes from property 'status' which is declared here on type 'PmCorrectiveActionWhereInput'
+[96msrc/pm-unified-safety-intelligence/pm-unified-safety-intelligence.service.ts[0m:[93m201[0m:[93m11[0m - 
+[91merror[0m[90m TS2322: [0mType '{ notIn: readonly ["verified", "closed", "cancelled"]; }' is not assignable to 
+type 'EnumPmCorrectiveActionStatusFilter<"PmCorrectiveAction"> | PmCorrectiveActionStatus'.
+  Type '{ notIn: readonly ["verified", "closed", "cancelled"]; }' is not assignable to type 
+'EnumPmCorrectiveActionStatusFilter<"PmCorrectiveAction">'.
+    Types of property 'notIn' are incompatible.
+      Type 'readonly ["verified", "closed", "cancelled"]' is not assignable to type 'PmCorrectiveActionStatus[] | 
+FieldRef<"PmCorrectiveAction", "PmCorrectiveActionStatus[]">'.
+        The type 'readonly ["verified", "closed", "cancelled"]' is 'readonly' and cannot be assigned to the mutable 
+type 'PmCorrectiveActionStatus[]'.
+
+[7m201[0m           status: openStatuses,
+[7m   [0m [91m          ~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m487529[0m:[93m5[0m
+    [7m487529[0m     status?: EnumPmCorrectiveActionStatusFilter<"PmCorrectiveAction"> | 
+$Enums.PmCorrectiveActionStatus
+    [7m      [0m [96m    ~~~~~~[0m
+    The expected type comes from property 'status' which is declared here on type 'PmCorrectiveActionWhereInput'
+[96msrc/pm-unified-safety-intelligence/pm-unified-safety-intelligence.service.ts[0m:[93m330[0m:[93m10[0m - 
+[91merror[0m[90m TS2488: [0mType 'DetectedPattern' must have a '[Symbol.iterator]()' method that returns an 
+iterator.
+
+[7m330[0m       ...this.patterns.projectSafetyDrift([projectScoreResult.score, projectScoreResult.score - 5]),
+[7m   [0m [91m         
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-worker-safety-profile/pm-worker-safety-cail-intelligence.service.ts[0m:[93m153[0m:[93m21[0m - 
+[91merror[0m[90m TS2367: [0mThis comparison appears to be unintentional because the types 
+'PmCompanyTrainingCategory' and '"orientation"' have no overlap.
+
+[7m153[0m           priority: m.category === 'orientation' ? 'high' : 'medium',
+[7m   [0m [91m                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~[0m
+[96msrc/pm-worker-safety-profile/pm-worker-safety-cail-intelligence.service.ts[0m:[93m170[0m:[93m16[0m - 
+[91merror[0m[90m TS2353: [0mObject literal may only specify known properties, and 'workerId' does not exist in 
+type 'EquipmentProjectAssignmentWhereInput'.
+
+[7m170[0m       where: { workerId, endedAt: null },
+[7m   [0m [91m               ~~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m146343[0m:[93m5[0m
+    [7m146343[0m     where?: EquipmentProjectAssignmentWhereInput
+    [7m      [0m [96m    ~~~~~[0m
+    The expected type comes from property 'where' which is declared here on type '{ select?: 
+EquipmentProjectAssignmentSelect<DefaultArgs>; include?: EquipmentProjectAssignmentInclude<DefaultArgs>; ... 5 more 
+...; distinct?: EquipmentProjectAssignmentScalarFieldEnum | EquipmentProjectAssignmentScalarFieldEnum[]; }'
+[96msrc/pm-worker-safety-profile/pm-worker-safety-cail-intelligence.service.ts[0m:[93m180[0m:[93m22[0m - 
+[91merror[0m[90m TS2551: [0mProperty 'equipment' does not exist on type '{ id: number; equipmentId: number; 
+projectId: number; companyId: number; assignedBy: number; assignedAt: Date; status: AssignmentStatus; endedAt: Date; 
+}'. Did you mean 'equipmentId'?
+
+[7m180[0m       const type = a.equipment?.category ?? 'equipment';
+[7m   [0m [91m                     ~~~~~~~~~[0m
+
+  [96mnode_modules/.prisma/client/index.d.ts[0m:[93m145751[0m:[93m7[0m
+    [7m145751[0m       equipmentId: number
+    [7m      [0m [96m      ~~~~~~~~~~~[0m
+    'equipmentId' is declared here.
+[96msrc/pm-worker-safety-profile/pm-worker-safety-profile.service.ts[0m:[93m295[0m:[93m63[0m - 
+[91merror[0m[90m TS2322: [0mType '"closed"' is not assignable to type 'SafetyMeetingStatus'.
+
+[7m295[0m             meeting: { projectId, status: { in: ['completed', 'closed'] } },
+[7m   [0m [91m                                                              ~~~~~~~~[0m
+[96msrc/safety-management/sds/sds.controller.ts[0m:[93m59[0m:[93m38[0m - [91merror[0m[90m TS2345: 
+[0mArgument of type '{ siteId: number; sdsDocumentId: string; quantity?: number; unit?: string; locationNote?: 
+string; }' is not assignable to parameter of type '{ companyId: number; siteId: number; projectId?: number; 
+sdsDocumentId?: string; productName?: string; quantity?: number; unit?: string; locationNote?: string; containerSize?: 
+string; storageClass?: string; chemicalExpiry?: Date; }'.
+  Property 'companyId' is missing in type '{ siteId: number; sdsDocumentId: string; quantity?: number; unit?: string; 
+locationNote?: string; }' but required in type '{ companyId: number; siteId: number; projectId?: number; 
+sdsDocumentId?: string; productName?: string; quantity?: number; unit?: string; locationNote?: string; containerSize?: 
+string; storageClass?: string; chemicalExpiry?: Date; }'.
+
+[7m59[0m     return this.sds.addInventoryItem(body);
+[7m  [0m [91m                                     ~~~~[0m
+
+  [96msrc/safety-management/sds/sds.service.ts[0m:[93m56[0m:[93m5[0m
+    [7m56[0m     companyId: number;
+    [7m  [0m [96m    ~~~~~~~~~[0m
+    'companyId' is declared here.
+

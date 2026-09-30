@@ -1,0 +1,1 @@
+{"version":3,"file":"knowledge-graph.d.ts","sourceRoot":"","sources":["../../src/engines/knowledge-graph.ts"],"names":[],"mappings":"AAAA,OAAO,KAAK,EAAE,wBAAwB,EAAE,0BAA0B,EAAE,MAAM,UAAU,CAAC;AAErF,qBAAa,gCAAgC;IAC3C,KAAK,CAAC,GAAG,EAAE,wBAAwB,GAAG,0BAA0B;CAsDjE"}

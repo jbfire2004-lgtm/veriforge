@@ -1,0 +1,18 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.trainingRouter = void 0;
+const express_1 = require("express");
+const training_controller_1 = require("../controllers/training.controller");
+const auth_middleware_1 = require("../middleware/auth.middleware");
+const error_handler_1 = require("../middleware/error-handler");
+const training_validators_1 = require("../validators/training.validators");
+exports.trainingRouter = (0, express_1.Router)();
+exports.trainingRouter.use(auth_middleware_1.requireAuth);
+exports.trainingRouter.post('/', training_validators_1.createValidators, error_handler_1.handleValidation, training_controller_1.trainingController.create);
+exports.trainingRouter.get('/', training_validators_1.listValidators, error_handler_1.handleValidation, training_controller_1.trainingController.list);
+exports.trainingRouter.post('/events', training_validators_1.eventValidators, error_handler_1.handleValidation, training_controller_1.trainingController.handleEvent);
+exports.trainingRouter.get('/:id', training_validators_1.idParamValidators, error_handler_1.handleValidation, training_controller_1.trainingController.getById);
+exports.trainingRouter.patch('/:id', training_validators_1.updateValidators, error_handler_1.handleValidation, training_controller_1.trainingController.update);
+exports.trainingRouter.patch('/:id/status', training_validators_1.statusValidators, error_handler_1.handleValidation, training_controller_1.trainingController.updateStatus);
+exports.trainingRouter.delete('/:id', training_validators_1.idParamValidators, error_handler_1.handleValidation, training_controller_1.trainingController.remove);
+exports.trainingRouter.post('/:id/artifacts', training_validators_1.artifactValidators, error_handler_1.handleValidation, training_controller_1.trainingController.addArtifact);
