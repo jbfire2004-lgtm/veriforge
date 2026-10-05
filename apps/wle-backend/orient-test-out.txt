@@ -1,0 +1,24 @@
+﻿node.exe : npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm 
+help npmrc` for supported config options.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn Unknow...config options.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+PASS src/modules/orientation/veriforge/__tests__/orientation-validation.spec.ts (102.149 s)
+PASS src/modules/orientation/veriforge/__tests__/orientation-requirement.service.spec.ts (8.669 s)
+PASS src/modules/orientation/veriforge/__tests__/worker-orientation-profile.service.spec.ts (14.329 s)
+PASS src/modules/orientation/veriforge/__tests__/orientation-delivery.service.spec.ts
+PASS src/modules/orientation/veriforge/__tests__/orientation-completion.service.spec.ts (7.616 s)
+PASS src/modules/orientation/veriforge/__tests__/orientation-helpers.spec.ts
+PASS src/modules/orientation/veriforge/__tests__/orientation-ai-generate.service.spec.ts
+PASS src/modules/orientation/veriforge/__tests__/orientation-definition.service.spec.ts (10.635 s)
+
+Test Suites: 8 passed, 8 total
+Tests:       50 passed, 50 total
+Snapshots:   0 total
+Time:        158.317 s
+Ran all test suites matching /src\\modules\\orientation\\veriforge\\__tests__/i.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after 
+all tests finished?

@@ -1,0 +1,65 @@
+﻿node.exe : npm warn Unknown env config "devdir". This will stop working in the next major version of npm. See `npm 
+help npmrc` for supported config options.
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (npm warn Unknow...config options.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+PASS src/modules/orientation/veriforge/__tests__/orientation-error-paths.spec.ts (191.21 s)
+  VeriForge orientation error paths
+    invalid / malformed / oversized inputs
+      ÔêÜ rejects empty title (139 ms)
+      ÔêÜ rejects whitespace-only title (11 ms)
+      ÔêÜ rejects contentBlocks object (not array) (39 ms)
+      ÔêÜ rejects contentBlocks string payload (2 ms)
+      ÔêÜ rejects oversized contentBlocks (>200) (2 ms)
+      ÔêÜ rejects null entries inside contentBlocks (7 ms)
+      ÔêÜ rejects array entries inside contentBlocks (2 ms)
+      ÔêÜ rejects unknown block type (2 ms)
+      ÔêÜ rejects quiz missing prompt (1 ms)
+      ÔêÜ rejects quiz with one choice (2 ms)
+      ÔêÜ rejects quiz answerIndex NaN (2 ms)
+      ÔêÜ rejects empty upload file (4 ms)
+      ÔêÜ rejects oversized upload (5 ms)
+      ÔêÜ rejects executable mime (3 ms)
+      ÔêÜ rejects missing mime (2 ms)
+    missing required fields
+      ÔêÜ completion list without workerId and orientationId (21 ms)
+      ÔêÜ completion create with unknown orientation (10 ms)
+      ÔêÜ completion create with unknown worker (6 ms)
+      ÔêÜ requirement create with missing orientation (12 ms)
+      ÔêÜ delivery assign with missing worker (19 ms)
+      ÔêÜ profile with unknown worker (6 ms)
+    unauthorized / cross-tenant
+      ÔêÜ definition get forbidden across companies (15 ms)
+      ÔêÜ TenantScopeService denies cross-company for COMPANY_ADMIN (17 ms)
+      ÔêÜ TenantScopeService denies actor with no companyId (11 ms)
+      ÔêÜ requirement rejects orientation from other company (36 ms)
+      ÔêÜ completion rejects orientation from other company (7 ms)
+      ÔêÜ delivery rejects unpublished (assign gate) (4 ms)
+    database write failures
+      ÔêÜ definition create surfaces prisma errors (no swallow) (4 ms)
+      ÔêÜ definition create surfaces FK failure (9 ms)
+      ÔêÜ completion unique race replays via clientSyncId (6 ms)
+      ÔêÜ completion unique without clientSyncId becomes ConflictException (1 ms)
+      ÔêÜ non-unique prisma error is rethrown by replayOrConflict (3 ms)
+      ÔêÜ audit failure after create propagates (no compensating delete) (7 ms)
+    external / AI failure & empty inputs
+      ÔêÜ AI generateFromText with empty text still returns blocks (no hard fail) (33 ms)
+      ÔêÜ AI generateFromText does not throw on huge input (truncates body) (1 ms)
+    concurrency / race conditions
+      ÔêÜ idempotent pre-check returns same completion for duplicate clientSyncId (5 ms)
+      ÔêÜ parallel create without clientSyncId has no dedupe guard (documented gap) (8 ms)
+    out-of-order / invalid state transitions
+      ÔêÜ cannot require unpublished orientation (4 ms)
+      ÔêÜ cannot deliver unpublished orientation (17 ms)
+      ÔêÜ profile without company context returns warning gating (soft fail) (12 ms)
+
+Test Suites: 1 passed, 1 total
+Tests:       40 passed, 40 total
+Snapshots:   0 total
+Time:        191.952 s
+Ran all test suites matching /src\\modules\\orientation\\veriforge\\__tests__\\orientation-error-paths.spec.ts/i.
+Force exiting Jest: Have you considered using `--detectOpenHandles` to detect async operations that kept running after 
+all tests finished?
