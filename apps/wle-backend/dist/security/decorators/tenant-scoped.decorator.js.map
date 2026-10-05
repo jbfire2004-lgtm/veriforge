@@ -1,1 +1,0 @@
-{"version":3,"file":"tenant-scoped.decorator.js","sourceRoot":"","sources":["../../../src/security/decorators/tenant-scoped.decorator.ts"],"names":[],"mappings":";;;AAAA,2CAA6C;AAEhC,QAAA,sBAAsB,GAAG,yBAAyB,CAAC;AAGzD,MAAM,YAAY,GAAG,CAAC,SAAS,GAAG,WAAW,EAAE,EAAE,CACtD,IAAA,oBAAW,EAAC,8BAAsB,EAAE,SAAS,CAAC,CAAC;AADpC,QAAA,YAAY,gBACwB"}
