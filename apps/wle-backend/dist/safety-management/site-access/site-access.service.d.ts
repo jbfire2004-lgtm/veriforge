@@ -1,0 +1,172 @@
+import { Prisma } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
+import { SifHecaService } from '../../sif-heca/sif-heca.service';
+import { PmInspectionsService } from '../../pm-inspections/pm-inspections.service';
+import { PmSafetyEventsService } from '../../pm-safety-events/pm-safety-events.service';
+import { PmCorrectiveActionsService } from '../../pm-corrective-actions/pm-corrective-actions.service';
+import { PmDocumentControlService } from '../../pm-document-control/pm-document-control.service';
+import { PmEquipmentSafetyService } from '../../pm-equipment-safety/pm-equipment-safety.service';
+import { PmEmergencyResponseService } from '../../pm-emergency-response/pm-emergency-response.service';
+import { PmSiteAccessControlService } from '../../pm-site-access-control/pm-site-access-control.service';
+export type SiteAccessEvaluation = {
+    granted: boolean;
+    denialReasons: string[];
+    checks: Record<string, boolean>;
+};
+export declare class SiteAccessService {
+    private readonly prisma;
+    private readonly sifHeca?;
+    private readonly pmInspections?;
+    private readonly pmSafetyEvents?;
+    private readonly pmCapa?;
+    private readonly pmDocuments?;
+    private readonly pmEquipment?;
+    private readonly pmEmergency?;
+    private readonly pmSiteAccess?;
+    constructor(prisma: PrismaService, sifHeca?: SifHecaService, pmInspections?: PmInspectionsService, pmSafetyEvents?: PmSafetyEventsService, pmCapa?: PmCorrectiveActionsService, pmDocuments?: PmDocumentControlService, pmEquipment?: PmEquipmentSafetyService, pmEmergency?: PmEmergencyResponseService, pmSiteAccess?: PmSiteAccessControlService);
+    listRules(projectId: number): Promise<{
+        id: string;
+        companyId: number | null;
+        projectId: number;
+        accessPointId: string | null;
+        zoneCode: string;
+        zoneType: import(".prisma/client").$Enums.PmAccessZoneType;
+        requiresFlhaHours: number;
+        requiresTrainingCodes: Prisma.JsonValue;
+        requiresOrientation: boolean;
+        requiresJha: boolean;
+        requiresSdsAck: boolean;
+        requiresPermitIds: Prisma.JsonValue;
+        requiredPpe: Prisma.JsonValue;
+        requirementsJson: Prisma.JsonValue;
+        equipmentCategoryIds: Prisma.JsonValue;
+        timeWindowStart: string | null;
+        timeWindowEnd: string | null;
+        highRisk: boolean;
+        active: boolean;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
+    upsertRule(data: {
+        projectId: number;
+        zoneCode?: string;
+        requiresFlhaHours?: number;
+        requiresTrainingCodes?: string[];
+        requiresOrientation?: boolean;
+    }): Promise<{
+        id: string;
+        companyId: number | null;
+        projectId: number;
+        accessPointId: string | null;
+        zoneCode: string;
+        zoneType: import(".prisma/client").$Enums.PmAccessZoneType;
+        requiresFlhaHours: number;
+        requiresTrainingCodes: Prisma.JsonValue;
+        requiresOrientation: boolean;
+        requiresJha: boolean;
+        requiresSdsAck: boolean;
+        requiresPermitIds: Prisma.JsonValue;
+        requiredPpe: Prisma.JsonValue;
+        requirementsJson: Prisma.JsonValue;
+        equipmentCategoryIds: Prisma.JsonValue;
+        timeWindowStart: string | null;
+        timeWindowEnd: string | null;
+        highRisk: boolean;
+        active: boolean;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    evaluateAccess(input: {
+        workerId: number;
+        projectId: number;
+        zoneCode?: string;
+        equipmentId?: number;
+        accessPointId?: string;
+    }): Promise<SiteAccessEvaluation>;
+    grantAccess(input: {
+        workerId: number;
+        projectId: number;
+        zoneCode?: string;
+        grantedByUserId?: number;
+        sourceFormId?: string;
+        expiresInHours?: number;
+        evaluation?: SiteAccessEvaluation;
+    }): Promise<{
+        id: string;
+        workerId: number;
+        projectId: number;
+        zoneCode: string;
+        grantedAt: Date;
+        grantedByUserId: number | null;
+        expiresAt: Date | null;
+        revokedAt: Date | null;
+        sourceFormId: string | null;
+        evaluationJson: Prisma.JsonValue | null;
+    }>;
+    revokeGrant(grantId: string): Promise<{
+        id: string;
+        workerId: number;
+        projectId: number;
+        zoneCode: string;
+        grantedAt: Date;
+        grantedByUserId: number | null;
+        expiresAt: Date | null;
+        revokedAt: Date | null;
+        sourceFormId: string | null;
+        evaluationJson: Prisma.JsonValue | null;
+    }>;
+    listGrants(projectId: number, workerId?: number): Promise<({
+        worker: {
+            id: number;
+            firstName: string;
+            lastName: string;
+        };
+    } & {
+        id: string;
+        workerId: number;
+        projectId: number;
+        zoneCode: string;
+        grantedAt: Date;
+        grantedByUserId: number | null;
+        expiresAt: Date | null;
+        revokedAt: Date | null;
+        sourceFormId: string | null;
+        evaluationJson: Prisma.JsonValue | null;
+    })[]>;
+    processWorkerSiteAccessForm(input: {
+        formId: string;
+        workerId: number;
+        projectId: number;
+        formData: Record<string, unknown>;
+        actorUserId?: number;
+    }): Promise<{
+        evaluation: SiteAccessEvaluation;
+        grant: any;
+    }>;
+    ensureDefaultRule(projectId: number): Promise<{
+        id: string;
+        companyId: number | null;
+        projectId: number;
+        accessPointId: string | null;
+        zoneCode: string;
+        zoneType: import(".prisma/client").$Enums.PmAccessZoneType;
+        requiresFlhaHours: number;
+        requiresTrainingCodes: Prisma.JsonValue;
+        requiresOrientation: boolean;
+        requiresJha: boolean;
+        requiresSdsAck: boolean;
+        requiresPermitIds: Prisma.JsonValue;
+        requiredPpe: Prisma.JsonValue;
+        requirementsJson: Prisma.JsonValue;
+        equipmentCategoryIds: Prisma.JsonValue;
+        timeWindowStart: string | null;
+        timeWindowEnd: string | null;
+        highRisk: boolean;
+        active: boolean;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+}

@@ -1,0 +1,80 @@
+import { PmSmsHecaType, Prisma } from '@prisma/client';
+import { PrismaService } from '../prisma/prisma.service';
+export declare class SmsHecaLibraryService {
+    private readonly prisma;
+    constructor(prisma: PrismaService);
+    seedDefaults(companyId: number, projectId?: number): Promise<{
+        id: string;
+        companyId: number;
+        projectId: number | null;
+        code: string;
+        title: string;
+        description: string | null;
+        hecaType: import(".prisma/client").$Enums.PmSmsHecaType;
+        requiredControlsJson: Prisma.JsonValue;
+        verificationStepsJson: Prisma.JsonValue;
+        trainingCodesJson: Prisma.JsonValue;
+        energyTypesJson: Prisma.JsonValue;
+        active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
+    list(companyId: number, projectId?: number, activeOnly?: boolean): Promise<{
+        id: string;
+        companyId: number;
+        projectId: number | null;
+        code: string;
+        title: string;
+        description: string | null;
+        hecaType: import(".prisma/client").$Enums.PmSmsHecaType;
+        requiredControlsJson: Prisma.JsonValue;
+        verificationStepsJson: Prisma.JsonValue;
+        trainingCodesJson: Prisma.JsonValue;
+        energyTypesJson: Prisma.JsonValue;
+        active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }[]>;
+    create(companyId: number, data: {
+        code: string;
+        title: string;
+        description?: string;
+        hecaType: PmSmsHecaType;
+        projectId?: number;
+        requiredControls?: string[];
+        verificationSteps?: string[];
+        trainingCodes?: string[];
+        energyTypes?: string[];
+    }): Promise<{
+        id: string;
+        companyId: number;
+        projectId: number | null;
+        code: string;
+        title: string;
+        description: string | null;
+        hecaType: import(".prisma/client").$Enums.PmSmsHecaType;
+        requiredControlsJson: Prisma.JsonValue;
+        verificationStepsJson: Prisma.JsonValue;
+        trainingCodesJson: Prisma.JsonValue;
+        energyTypesJson: Prisma.JsonValue;
+        active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    getByCode(companyId: number, code: string): Promise<{
+        id: string;
+        companyId: number;
+        projectId: number | null;
+        code: string;
+        title: string;
+        description: string | null;
+        hecaType: import(".prisma/client").$Enums.PmSmsHecaType;
+        requiredControlsJson: Prisma.JsonValue;
+        verificationStepsJson: Prisma.JsonValue;
+        trainingCodesJson: Prisma.JsonValue;
+        energyTypesJson: Prisma.JsonValue;
+        active: boolean;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+}

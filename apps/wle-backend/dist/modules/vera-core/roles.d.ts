@@ -1,0 +1,14 @@
+import { UserRole } from '@prisma/client';
+export declare const SUPER_ADMIN_ROLES: UserRole[];
+export declare const UNION_HALL_ROLES: UserRole[];
+export declare const COMPANY_ADMIN_ROLES: UserRole[];
+export declare const SUPERVISOR_ROLES: UserRole[];
+export declare const TRAINING_PROVIDER_ADMIN_ROLES: UserRole[];
+export declare const TRAINING_INSTRUCTOR_ROLES: UserRole[];
+export declare const TRAINING_INSTRUCTOR_ONLY_ROLES: UserRole[];
+export declare const CONTRACTOR_ROLES: UserRole[];
+export declare const STAFF_ROLES: UserRole[];
+export declare function isSuperAdmin(role: UserRole): boolean;
+export declare function isUnionHallAdmin(role: UserRole): boolean;
+export declare function isCompanyAdmin(role: UserRole): boolean;
+export declare function isSupervisor(role: UserRole): boolean;

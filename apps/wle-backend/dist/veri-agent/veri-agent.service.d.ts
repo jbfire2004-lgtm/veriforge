@@ -1,0 +1,32 @@
+import { AuditLogService } from '../audit/audit-log.service';
+import { VeriAgentPolicyService } from './veri-agent-policy.service';
+import { VeriAgentRedactionService } from './veri-agent-redaction.service';
+import { VeriAgentRemoteClient } from './veri-agent-remote.client';
+import type { VeriAgentCompleteRequest, VeriAgentCompleteResult, VeriAgentEmbedRequest, VeriAgentEmbedResult, VeriAgentMultimodalRequest } from './veri-agent.types';
+export declare class VeriAgentService {
+    private readonly policy;
+    private readonly redaction;
+    private readonly auditLog;
+    private readonly remote;
+    private readonly logger;
+    constructor(policy: VeriAgentPolicyService, redaction: VeriAgentRedactionService, auditLog: AuditLogService, remote: VeriAgentRemoteClient);
+    isConfigured(): boolean;
+    isEmbeddingConfigured(): boolean;
+    prepareContext(context: Record<string, unknown>): Record<string, unknown>;
+    embed(req: VeriAgentEmbedRequest): Promise<VeriAgentEmbedResult>;
+    completeJson<T extends Record<string, unknown>>(req: VeriAgentCompleteRequest): Promise<VeriAgentCompleteResult<T>>;
+    completeMultimodalJson<T extends Record<string, unknown>>(req: VeriAgentMultimodalRequest): Promise<VeriAgentCompleteResult<T>>;
+    private applyModeToCompleteRequest;
+    private applyModeToMultimodalRequest;
+    private embedLocal;
+    private completeJsonLocal;
+    private completeMultimodalJsonLocal;
+    private gate;
+    private providerChat;
+    private providerEmbed;
+    private auditEmbedResult;
+    private auditRemoteResult;
+    private auditSuccess;
+    private auditFailure;
+    private writeAudit;
+}

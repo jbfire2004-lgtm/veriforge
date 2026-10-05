@@ -1,0 +1,1047 @@
+import { PrismaService } from '../prisma/prisma.service';
+import { AuditLogService } from '../audit/audit-log.service';
+import { PmCorrectiveActionsService } from './pm-corrective-actions.service';
+export declare class PmCapaAutoGenerateService {
+    private readonly prisma;
+    private readonly capa;
+    private readonly auditLog;
+    constructor(prisma: PrismaService, capa: PmCorrectiveActionsService, auditLog: AuditLogService);
+    fromJhaFlha(jhaFlhaId: string, actorId: number): Promise<({
+        equipment: {
+            id: number;
+            name: string;
+        };
+        project: {
+            id: number;
+            name: string;
+        };
+        cailEntry: {
+            id: string;
+            status: import(".prisma/client").$Enums.CailStatus;
+            severity: import(".prisma/client").$Enums.CailSeverity;
+            dueDate: Date;
+        };
+        auditLogs: {
+            id: string;
+            actionId: string;
+            eventType: string;
+            actorId: number | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+            createdAt: Date;
+        }[];
+        attachments: {
+            id: string;
+            actionId: string;
+            storageKey: string | null;
+            fileName: string | null;
+            mimeType: string | null;
+            dataUrl: string | null;
+            coreFileId: number | null;
+            phase: string;
+            clientSyncId: string | null;
+            createdAt: Date;
+        }[];
+        assignees: ({
+            user: {
+                id: number;
+                username: string;
+            };
+        } & {
+            id: string;
+            actionId: string;
+            userId: number | null;
+            workerId: number | null;
+            role: import(".prisma/client").$Enums.PmCapaAssigneeRole;
+            delegatedFrom: string | null;
+            assignedAt: Date;
+            acceptedAt: Date | null;
+        })[];
+        escalations: {
+            id: string;
+            actionId: string;
+            level: number;
+            reason: string;
+            escalatedToUserId: number | null;
+            triggeredAt: Date;
+            resolvedAt: Date | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+        }[];
+        verifications: {
+            id: string;
+            actionId: string;
+            verifierUserId: number;
+            role: string;
+            outcome: string;
+            notes: string | null;
+            evidenceJson: import(".prisma/client").Prisma.JsonValue;
+            verifiedAt: Date;
+        }[];
+    } & {
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    })[]>;
+    fromInspectionDeficiency(deficiencyId: string, actorId: number): Promise<{
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    fromSafetyEvent(eventId: string, rootCauseId: string, actorId: number): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+        };
+        project: {
+            id: number;
+            name: string;
+        };
+        cailEntry: {
+            id: string;
+            status: import(".prisma/client").$Enums.CailStatus;
+            severity: import(".prisma/client").$Enums.CailSeverity;
+            dueDate: Date;
+        };
+        auditLogs: {
+            id: string;
+            actionId: string;
+            eventType: string;
+            actorId: number | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+            createdAt: Date;
+        }[];
+        attachments: {
+            id: string;
+            actionId: string;
+            storageKey: string | null;
+            fileName: string | null;
+            mimeType: string | null;
+            dataUrl: string | null;
+            coreFileId: number | null;
+            phase: string;
+            clientSyncId: string | null;
+            createdAt: Date;
+        }[];
+        assignees: ({
+            user: {
+                id: number;
+                username: string;
+            };
+        } & {
+            id: string;
+            actionId: string;
+            userId: number | null;
+            workerId: number | null;
+            role: import(".prisma/client").$Enums.PmCapaAssigneeRole;
+            delegatedFrom: string | null;
+            assignedAt: Date;
+            acceptedAt: Date | null;
+        })[];
+        escalations: {
+            id: string;
+            actionId: string;
+            level: number;
+            reason: string;
+            escalatedToUserId: number | null;
+            triggeredAt: Date;
+            resolvedAt: Date | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+        }[];
+        verifications: {
+            id: string;
+            actionId: string;
+            verifierUserId: number;
+            role: string;
+            outcome: string;
+            notes: string | null;
+            evidenceJson: import(".prisma/client").Prisma.JsonValue;
+            verifiedAt: Date;
+        }[];
+    } & {
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    fromSifHecaEvent(eventId: string, actorId: number): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+        };
+        project: {
+            id: number;
+            name: string;
+        };
+        cailEntry: {
+            id: string;
+            status: import(".prisma/client").$Enums.CailStatus;
+            severity: import(".prisma/client").$Enums.CailSeverity;
+            dueDate: Date;
+        };
+        auditLogs: {
+            id: string;
+            actionId: string;
+            eventType: string;
+            actorId: number | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+            createdAt: Date;
+        }[];
+        attachments: {
+            id: string;
+            actionId: string;
+            storageKey: string | null;
+            fileName: string | null;
+            mimeType: string | null;
+            dataUrl: string | null;
+            coreFileId: number | null;
+            phase: string;
+            clientSyncId: string | null;
+            createdAt: Date;
+        }[];
+        assignees: ({
+            user: {
+                id: number;
+                username: string;
+            };
+        } & {
+            id: string;
+            actionId: string;
+            userId: number | null;
+            workerId: number | null;
+            role: import(".prisma/client").$Enums.PmCapaAssigneeRole;
+            delegatedFrom: string | null;
+            assignedAt: Date;
+            acceptedAt: Date | null;
+        })[];
+        escalations: {
+            id: string;
+            actionId: string;
+            level: number;
+            reason: string;
+            escalatedToUserId: number | null;
+            triggeredAt: Date;
+            resolvedAt: Date | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+        }[];
+        verifications: {
+            id: string;
+            actionId: string;
+            verifierUserId: number;
+            role: string;
+            outcome: string;
+            notes: string | null;
+            evidenceJson: import(".prisma/client").Prisma.JsonValue;
+            verifiedAt: Date;
+        }[];
+    } & {
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    syncOpenFromModules(projectId: number, actorId: number): Promise<{
+        jha: number;
+        inspection: number;
+        sif: number;
+    }>;
+    fromDocumentDeficiency(input: {
+        companyId: number;
+        projectId?: number;
+        siteId?: number;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId?: string;
+        title: string;
+        description?: string;
+        severity?: 'low' | 'medium' | 'high' | 'critical';
+        actorId: number;
+    }): Promise<{
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    fromEquipmentFailure(failureId: string, actorId: number): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+        };
+        project: {
+            id: number;
+            name: string;
+        };
+        cailEntry: {
+            id: string;
+            status: import(".prisma/client").$Enums.CailStatus;
+            severity: import(".prisma/client").$Enums.CailSeverity;
+            dueDate: Date;
+        };
+        auditLogs: {
+            id: string;
+            actionId: string;
+            eventType: string;
+            actorId: number | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+            createdAt: Date;
+        }[];
+        attachments: {
+            id: string;
+            actionId: string;
+            storageKey: string | null;
+            fileName: string | null;
+            mimeType: string | null;
+            dataUrl: string | null;
+            coreFileId: number | null;
+            phase: string;
+            clientSyncId: string | null;
+            createdAt: Date;
+        }[];
+        assignees: ({
+            user: {
+                id: number;
+                username: string;
+            };
+        } & {
+            id: string;
+            actionId: string;
+            userId: number | null;
+            workerId: number | null;
+            role: import(".prisma/client").$Enums.PmCapaAssigneeRole;
+            delegatedFrom: string | null;
+            assignedAt: Date;
+            acceptedAt: Date | null;
+        })[];
+        escalations: {
+            id: string;
+            actionId: string;
+            level: number;
+            reason: string;
+            escalatedToUserId: number | null;
+            triggeredAt: Date;
+            resolvedAt: Date | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+        }[];
+        verifications: {
+            id: string;
+            actionId: string;
+            verifierUserId: number;
+            role: string;
+            outcome: string;
+            notes: string | null;
+            evidenceJson: import(".prisma/client").Prisma.JsonValue;
+            verifiedAt: Date;
+        }[];
+    } & {
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    fromEmergencyEvent(eventId: string, actorId: number): Promise<{
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    fromTrainingGap(workerId: number, projectId: number, trainingCode: string, actorId: number): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+        };
+        project: {
+            id: number;
+            name: string;
+        };
+        cailEntry: {
+            id: string;
+            status: import(".prisma/client").$Enums.CailStatus;
+            severity: import(".prisma/client").$Enums.CailSeverity;
+            dueDate: Date;
+        };
+        auditLogs: {
+            id: string;
+            actionId: string;
+            eventType: string;
+            actorId: number | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+            createdAt: Date;
+        }[];
+        attachments: {
+            id: string;
+            actionId: string;
+            storageKey: string | null;
+            fileName: string | null;
+            mimeType: string | null;
+            dataUrl: string | null;
+            coreFileId: number | null;
+            phase: string;
+            clientSyncId: string | null;
+            createdAt: Date;
+        }[];
+        assignees: ({
+            user: {
+                id: number;
+                username: string;
+            };
+        } & {
+            id: string;
+            actionId: string;
+            userId: number | null;
+            workerId: number | null;
+            role: import(".prisma/client").$Enums.PmCapaAssigneeRole;
+            delegatedFrom: string | null;
+            assignedAt: Date;
+            acceptedAt: Date | null;
+        })[];
+        escalations: {
+            id: string;
+            actionId: string;
+            level: number;
+            reason: string;
+            escalatedToUserId: number | null;
+            triggeredAt: Date;
+            resolvedAt: Date | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+        }[];
+        verifications: {
+            id: string;
+            actionId: string;
+            verifierUserId: number;
+            role: string;
+            outcome: string;
+            notes: string | null;
+            evidenceJson: import(".prisma/client").Prisma.JsonValue;
+            verifiedAt: Date;
+        }[];
+    } & {
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    fromSdsGap(companyId: number, projectId: number, chemicalName: string, actorId: number): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+        };
+        project: {
+            id: number;
+            name: string;
+        };
+        cailEntry: {
+            id: string;
+            status: import(".prisma/client").$Enums.CailStatus;
+            severity: import(".prisma/client").$Enums.CailSeverity;
+            dueDate: Date;
+        };
+        auditLogs: {
+            id: string;
+            actionId: string;
+            eventType: string;
+            actorId: number | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+            createdAt: Date;
+        }[];
+        attachments: {
+            id: string;
+            actionId: string;
+            storageKey: string | null;
+            fileName: string | null;
+            mimeType: string | null;
+            dataUrl: string | null;
+            coreFileId: number | null;
+            phase: string;
+            clientSyncId: string | null;
+            createdAt: Date;
+        }[];
+        assignees: ({
+            user: {
+                id: number;
+                username: string;
+            };
+        } & {
+            id: string;
+            actionId: string;
+            userId: number | null;
+            workerId: number | null;
+            role: import(".prisma/client").$Enums.PmCapaAssigneeRole;
+            delegatedFrom: string | null;
+            assignedAt: Date;
+            acceptedAt: Date | null;
+        })[];
+        escalations: {
+            id: string;
+            actionId: string;
+            level: number;
+            reason: string;
+            escalatedToUserId: number | null;
+            triggeredAt: Date;
+            resolvedAt: Date | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+        }[];
+        verifications: {
+            id: string;
+            actionId: string;
+            verifierUserId: number;
+            role: string;
+            outcome: string;
+            notes: string | null;
+            evidenceJson: import(".prisma/client").Prisma.JsonValue;
+            verifiedAt: Date;
+        }[];
+    } & {
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    fromAccessDenial(workerId: number, projectId: number, reason: string, actorId: number): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+        };
+        project: {
+            id: number;
+            name: string;
+        };
+        cailEntry: {
+            id: string;
+            status: import(".prisma/client").$Enums.CailStatus;
+            severity: import(".prisma/client").$Enums.CailSeverity;
+            dueDate: Date;
+        };
+        auditLogs: {
+            id: string;
+            actionId: string;
+            eventType: string;
+            actorId: number | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+            createdAt: Date;
+        }[];
+        attachments: {
+            id: string;
+            actionId: string;
+            storageKey: string | null;
+            fileName: string | null;
+            mimeType: string | null;
+            dataUrl: string | null;
+            coreFileId: number | null;
+            phase: string;
+            clientSyncId: string | null;
+            createdAt: Date;
+        }[];
+        assignees: ({
+            user: {
+                id: number;
+                username: string;
+            };
+        } & {
+            id: string;
+            actionId: string;
+            userId: number | null;
+            workerId: number | null;
+            role: import(".prisma/client").$Enums.PmCapaAssigneeRole;
+            delegatedFrom: string | null;
+            assignedAt: Date;
+            acceptedAt: Date | null;
+        })[];
+        escalations: {
+            id: string;
+            actionId: string;
+            level: number;
+            reason: string;
+            escalatedToUserId: number | null;
+            triggeredAt: Date;
+            resolvedAt: Date | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+        }[];
+        verifications: {
+            id: string;
+            actionId: string;
+            verifierUserId: number;
+            role: string;
+            outcome: string;
+            notes: string | null;
+            evidenceJson: import(".prisma/client").Prisma.JsonValue;
+            verifiedAt: Date;
+        }[];
+    } & {
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+    fromPolicyNonCompliance(companyId: number, projectId: number, policyTitle: string, workerId: number | undefined, actorId: number): Promise<{
+        equipment: {
+            id: number;
+            name: string;
+        };
+        project: {
+            id: number;
+            name: string;
+        };
+        cailEntry: {
+            id: string;
+            status: import(".prisma/client").$Enums.CailStatus;
+            severity: import(".prisma/client").$Enums.CailSeverity;
+            dueDate: Date;
+        };
+        auditLogs: {
+            id: string;
+            actionId: string;
+            eventType: string;
+            actorId: number | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+            createdAt: Date;
+        }[];
+        attachments: {
+            id: string;
+            actionId: string;
+            storageKey: string | null;
+            fileName: string | null;
+            mimeType: string | null;
+            dataUrl: string | null;
+            coreFileId: number | null;
+            phase: string;
+            clientSyncId: string | null;
+            createdAt: Date;
+        }[];
+        assignees: ({
+            user: {
+                id: number;
+                username: string;
+            };
+        } & {
+            id: string;
+            actionId: string;
+            userId: number | null;
+            workerId: number | null;
+            role: import(".prisma/client").$Enums.PmCapaAssigneeRole;
+            delegatedFrom: string | null;
+            assignedAt: Date;
+            acceptedAt: Date | null;
+        })[];
+        escalations: {
+            id: string;
+            actionId: string;
+            level: number;
+            reason: string;
+            escalatedToUserId: number | null;
+            triggeredAt: Date;
+            resolvedAt: Date | null;
+            payload: import(".prisma/client").Prisma.JsonValue | null;
+        }[];
+        verifications: {
+            id: string;
+            actionId: string;
+            verifierUserId: number;
+            role: string;
+            outcome: string;
+            notes: string | null;
+            evidenceJson: import(".prisma/client").Prisma.JsonValue;
+            verifiedAt: Date;
+        }[];
+    } & {
+        id: string;
+        cailEntryId: string;
+        companyId: number;
+        projectId: number;
+        siteId: number | null;
+        sourceModule: string;
+        sourceId: string;
+        sourceItemId: string;
+        deficiencyId: string | null;
+        actionType: import(".prisma/client").$Enums.PmCorrectiveActionType;
+        status: import(".prisma/client").$Enums.PmCorrectiveActionStatus;
+        title: string;
+        description: string | null;
+        severityScore: number;
+        priorityScore: number;
+        escalationLevel: number;
+        dueAt: Date | null;
+        overdueAt: Date | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        subcontractorCompanyId: number | null;
+        requiresVerification: boolean;
+        verifiedAt: Date | null;
+        closedAt: Date | null;
+        createdByUserId: number;
+        verifiedByUserId: number | null;
+        parentActionId: string | null;
+        hazardId: string | null;
+        controlId: string | null;
+        rootCauseId: string | null;
+        publishVersion: number;
+        publishedAt: Date | null;
+        severityLevel: string;
+        priorityLevel: string;
+        evidenceRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        verificationRequirementsJson: import(".prisma/client").Prisma.JsonValue;
+        clientSyncId: string | null;
+        deletedAt: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+    }>;
+}

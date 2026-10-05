@@ -1,0 +1,10 @@
+export declare const VERA_PERMISSION_KEY = "vera_permission";
+export declare const VERA_FEATURE_KEY = "vera_feature";
+export declare const VERA_MODULE_KEY = "vera_module";
+export declare const VERA_MIN_TIER_KEY = "vera_min_tier";
+export declare const RequirePermission: (permission: string) => import("@nestjs/common").CustomDecorator<string>;
+export declare const RequireFeature: (feature: string) => import("@nestjs/common").CustomDecorator<string>;
+export declare const RequireModule: (moduleId: string) => import("@nestjs/common").CustomDecorator<string>;
+export declare const RequireMinTier: (tierKey: string) => import("@nestjs/common").CustomDecorator<string>;
+export declare const VERA_ROLE_KEY = "vera_role";
+export declare const RequireRoles: (...roles: string[]) => import("@nestjs/common").CustomDecorator<string>;

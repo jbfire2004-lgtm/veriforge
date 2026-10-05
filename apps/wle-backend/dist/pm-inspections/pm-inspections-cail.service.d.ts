@@ -1,0 +1,57 @@
+import { CailSeverity, PmDeficiencySeverity } from '@prisma/client';
+import { CailEmitterService } from '../safety-intelligence/cail/cail-emitter.service';
+export declare class PmInspectionsCailService {
+    private readonly emitter;
+    constructor(emitter: CailEmitterService);
+    severityMap(sev: PmDeficiencySeverity): CailSeverity;
+    emitFromDeficiency(input: {
+        projectId: number;
+        ownerCompanyId: number;
+        inspectionId: string;
+        deficiencyId: string;
+        title: string;
+        description?: string;
+        severity: PmDeficiencySeverity;
+        createdByUserId?: number;
+        siteId?: number;
+        equipmentId?: number;
+        workerId?: number;
+        assignedUserId?: number;
+        dueDate?: Date;
+    }): Promise<{
+        id: string;
+        projectId: number;
+        ownerCompanyId: number;
+        assignedUserId: number | null;
+        sourceType: import(".prisma/client").$Enums.CailSourceType;
+        sourceId: string;
+        sourceItemId: string;
+        title: string;
+        description: string | null;
+        status: import(".prisma/client").$Enums.CailStatus;
+        severity: import(".prisma/client").$Enums.CailSeverity;
+        riskCategory: import(".prisma/client").$Enums.CailRiskCategory | null;
+        dueDate: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+        closedAt: Date | null;
+        verifiedAt: Date | null;
+        createdByUserId: number | null;
+        verifiedByUserId: number | null;
+        evidenceBefore: import(".prisma/client").Prisma.JsonValue;
+        evidenceAfter: import(".prisma/client").Prisma.JsonValue;
+        rootCauseCategory: string | null;
+        rootCauseNotes: string | null;
+        aiRootCauseSuggestions: import(".prisma/client").Prisma.JsonValue | null;
+        aiCorrectiveActionSuggestions: import(".prisma/client").Prisma.JsonValue | null;
+        aiClassification: import(".prisma/client").Prisma.JsonValue | null;
+        lessonsLearnedGenerated: boolean;
+        tags: import(".prisma/client").Prisma.JsonValue;
+        siteId: number | null;
+        locationNote: string | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        overdueAt: Date | null;
+        timeToResolveHours: number | null;
+    }>;
+}

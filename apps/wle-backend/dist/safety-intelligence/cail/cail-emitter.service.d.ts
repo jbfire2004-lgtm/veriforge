@@ -1,0 +1,74 @@
+import { CailSeverity, CailSourceType, CailRiskCategory, Prisma } from '@prisma/client';
+import { PrismaService } from '../../prisma/prisma.service';
+import { VsiEventService } from '../events/vsi-event.service';
+export type EmitCailInput = {
+    projectId: number;
+    ownerCompanyId: number;
+    sourceType: CailSourceType;
+    sourceId: string;
+    sourceItemId?: string;
+    title: string;
+    description?: string;
+    severity?: CailSeverity;
+    riskCategory?: CailRiskCategory | null;
+    assignedUserId?: number;
+    createdByUserId?: number;
+    siteId?: number;
+    locationNote?: string;
+    equipmentId?: number;
+    workerId?: number;
+    dueDate?: Date;
+    evidenceBefore?: unknown[];
+    tags?: string[];
+};
+export declare class CailEmitterService {
+    private readonly prisma;
+    private readonly vsiEvents;
+    constructor(prisma: PrismaService, vsiEvents: VsiEventService);
+    emit(input: EmitCailInput): Promise<{
+        id: string;
+        projectId: number;
+        ownerCompanyId: number;
+        assignedUserId: number | null;
+        sourceType: import(".prisma/client").$Enums.CailSourceType;
+        sourceId: string;
+        sourceItemId: string;
+        title: string;
+        description: string | null;
+        status: import(".prisma/client").$Enums.CailStatus;
+        severity: import(".prisma/client").$Enums.CailSeverity;
+        riskCategory: import(".prisma/client").$Enums.CailRiskCategory | null;
+        dueDate: Date | null;
+        createdAt: Date;
+        updatedAt: Date;
+        closedAt: Date | null;
+        verifiedAt: Date | null;
+        createdByUserId: number | null;
+        verifiedByUserId: number | null;
+        evidenceBefore: Prisma.JsonValue;
+        evidenceAfter: Prisma.JsonValue;
+        rootCauseCategory: string | null;
+        rootCauseNotes: string | null;
+        aiRootCauseSuggestions: Prisma.JsonValue | null;
+        aiCorrectiveActionSuggestions: Prisma.JsonValue | null;
+        aiClassification: Prisma.JsonValue | null;
+        lessonsLearnedGenerated: boolean;
+        tags: Prisma.JsonValue;
+        siteId: number | null;
+        locationNote: string | null;
+        equipmentId: number | null;
+        workerId: number | null;
+        overdueAt: Date | null;
+        timeToResolveHours: number | null;
+    }>;
+    linkSafetyForm(safetyFormId: string, cailEntryId: string, fieldId?: string): Promise<{
+        safetyFormId: string;
+        fieldId: string | null;
+        cailEntryId: string;
+    }>;
+    linkEquipmentInspection(inspectionId: number, checklistItemId: string, cailEntryId: string): Promise<{
+        inspectionId: number;
+        checklistItemId: string;
+        cailEntryId: string;
+    }>;
+}
