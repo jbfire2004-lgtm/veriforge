@@ -4,3 +4,4 @@ packages:
   - "packages/*"
   - "services/veriforge-saas-service"
   - "apps/veriforge-frontend"
+  - "apps/wle-backend"
