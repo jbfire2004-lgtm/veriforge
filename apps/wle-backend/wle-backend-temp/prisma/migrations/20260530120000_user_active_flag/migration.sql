@@ -1,0 +1,2 @@
+-- User activate/deactivate for ACP user management
+ALTER TABLE "User" ADD COLUMN IF NOT EXISTS "active" BOOLEAN NOT NULL DEFAULT true;
