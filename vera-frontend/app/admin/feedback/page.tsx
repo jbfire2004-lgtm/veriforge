@@ -1,1 +1,1 @@
-export { default } from "@/src/pages/admin/feedback";
+export { default } from "@/src/screens/admin/feedback";

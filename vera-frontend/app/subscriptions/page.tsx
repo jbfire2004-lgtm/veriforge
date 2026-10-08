@@ -1,4 +1,4 @@
-export { default } from "@/src/pages/subscriptions/index";
+export { default } from "@/src/screens/subscriptions/index";
 
 export const metadata = {
   title: "Subscriptions — VERA",

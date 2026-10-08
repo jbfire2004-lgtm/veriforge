@@ -1,9 +1,9 @@
 import { type NextRequest } from "next/server";
+import { resolveServerApiBaseUrl } from "@/lib/dev-ports";
 
 export const dynamic = "force-dynamic";
 
-const NEST =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const NEST = resolveServerApiBaseUrl();
 
 const STRIP_REQ = new Set([
   "host",

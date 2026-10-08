@@ -1,1 +1,1 @@
-export { default } from "@/src/pages/pm/safety-intelligence/inspections/detail";
+export { default } from "@/src/screens/pm/safety-intelligence/inspections/detail";

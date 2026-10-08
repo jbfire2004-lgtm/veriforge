@@ -1,4 +1,5 @@
 import { prisma } from '../db/prisma';
+import { asJson } from '../utils/json';
 
 const SENSITIVE = /password|secret|token|authorization|keyHash/i;
 
@@ -29,7 +30,7 @@ export class DeveloperAuditService {
         resourceId: input.resourceId,
         ip: input.ip,
         userAgent: input.userAgent,
-        meta: scrub(input.meta) ?? undefined,
+        meta: asJson(scrub(input.meta)),
       },
     });
   }

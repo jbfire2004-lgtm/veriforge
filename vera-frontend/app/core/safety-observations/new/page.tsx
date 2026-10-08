@@ -1,1 +1,1 @@
-export { default } from "@/src/pages/core-safety-observation/new";
+export { default } from "@/src/screens/core-safety-observation/new";

@@ -1,4 +1,5 @@
 import { prisma } from '../db/prisma';
+import { asJson } from '../utils/json';
 import { logger } from '../utils/logger';
 import { notificationTriggers } from './notification-triggers.service';
 
@@ -20,7 +21,7 @@ export class ComplianceNotificationService {
           artifactId: input.artifactId,
           kind: input.kind,
           recipientEmail: input.recipientEmail,
-          meta: input.meta ?? undefined,
+          meta: asJson(input.meta),
         },
       });
 

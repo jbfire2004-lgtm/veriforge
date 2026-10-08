@@ -3,7 +3,7 @@ import path from "path";
 
 const fixes = [
   [
-    "src/pages/pm/safety-suite/index.tsx",
+    "src/screens/pm/safety-suite/index.tsx",
     /<VeraPageLayout[\s\S]*?description="[\s\S]*?"\s*>/,
     `<VeraPageLayout
       title="Vera Safety Suite"
@@ -11,7 +11,7 @@ const fixes = [
     >`,
   ],
   [
-    "src/pages/pm/project-management/dashboard.tsx",
+    "src/screens/pm/project-management/dashboard.tsx",
     /<VeraPageLayout[\s\S]*?>\s*\n/,
     `<VeraPageLayout
       title="Project management"
@@ -25,7 +25,7 @@ const fixes = [
 `,
   ],
   [
-    "src/pages/pm/worker-safety-profile/dashboard.tsx",
+    "src/screens/pm/worker-safety-profile/dashboard.tsx",
     /<VeraPageLayout[\s\S]*?>\s*\n/,
     `<VeraPageLayout
       title="Worker safety profile"
@@ -39,7 +39,7 @@ const fixes = [
 `,
   ],
   [
-    "src/pages/pm/unified-hazard-control/dashboard.tsx",
+    "src/screens/pm/unified-hazard-control/dashboard.tsx",
     /<VeraPageLayout[\s\S]*?>\s*\n/,
     `<VeraPageLayout
       title="Unified hazard & control"
@@ -48,7 +48,7 @@ const fixes = [
 `,
   ],
   [
-    "src/pages/pm/unified-corrective-action/dashboard.tsx",
+    "src/screens/pm/unified-corrective-action/dashboard.tsx",
     /<VeraPageLayout[\s\S]*?>\s*\n/,
     `<VeraPageLayout
       title="Unified corrective actions"
@@ -66,10 +66,10 @@ for (const [file, re, replacement] of fixes) {
 }
 
 const templateFixes = [
-  ["src/pages/pm/incidents/dashboard.tsx", "Intake wizard, RCA, SIF/HECA, CAIL — project #", "projectId"],
-  ["src/pages/pm/inspections/dashboard.tsx", "Templates, field execution, deficiencies, and CAIL — project #", "projectId"],
-  ["src/pages/pm/corrective-actions/dashboard.tsx", "Unified CAPA on CAIL — assignment, escalation, verification — project #", "projectId"],
-  ["src/pages/pm/attachments-media/dashboard.tsx", "Unified uploads, thumbnails, annotations, and offline sync — project #", "projectId"],
+  ["src/screens/pm/incidents/dashboard.tsx", "Intake wizard, RCA, SIF/HECA, CAIL — project #", "projectId"],
+  ["src/screens/pm/inspections/dashboard.tsx", "Templates, field execution, deficiencies, and CAIL — project #", "projectId"],
+  ["src/screens/pm/corrective-actions/dashboard.tsx", "Unified CAPA on CAIL — assignment, escalation, verification — project #", "projectId"],
+  ["src/screens/pm/attachments-media/dashboard.tsx", "Unified uploads, thumbnails, annotations, and offline sync — project #", "projectId"],
 ];
 
 for (const [file, prefix, varName] of templateFixes) {
@@ -83,14 +83,14 @@ for (const [file, prefix, varName] of templateFixes) {
 }
 
 const multiLine = [
-  ["src/pages/pm/site-access-control/dashboard.tsx", "Unified validation across training, JHA, CAPA, equipment, SDS, emergency — project #", "projectId"],
-  ["src/pages/pm/safety-stations/dashboard.tsx", "Registration, heartbeat monitoring, worker/equipment validation, muster, offline sync — project #", "projectId"],
-  ["src/pages/pm/offline-mode/dashboard.tsx", "Local-first IndexedDB cache, sync queue, delta updates, and conflict resolution — project #", "projectId"],
-  ["src/pages/pm/project-safety-context/dashboard.tsx", "Safety profile, hazard & control libraries, enforcement, versioning — project #", "projectId"],
-  ["src/pages/pm/equipment-safety/dashboard.tsx", "Profiles, certifications, inspections, LOTO, failures, and CAIL risk scoring — project #", "projectId"],
-  ["src/pages/pm/emergency-response/dashboard.tsx", "Plans, muster, evacuation, notifications, and CAIL — site #", "siteId", ", project #", "projectId"],
-  ["src/pages/pm/documents/dashboard.tsx", "SDS library, chemical inventory, policies, acknowledgments, and CAIL insights — project #", "projectId"],
-  ["src/pages/pm/company-safety-context/dashboard.tsx", "Corporate profile, master hazard/control libraries, training matrix, policies, SDS, emergency plans — company #", "companyId"],
+  ["src/screens/pm/site-access-control/dashboard.tsx", "Unified validation across training, JHA, CAPA, equipment, SDS, emergency — project #", "projectId"],
+  ["src/screens/pm/safety-stations/dashboard.tsx", "Registration, heartbeat monitoring, worker/equipment validation, muster, offline sync — project #", "projectId"],
+  ["src/screens/pm/offline-mode/dashboard.tsx", "Local-first IndexedDB cache, sync queue, delta updates, and conflict resolution — project #", "projectId"],
+  ["src/screens/pm/project-safety-context/dashboard.tsx", "Safety profile, hazard & control libraries, enforcement, versioning — project #", "projectId"],
+  ["src/screens/pm/equipment-safety/dashboard.tsx", "Profiles, certifications, inspections, LOTO, failures, and CAIL risk scoring — project #", "projectId"],
+  ["src/screens/pm/emergency-response/dashboard.tsx", "Plans, muster, evacuation, notifications, and CAIL — site #", "siteId", ", project #", "projectId"],
+  ["src/screens/pm/documents/dashboard.tsx", "SDS library, chemical inventory, policies, acknowledgments, and CAIL insights — project #", "projectId"],
+  ["src/screens/pm/company-safety-context/dashboard.tsx", "Corporate profile, master hazard/control libraries, training matrix, policies, SDS, emergency plans — company #", "companyId"],
 ];
 
 for (const row of multiLine) {
@@ -114,7 +114,7 @@ for (const row of multiLine) {
 }
 
 // Fix HTML entities in titles
-for (const file of ["src/pages/pm/unified-hazard-control/dashboard.tsx", "src/pages/pm/attachments-media/dashboard.tsx"]) {
+for (const file of ["src/screens/pm/unified-hazard-control/dashboard.tsx", "src/screens/pm/attachments-media/dashboard.tsx"]) {
   let src = fs.readFileSync(file, "utf8");
   src = src.replace(/&amp;/g, "&");
   fs.writeFileSync(file, src);

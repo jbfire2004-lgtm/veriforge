@@ -23,7 +23,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import ContractorOpsPanel from "@/src/pages/contractor-safety-portal/dashboard";
+import ContractorOpsPanel from "@/src/screens/contractor-safety-portal/dashboard";
 
 const STATUS_TONE: Record<
   string,

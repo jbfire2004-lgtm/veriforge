@@ -1,4 +1,4 @@
-import PmInspectionReportPage from "@/src/pages/pm/inspections/report";
+import PmInspectionReportPage from "@/src/screens/pm/inspections/report";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmInspectionReportRoute({

@@ -1,4 +1,4 @@
-import type { BillingCycle, ModuleCode, OrgStatus, Prisma } from '@prisma/client';
+import { Prisma, type BillingCycle, type ModuleCode, type OrgStatus } from '@prisma/client';
 import { prisma } from '../db/prisma';
 import { BadRequestError, NotFoundError } from '../utils/errors';
 import { slugify } from '../utils/crypto';

@@ -1,4 +1,4 @@
-import CoreUploadPage from "@/src/pages/core/upload";
+import CoreUploadPage from "@/src/screens/core/upload";
 
 export default function CoreUploadRoute() {
   return <CoreUploadPage />;

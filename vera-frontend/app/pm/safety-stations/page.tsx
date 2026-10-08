@@ -1,4 +1,4 @@
-import PmSafetyStationsDashboardPage from "@/src/pages/pm/safety-stations/dashboard";
+import PmSafetyStationsDashboardPage from "@/src/screens/pm/safety-stations/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmSafetyStationsRoute({

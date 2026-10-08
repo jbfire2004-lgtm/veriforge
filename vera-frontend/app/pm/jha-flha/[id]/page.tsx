@@ -1,4 +1,4 @@
-import JhaFlhaEditorPage from "@/src/pages/pm/jha-flha/editor";
+import JhaFlhaEditorPage from "@/src/screens/pm/jha-flha/editor";
 import { resolveRouteParams } from "@/lib/resolve-route-params";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 

@@ -1,4 +1,4 @@
-import SmsCoreDashboard from '@/src/pages/pm/sms/dashboard';
+import SmsCoreDashboard from '@/src/screens/pm/sms/dashboard';
 import { resolveSearchParams } from '@/lib/resolve-search-params';
 import {
   resolvePmInspectionCompanyId,

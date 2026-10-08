@@ -5,7 +5,7 @@ import {
   getUserCompanyContext,
   mergeCompaniesWithUser,
 } from "@/lib/user-company-context";
-import CoreDailyLogListPage from "@/src/pages/core-daily-log/list";
+import CoreDailyLogListPage from "@/src/screens/core-daily-log/list";
 import type { SitesPaginatedDto } from "@/src/api/sites";
 
 export const metadata = {

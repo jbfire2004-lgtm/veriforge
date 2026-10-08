@@ -1,4 +1,4 @@
-import NewPmSafetyWorkflowPage from "@/src/pages/pm/safety/new";
+import NewPmSafetyWorkflowPage from "@/src/screens/pm/safety/new";
 
 export default function NewPmSafetyWorkflowRoute() {
   return <NewPmSafetyWorkflowPage />;

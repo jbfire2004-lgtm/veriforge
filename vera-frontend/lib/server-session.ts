@@ -4,6 +4,7 @@ import { getServerSession, type Session } from "next-auth";
 import { getToken } from "next-auth/jwt";
 import { cookies } from "next/headers";
 import { authOptions } from "@/lib/auth-options";
+import { resolveServerApiBaseUrl } from "@/lib/dev-ports";
 
 type JwtWithAccess = {
   accessToken?: string;
@@ -13,7 +14,7 @@ type JwtWithAccess = {
 async function refreshAccessTokenFromApi(
   refreshToken: string,
 ): Promise<string | undefined> {
-  const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+  const apiBase = resolveServerApiBaseUrl();
   try {
     const res = await fetch(`${apiBase}/auth/refresh`, {
       method: "POST",

@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import SubscriptionsCheckoutPage from "@/src/pages/subscriptions/checkout";
+import SubscriptionsCheckoutPage from "@/src/screens/subscriptions/checkout";
 
 export const metadata = {
   title: "Checkout — VERA Subscriptions",

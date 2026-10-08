@@ -85,7 +85,7 @@ export function deriveInsuranceStatus(docs: {
   let best: InsuranceStatus = 'missing';
   for (const d of insurance) {
     if (d.status === 'expired' || (d.expiryDate && d.expiryDate.getTime() < now)) {
-      if (best !== 'valid' && best !== 'expiring') best = 'expired';
+      if (best === 'missing' || best === 'expired') best = 'expired';
       continue;
     }
     if (d.status === 'valid') {

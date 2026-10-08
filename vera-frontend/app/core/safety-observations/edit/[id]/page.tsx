@@ -1,2 +1,2 @@
-export { default } from "@/src/pages/core-safety-observation/edit";
+export { default } from "@/src/screens/core-safety-observation/edit";
 

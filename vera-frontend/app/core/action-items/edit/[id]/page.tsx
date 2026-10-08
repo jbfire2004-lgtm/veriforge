@@ -1,2 +1,2 @@
-export { default } from "@/src/pages/core-action-items/edit";
+export { default } from "@/src/screens/core-action-items/edit";
 

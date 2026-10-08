@@ -1,4 +1,4 @@
-import SifHecaEvaluatePage from "@/src/pages/pm/sif-heca/evaluate";
+import SifHecaEvaluatePage from "@/src/screens/pm/sif-heca/evaluate";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function SifHecaEvaluateRoute({

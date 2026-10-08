@@ -1,4 +1,4 @@
-import EditCoreMeetingRecordPage from "@/src/pages/core-meeting-record/edit";
+import EditCoreMeetingRecordPage from "@/src/screens/core-meeting-record/edit";
 
 export default function CoreMeetingRecordEditRoute() {
   return <EditCoreMeetingRecordPage />;

@@ -15,7 +15,11 @@ FROM base AS deps
 COPY vera-frontend/package.json vera-frontend/package-lock.json* vera-frontend/pnpm-lock.yaml* ./vera-frontend/
 COPY packages ./packages
 WORKDIR /repo/vera-frontend
-RUN if [ -f pnpm-lock.yaml ]; then \
+# file: packages "prepare" runs tsc before their deps exist. Next compiles them from src.
+RUN for f in /repo/packages/*/package.json; do \
+      node -e 'const fs=require("fs"); const p=process.argv[1]; const j=JSON.parse(fs.readFileSync(p,"utf8")); if(j.scripts){delete j.scripts.prepare;} fs.writeFileSync(p, JSON.stringify(j));' "$f"; \
+    done \
+ && if [ -f pnpm-lock.yaml ]; then \
       pnpm install --frozen-lockfile; \
     elif [ -f package-lock.json ]; then \
       npm ci --legacy-peer-deps; \
@@ -30,12 +34,17 @@ COPY --from=deps /repo/packages ./packages
 COPY vera-frontend ./vera-frontend
 WORKDIR /repo/vera-frontend
 
-ARG NEXT_PUBLIC_API_URL=/api
+ARG NEXT_PUBLIC_API_URL=/nest
 ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
+ARG NEST_INTERNAL_URL=http://nest:3001
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
+ENV NEST_INTERNAL_URL=$NEST_INTERNAL_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
+# 16 GB EC2. Override with --build-arg NEXT_HEAP_MB=3072 only on a small machine.
+ARG NEXT_HEAP_MB=6144
+ENV NODE_OPTIONS=--max-old-space-size=${NEXT_HEAP_MB}
 
 RUN pnpm run build || npm run build
 
@@ -47,6 +56,7 @@ ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PORT=3000
 ENV HOSTNAME=0.0.0.0
+ENV NEST_INTERNAL_URL=http://nest:3001
 
 RUN addgroup -g 1001 -S nodejs \
   && adduser -S nextjs -u 1001 -G nodejs \

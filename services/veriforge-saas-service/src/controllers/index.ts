@@ -1,4 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
+import { routeParam } from '../utils/route-param';
 import { authService } from '../services/auth.service';
 import { pricingService } from '../services/pricing.service';
 import { organizationService } from '../services/organization.service';
@@ -82,7 +83,7 @@ export const pricingController = {
 export const organizationController = {
   update: asyncHandler(async (req, res) => {
     rbacService.assertCan(req.auth!, PERMISSIONS.ORG_PROFILE_UPDATE);
-    const org = await organizationService.update(req.params.orgId, {
+    const org = await organizationService.update(routeParam(req.params.orgId), {
       name: req.body.name,
       status: req.body.status as OrgStatus | undefined,
       billingCycle: req.body.billingCycle as BillingCycle | undefined,
@@ -107,24 +108,24 @@ export const organizationController = {
   inviteUser: asyncHandler(async (req, res) => {
     rbacService.assertCan(req.auth!, PERMISSIONS.ORG_USERS_MANAGE);
     const result = await userService.invite({
-      orgId: req.params.orgId,
+      orgId: routeParam(req.params.orgId),
       email: req.body.email,
       fullName: req.body.fullName,
-      role: (req.body.role as SystemRoleCode) ?? 'user',
+      role: (req.body.role as Exclude<SystemRoleCode, 'owner'>) ?? 'user',
       invitedByUserId: req.auth!.user_id,
     });
     res.status(201).json(result);
   }),
 
   getTrial: asyncHandler(async (req, res) => {
-    const trial = await trialService.getTrial(req.params.orgId);
+    const trial = await trialService.getTrial(routeParam(req.params.orgId));
     res.json(trial);
   }),
 
   extendTrial: asyncHandler(async (req, res) => {
     rbacService.assertCan(req.auth!, PERMISSIONS.ORG_TRIAL_EXTEND);
     const organization = await trialService.extendTrial(
-      req.params.orgId,
+      routeParam(req.params.orgId),
       Number(req.body.extraDays ?? 7),
     );
     res.json({ organization });
@@ -133,7 +134,7 @@ export const organizationController = {
   convertBilling: asyncHandler(async (req, res) => {
     rbacService.assertCan(req.auth!, PERMISSIONS.ORG_BILLING_MANAGE);
     const subscription = await billingIntegrationService.convertTrialToActive({
-      orgId: req.params.orgId,
+      orgId: routeParam(req.params.orgId),
       paymentMethodId: req.body.paymentMethodId,
       billingCycle: req.body.billingCycle as BillingCycle | undefined,
     });
@@ -143,7 +144,7 @@ export const organizationController = {
   listModules: asyncHandler(async (req, res) => {
     const { prisma } = await import('../db/prisma');
     const modules = await prisma.organizationModule.findMany({
-      where: { orgId: req.params.orgId, effectiveTo: null },
+      where: { orgId: routeParam(req.params.orgId), effectiveTo: null },
       include: { module: true },
       orderBy: { createdAt: 'asc' },
     });
@@ -178,45 +179,45 @@ export const adminController = {
   }),
 
   getOrganization: asyncHandler(async (req, res) => {
-    const organization = await organizationService.getById(req.params.orgId);
+    const organization = await organizationService.getById(routeParam(req.params.orgId));
     const { prisma } = await import('../db/prisma');
     const modules = await prisma.organizationModule.findMany({
-      where: { orgId: req.params.orgId, effectiveTo: null },
+      where: { orgId: routeParam(req.params.orgId), effectiveTo: null },
       include: { module: true },
     });
-    const trial = await trialService.getTrial(req.params.orgId);
+    const trial = await trialService.getTrial(routeParam(req.params.orgId));
     res.json({ organization, modules, trial });
   }),
 
   patchModules: asyncHandler(async (req, res) => {
     const updates = req.body.modules as { code: ModuleCode; enabled: boolean }[];
     for (const u of updates) {
-      await moduleService.setModuleEnabled(req.params.orgId, u.code, u.enabled);
+      await moduleService.setModuleEnabled(routeParam(req.params.orgId), u.code, u.enabled);
     }
     const enabled = updates.filter((u) => u.enabled).map((u) => u.code);
     if (enabled.length) {
       try {
-        await billingIntegrationService.syncModulesOnStripe(req.params.orgId, enabled);
+        await billingIntegrationService.syncModulesOnStripe(routeParam(req.params.orgId), enabled);
       } catch {
         // no Stripe sub yet
       }
     }
     const { prisma } = await import('../db/prisma');
     const modules = await prisma.organizationModule.findMany({
-      where: { orgId: req.params.orgId, effectiveTo: null },
+      where: { orgId: routeParam(req.params.orgId), effectiveTo: null },
       include: { module: true },
     });
     res.json({ modules });
   }),
 
   patchSubscription: asyncHandler(async (req, res) => {
-    const org = await organizationService.update(req.params.orgId, {
+    const org = await organizationService.update(routeParam(req.params.orgId), {
       billingCycle: req.body.billingCycle as BillingCycle | undefined,
       status: req.body.status as OrgStatus | undefined,
     });
     if (req.body.convertToActive) {
       const subscription = await billingIntegrationService.convertTrialToActive({
-        orgId: req.params.orgId,
+        orgId: routeParam(req.params.orgId),
         billingCycle: req.body.billingCycle,
       });
       res.json({ organization: org, subscription });
@@ -227,14 +228,14 @@ export const adminController = {
 
   extendTrial: asyncHandler(async (req, res) => {
     const organization = await trialService.extendTrial(
-      req.params.orgId,
+      routeParam(req.params.orgId),
       Number(req.body.extraDays ?? 7),
     );
     res.json({ organization });
   }),
 
   patchOnboarding: asyncHandler(async (req, res) => {
-    const organization = await organizationService.update(req.params.orgId, {
+    const organization = await organizationService.update(routeParam(req.params.orgId), {
       onboardingNotes: req.body.notes ?? req.body.onboardingNotes,
       onboardingChecklist: req.body.checklist ?? req.body.onboardingChecklist,
     });
@@ -275,7 +276,7 @@ export const adminController = {
   }),
 
   patchOnboardingByOrg: asyncHandler(async (req, res) => {
-    const onboarding = await onboardingService.update(req.params.orgId, {
+    const onboarding = await onboardingService.update(routeParam(req.params.orgId), {
       status: req.body.status as OnboardingStatus | undefined,
       notes: req.body.notes ?? req.body.onboardingNotes,
       checklist: req.body.checklist ?? req.body.onboardingChecklist,

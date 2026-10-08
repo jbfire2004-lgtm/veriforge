@@ -1,4 +1,4 @@
-import NewSubstanceTestPage from "@/src/pages/pm/substance-testing/new";
+import NewSubstanceTestPage from "@/src/screens/pm/substance-testing/new";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function NewSubstanceTestRoute({

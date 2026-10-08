@@ -1,4 +1,4 @@
-import PmCapaDetailPage from "@/src/pages/pm/corrective-actions/detail";
+import PmCapaDetailPage from "@/src/screens/pm/corrective-actions/detail";
 import { resolveRouteParams } from "@/lib/resolve-route-params";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 

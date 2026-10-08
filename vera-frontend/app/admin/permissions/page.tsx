@@ -1,1 +1,1 @@
-export { default } from "@/src/pages/admin/acp/permissions";
+export { default } from "@/src/screens/admin/acp/permissions";

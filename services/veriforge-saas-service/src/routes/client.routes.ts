@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { routeParam } from '../utils/route-param';
 import { param } from 'express-validator';
 import type { Request, Response, NextFunction } from 'express';
 import { handleValidation } from '../middleware/error-handler';
@@ -106,7 +107,7 @@ review.get(
   handleValidation,
   requireHiringClientPermission(HIRING_CLIENT_PERMISSIONS.CONTRACTOR_SCORECARDS_VIEW),
   asyncHandler(async (req, res) => {
-    const scorecard = await hiringClientReviewService.getScorecard(req.params.id);
+    const scorecard = await hiringClientReviewService.getScorecard(routeParam(req.params.id));
     res.json(scorecard);
   }),
 );
@@ -120,7 +121,7 @@ review.get(
     HIRING_CLIENT_PERMISSIONS.CONTRACTOR_DOCUMENTS_VIEW,
   ),
   asyncHandler(async (req, res) => {
-    const compliance = await hiringClientReviewService.getCompliance(req.params.id);
+    const compliance = await hiringClientReviewService.getCompliance(routeParam(req.params.id));
     res.json(compliance);
   }),
 );
@@ -134,7 +135,7 @@ review.post(
   asyncHandler(async (req, res) => {
     const result = await hiringClientReviewService.awardContract({
       hiringClientId: req.hiringClientId!,
-      contractorOrgId: req.params.id,
+      contractorOrgId: routeParam(req.params.id),
       awardedByUserId: req.hiringClientUserId!,
       projectName: req.body.projectName,
       notes: req.body.notes,

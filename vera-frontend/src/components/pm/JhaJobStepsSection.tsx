@@ -1,7 +1,7 @@
 "use client";
 
 import { Plus, Trash2 } from "lucide-react";
-import type { JobStep } from "@/src/pages/pm/jha-flha/jha-flha-templates";
+import type { JobStep } from "@/src/screens/pm/jha-flha/jha-flha-templates";
 import { SfButton, SfInput } from "@/src/components/safety-forms/ui";
 
 type Props = {

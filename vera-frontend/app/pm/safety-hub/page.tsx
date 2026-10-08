@@ -1,4 +1,4 @@
-import SafetyHubDashboard from "@/src/pages/pm/safety-hub/dashboard";
+import SafetyHubDashboard from "@/src/screens/pm/safety-hub/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function SafetyHubRoute({

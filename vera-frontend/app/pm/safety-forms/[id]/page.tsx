@@ -1,4 +1,4 @@
-import SafetyFormDetailPage from "@/src/pages/pm/safety-forms/detail";
+import SafetyFormDetailPage from "@/src/screens/pm/safety-forms/detail";
 
 type Props = { params: Promise<{ id: string }> };
 

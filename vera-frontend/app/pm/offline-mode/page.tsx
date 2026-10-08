@@ -1,4 +1,4 @@
-import PmOfflineModeDashboardPage from "@/src/pages/pm/offline-mode/dashboard";
+import PmOfflineModeDashboardPage from "@/src/screens/pm/offline-mode/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmOfflineModeRoute({

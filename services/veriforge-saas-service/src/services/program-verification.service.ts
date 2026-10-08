@@ -470,7 +470,8 @@ export class ProgramVerificationService {
   /** QuickCheck — compact pass/fail style signals. */
   async quickCheck(contractorId: string) {
     const dash = await this.dashboard(contractorId);
-    const checks = dash.coverage.map((c) => ({
+    const checks: Array<{ id: string; label: string; ok: boolean; detail: string }> =
+      dash.coverage.map((c) => ({
       id: `pvs:${c.category}`,
       label: c.label,
       ok: c.satisfied,

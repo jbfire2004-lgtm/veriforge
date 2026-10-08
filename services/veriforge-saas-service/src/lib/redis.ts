@@ -1,8 +1,10 @@
-import { createClient, type RedisClientType } from 'redis';
+import { createClient } from 'redis';
 import { env } from '../config/env';
 import { logger } from '../utils/logger';
 
-let client: RedisClientType | null = null;
+type RedisConn = ReturnType<typeof createClient>;
+
+let client: RedisConn | null = null;
 
 export const CacheKeys = {
   rbacUser: (userId: string) => `vf:rbac:user:${userId}`,
@@ -19,7 +21,7 @@ export const CacheTtl = {
   modules: Number(process.env.CACHE_TTL_MODULES_SEC ?? 300),
 } as const;
 
-export async function getRedis(): Promise<RedisClientType | null> {
+export async function getRedis(): Promise<RedisConn | null> {
   if (env.nodeEnv === 'test' || process.env.REDIS_DISABLED === 'true') {
     return null;
   }

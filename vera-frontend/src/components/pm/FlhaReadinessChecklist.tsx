@@ -1,6 +1,6 @@
 "use client";
 
-import { FLHA_READINESS_ITEMS } from "@/src/pages/pm/jha-flha/jha-flha-templates";
+import { FLHA_READINESS_ITEMS } from "@/src/screens/pm/jha-flha/jha-flha-templates";
 import { sfCn } from "@/src/components/safety-forms/theme/cn";
 
 type Props = {

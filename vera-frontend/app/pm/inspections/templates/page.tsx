@@ -1,4 +1,4 @@
-import PmInspectionTemplatesPage from "@/src/pages/pm/inspections/templates";
+import PmInspectionTemplatesPage from "@/src/screens/pm/inspections/templates";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 import { getPmInspectionRouteScope } from "@/lib/pm-inspection-route-scope";
 

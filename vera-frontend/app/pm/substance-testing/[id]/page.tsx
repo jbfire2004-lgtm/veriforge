@@ -1,4 +1,4 @@
-import SubstanceTestDetailPage from "@/src/pages/pm/substance-testing/detail";
+import SubstanceTestDetailPage from "@/src/screens/pm/substance-testing/detail";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function SubstanceTestDetailRoute({

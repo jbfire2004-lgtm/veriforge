@@ -1,4 +1,4 @@
-import SubstanceTestingDashboard from "@/src/pages/pm/substance-testing/dashboard";
+import SubstanceTestingDashboard from "@/src/screens/pm/substance-testing/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function SubstanceTestingRoute({

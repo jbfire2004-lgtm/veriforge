@@ -1,4 +1,4 @@
-import PmInspectionSharedReportsPage from "@/src/pages/pm/inspections/shared";
+import PmInspectionSharedReportsPage from "@/src/screens/pm/inspections/shared";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmInspectionSharedReportsRoute({

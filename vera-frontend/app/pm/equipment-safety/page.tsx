@@ -1,4 +1,4 @@
-import PmEquipmentSafetyDashboardPage from "@/src/pages/pm/equipment-safety/dashboard";
+import PmEquipmentSafetyDashboardPage from "@/src/screens/pm/equipment-safety/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmEquipmentSafetyRoute({

@@ -1,4 +1,4 @@
-import PmInspectionDetailPage from "@/src/pages/pm/inspections/detail";
+import PmInspectionDetailPage from "@/src/screens/pm/inspections/detail";
 import { resolveRouteParams } from "@/lib/resolve-route-params";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 

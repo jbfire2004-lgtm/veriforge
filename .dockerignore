@@ -12,8 +12,11 @@ logs
 .env
 .env.*
 !**/.env*.example
-backend
+# backend/ stays in context: Nest image COPY paths are backend/ + packages/.
+# Keep Dockerfile edits from invalidating the backend source layer.
+backend/Dockerfile
 services
+veriforge/apps/wle-backend
 apps
 docs
 infra/veriforge/k8s

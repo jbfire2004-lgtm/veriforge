@@ -45,7 +45,7 @@ import { type LibraryEntry } from "@/src/components/pm/JhaLibraryPicker";
 import {
   getJhaFlhaTemplate,
   type JobStep,
-} from "@/src/pages/pm/jha-flha/jha-flha-templates";
+} from "@/src/screens/pm/jha-flha/jha-flha-templates";
 import {
   buildSmsWorkflowSteps,
   SmsWorkflowPage,

@@ -1,4 +1,4 @@
-import SafetySuiteHubPage from "@/src/pages/pm/safety-suite/index";
+import SafetySuiteHubPage from "@/src/screens/pm/safety-suite/index";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function SafetySuiteRoute({

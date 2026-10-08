@@ -265,8 +265,8 @@ describe("VeriSuite SMS · every page route exists", () => {
     expect(universal).toContain("Main content");
     expect(universal).toContain("Action buttons");
     expect(universal).toContain("Footer");
-    expect(read("src/pages/pm/sms/dashboard.tsx")).toContain("SmsUniversalLayout");
-    expect(read("src/pages/pm/sms/dashboard.tsx")).toContain(
+    expect(read("src/screens/pm/sms/dashboard.tsx")).toContain("SmsUniversalLayout");
+    expect(read("src/screens/pm/sms/dashboard.tsx")).toContain(
       "SmsIntegrationsSection",
     );
   });

@@ -3,9 +3,9 @@ import Credentials from "next-auth/providers/credentials";
 import { refreshSession } from "@/lib/api/phase-1-auth";
 import { unwrapApiPayload } from "@/lib/api-fetch";
 import { roleFromAccessToken } from "@/lib/session-role";
+import { resolveServerApiBaseUrl } from "@/lib/dev-ports";
 
-const apiBase =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+const apiBase = resolveServerApiBaseUrl();
 
 type LoginResponse = {
   accessToken?: string;

@@ -28,15 +28,26 @@ export function publicSiteUrl(): string {
 }
 
 /**
+ * Server-side Nest origin. Compose sets NEST_INTERNAL_URL=http://nest:3001
+ * while the browser keeps a relative NEXT_PUBLIC_API_URL such as /nest.
+ */
+export function resolveServerApiBaseUrl(): string {
+  const internal = process.env.NEST_INTERNAL_URL?.replace(/\/$/, "");
+  if (internal && !internal.startsWith("/")) return internal;
+  const configured = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+  if (configured && !configured.startsWith("/")) return configured;
+  return DEV_NEST_INTERNAL_URL;
+}
+
+/**
  * Nest API base URL.
- * - SSR (Next on :3000): direct :3001
+ * - SSR (Next on :3000): NEST_INTERNAL_URL, else an absolute NEXT_PUBLIC_API_URL, else :3001
  * - Browser on :5175: `/nest` Vite proxy → :3001
  */
 export function resolveApiBaseUrl(): string {
   const configured = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
   if (typeof window === "undefined") {
-    if (configured && !configured.startsWith("/")) return configured;
-    return DEV_NEST_INTERNAL_URL;
+    return resolveServerApiBaseUrl();
   }
   if (configured?.startsWith("/")) return configured;
   if (configured) return configured;

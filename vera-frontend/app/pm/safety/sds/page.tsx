@@ -1,4 +1,4 @@
-import SdsLibraryPage from "@/src/pages/pm/safety-management/sds-library";
+import SdsLibraryPage from "@/src/screens/pm/safety-management/sds-library";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function SdsRoute({

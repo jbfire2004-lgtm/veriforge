@@ -1,4 +1,4 @@
-import PpePreUseNewPage from "@/src/pages/pm/inspections/ppe-preuse/new";
+import PpePreUseNewPage from "@/src/screens/pm/inspections/ppe-preuse/new";
 
 export default function Page() {
   return <PpePreUseNewPage />;

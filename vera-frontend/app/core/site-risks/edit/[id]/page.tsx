@@ -1,2 +1,2 @@
-export { default } from "@/src/pages/core-site-risk/edit";
+export { default } from "@/src/screens/core-site-risk/edit";
 

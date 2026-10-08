@@ -1,4 +1,4 @@
-import SiteAccessPage from "@/src/pages/pm/safety-management/site-access";
+import SiteAccessPage from "@/src/screens/pm/safety-management/site-access";
 
 export default async function SiteAccessRoute({
   searchParams,

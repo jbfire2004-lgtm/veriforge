@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import NewSafetyMeetingPage from "@/src/pages/pm/safety-meetings/new";
+import NewSafetyMeetingPage from "@/src/screens/pm/safety-meetings/new";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function NewSafetyMeetingRoute({

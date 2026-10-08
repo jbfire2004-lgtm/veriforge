@@ -1,4 +1,4 @@
-import PmSmartSiteWorkspacePage from "@/src/pages/pm/inspections/smart-workspace";
+import PmSmartSiteWorkspacePage from "@/src/screens/pm/inspections/smart-workspace";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 import { getPmInspectionRouteScope } from "@/lib/pm-inspection-route-scope";
 

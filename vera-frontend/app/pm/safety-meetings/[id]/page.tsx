@@ -1,4 +1,4 @@
-import SafetyMeetingDetailPage from "@/src/pages/pm/safety-meetings/detail";
+import SafetyMeetingDetailPage from "@/src/screens/pm/safety-meetings/detail";
 import { resolveRouteParams } from "@/lib/resolve-route-params";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 

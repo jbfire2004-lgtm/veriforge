@@ -71,7 +71,14 @@ const nextConfig: NextConfig = {
     return config;
   },
   async rewrites() {
-    const api = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3001";
+    const configured = process.env.NEXT_PUBLIC_API_URL?.replace(/\/$/, "");
+    const internal = process.env.NEST_INTERNAL_URL?.replace(/\/$/, "");
+    const api =
+      internal && !internal.startsWith("/")
+        ? internal
+        : configured && !configured.startsWith("/")
+          ? configured
+          : "http://localhost:3001";
     const prefixes = [
       "workers",
       "companies",

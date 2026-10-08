@@ -1,4 +1,4 @@
-import PmSafetyListPage from "@/src/pages/pm/safety/list";
+import PmSafetyListPage from "@/src/screens/pm/safety/list";
 
 export default function PmSafetyListRoute() {
   return <PmSafetyListPage />;

@@ -1,4 +1,4 @@
-import SafetyFormFillPage from "@/src/pages/pm/safety-forms/fill";
+import SafetyFormFillPage from "@/src/screens/pm/safety-forms/fill";
 
 type Props = {
   params: Promise<{ definitionId: string }>;

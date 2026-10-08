@@ -1,1 +1,1 @@
-export { default } from "@/src/pages/core-action-items/list";
+export { default } from "@/src/screens/core-action-items/list";

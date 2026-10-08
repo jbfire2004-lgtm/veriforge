@@ -1,4 +1,4 @@
-import PmAttachmentsMediaDashboardPage from "@/src/pages/pm/attachments-media/dashboard";
+import PmAttachmentsMediaDashboardPage from "@/src/screens/pm/attachments-media/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmAttachmentsMediaRoute({

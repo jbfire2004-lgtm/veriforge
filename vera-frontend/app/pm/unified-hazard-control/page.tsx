@@ -1,4 +1,4 @@
-import PmUnifiedHazardControlDashboard from "@/src/pages/pm/unified-hazard-control/dashboard";
+import PmUnifiedHazardControlDashboard from "@/src/screens/pm/unified-hazard-control/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmUnifiedHazardControlRoute({

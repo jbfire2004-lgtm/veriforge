@@ -1,1 +1,1 @@
-export { default } from "@/src/pages/admin/acp/users";
+export { default } from "@/src/screens/admin/acp/users";

@@ -184,7 +184,14 @@ export class DocumentCenterService {
         mimeType: input.mimeType,
         buffer: input.buffer,
       });
-      stored = { ...obj };
+      stored = {
+        fileUrl: obj.fileUrl,
+        storageKey: obj.storageKey,
+        storageProvider: obj.storageProvider,
+        mimeType: obj.mimeType ?? input.mimeType,
+        sizeBytes: obj.sizeBytes ?? input.buffer.length,
+        fileName: obj.fileName ?? input.fileName,
+      };
     }
 
     const expiryDate = input.expiryDate ? new Date(input.expiryDate) : null;

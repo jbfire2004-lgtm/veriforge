@@ -1,4 +1,4 @@
-import PmSafetyAssessmentPage from "@/src/pages/pm/safety/assess";
+import PmSafetyAssessmentPage from "@/src/screens/pm/safety/assess";
 
 export default function PmSafetyAssessmentRoute() {
   return <PmSafetyAssessmentPage />;

@@ -1,1 +1,1 @@
-export { default } from "@/src/pages/pm/safety-intelligence/dashboard";
+export { default } from "@/src/screens/pm/safety-intelligence/dashboard";

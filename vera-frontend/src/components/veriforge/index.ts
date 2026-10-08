@@ -103,4 +103,4 @@ export {
   VFDashboardGrid,
   VFDashboardChart,
   VFAlertsPanel,
-} from "@/src/pages/dashboard";
+} from "@/src/screens/dashboard";

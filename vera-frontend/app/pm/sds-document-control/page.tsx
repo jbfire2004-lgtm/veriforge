@@ -1,4 +1,4 @@
-import PmDocumentsDashboardPage from "@/src/pages/pm/documents/dashboard";
+import PmDocumentsDashboardPage from "@/src/screens/pm/documents/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export const metadata = {

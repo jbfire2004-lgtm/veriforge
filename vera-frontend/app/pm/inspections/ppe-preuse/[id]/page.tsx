@@ -1,4 +1,4 @@
-import PpePreUseDetailPage from "@/src/pages/pm/inspections/ppe-preuse/detail";
+import PpePreUseDetailPage from "@/src/screens/pm/inspections/ppe-preuse/detail";
 
 export default async function Page({
   params,

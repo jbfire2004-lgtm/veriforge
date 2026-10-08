@@ -1,4 +1,4 @@
-import SupervisorSafetyDashboard from "@/src/pages/pm/safety-management/supervisor-dashboard";
+import SupervisorSafetyDashboard from "@/src/screens/pm/safety-management/supervisor-dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function SupervisorDashboardRoute({

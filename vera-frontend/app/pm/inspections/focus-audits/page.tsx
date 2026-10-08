@@ -1,4 +1,4 @@
-import PmFocusAuditsPage from "@/src/pages/pm/inspections/focus-audits";
+import PmFocusAuditsPage from "@/src/screens/pm/inspections/focus-audits";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 import { getPmInspectionRouteScope } from "@/lib/pm-inspection-route-scope";
 

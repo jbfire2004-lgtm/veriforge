@@ -1,4 +1,4 @@
-import PmInspectionNewPage from "@/src/pages/pm/inspections/new";
+import PmInspectionNewPage from "@/src/screens/pm/inspections/new";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 import { getPmInspectionRouteScope } from "@/lib/pm-inspection-route-scope";
 import { Suspense } from "react";

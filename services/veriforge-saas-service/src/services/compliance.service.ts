@@ -179,7 +179,7 @@ export class ComplianceService {
       input.decision === 'approve' ? 'valid' : 'rejected';
 
     // If approving but already past expiry, mark expired instead
-    let finalStatus = status;
+    let finalStatus: ComplianceArtifactStatus = status;
     if (
       status === 'valid' &&
       artifact.expiryDate &&

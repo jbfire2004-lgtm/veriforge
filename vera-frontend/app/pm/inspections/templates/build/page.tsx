@@ -1,4 +1,4 @@
-import PmInspectionTemplatesBuilderPage from "@/src/pages/pm/inspections/templates-builder";
+import PmInspectionTemplatesBuilderPage from "@/src/screens/pm/inspections/templates-builder";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmInspectionTemplatesBuildRoute({

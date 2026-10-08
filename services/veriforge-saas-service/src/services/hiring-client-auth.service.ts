@@ -221,7 +221,7 @@ export class HiringClientAuthService {
   }
 
   canAny(auth: HiringClientJwtPayload, keys: string[]): boolean {
-    return keys.some((k) => auth.permissions.includes(k));
+    return keys.some((k) => (auth.permissions as readonly string[]).includes(k));
   }
 }
 

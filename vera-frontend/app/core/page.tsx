@@ -1,4 +1,4 @@
-import CoreHubPage from "@/src/pages/core/index";
+import CoreHubPage from "@/src/screens/core/index";
 
 export default function CoreRoute() {
   return <CoreHubPage />;

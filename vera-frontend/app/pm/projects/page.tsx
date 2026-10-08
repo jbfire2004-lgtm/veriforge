@@ -3,7 +3,7 @@ import { redirect } from "next/navigation";
 import { authOptions } from "@/lib/auth-options";
 import { apiGetSafe } from "@/lib/api";
 import { getUserCompanyContext, mergeCompaniesWithUser } from "@/lib/user-company-context";
-import PmProjectsListPage from "@/src/pages/pm/projects/list";
+import PmProjectsListPage from "@/src/screens/pm/projects/list";
 
 export const metadata = {
   title: "Projects — Vera PM",

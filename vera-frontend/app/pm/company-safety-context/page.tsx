@@ -1,4 +1,4 @@
-import PmCompanySafetyContextDashboard from "@/src/pages/pm/company-safety-context/dashboard";
+import PmCompanySafetyContextDashboard from "@/src/screens/pm/company-safety-context/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmCompanySafetyContextRoute({

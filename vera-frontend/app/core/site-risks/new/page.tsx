@@ -1,1 +1,1 @@
-export { default } from "@/src/pages/core-site-risk/new";
+export { default } from "@/src/screens/core-site-risk/new";

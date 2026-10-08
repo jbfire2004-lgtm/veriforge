@@ -16,7 +16,7 @@ const ROOT = process.cwd();
 const TARGETS = [
   "src/layouts",
   "src/mobile",
-  "src/pages/dashboard",
+  "src/screens/dashboard",
   "src/components/veriforge",
   "src/router",
   "components/veriforge",

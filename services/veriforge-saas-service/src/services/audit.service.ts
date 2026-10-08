@@ -1,4 +1,5 @@
 import { prisma } from '../db/prisma';
+import { asJson } from '../utils/json';
 import { logger } from '../utils/logger';
 
 const SENSITIVE_KEYS = new Set([
@@ -47,6 +48,17 @@ export type AuditAction =
   | 'subscription.billing.update'
   | 'scorecard.recalculate'
   | 'compliance.upload'
+  | 'compliance.update'
+  | 'compliance.review.approve'
+  | 'compliance.review.reject'
+  | 'contractor.directory.create'
+  | 'contractor.directory.update'
+  | 'contractor.directory.delete'
+  | 'hiring_client.signup'
+  | 'hiring_client.login'
+  | 'hiring_client.award'
+  | 'org.user.create'
+  | 'org.role.create'
   | 'trial.extended'
   | 'privacy.export'
   | 'privacy.delete';
@@ -73,7 +85,7 @@ export class AuditService {
           resourceId: input.resourceId,
           ip: input.ip,
           userAgent: input.userAgent,
-          meta: safeMeta ?? undefined,
+          meta: asJson(safeMeta),
         },
       });
     } catch (err) {

@@ -1,5 +1,5 @@
 import type { Request, Response, NextFunction } from 'express';
-import rateLimit, { type Store, type Options, type IncrementalResponse } from 'express-rate-limit';
+import rateLimit, { type Store, type Options, type IncrementResponse } from 'express-rate-limit';
 import { TooManyRequestsError } from '../utils/errors';
 import { getRedis } from '../lib/redis';
 
@@ -11,7 +11,7 @@ function clientIp(req: Request): string {
 
 const mem = new Map<string, { count: number; resetAt: number }>();
 
-function memoryIncrement(key: string, windowMs: number): IncrementalResponse {
+function memoryIncrement(key: string, windowMs: number): IncrementResponse {
   const now = Date.now();
   const cur = mem.get(key);
   if (!cur || cur.resetAt <= now) {
@@ -36,7 +36,7 @@ class RedisRateLimitStore implements Store {
     this.windowMs = options.windowMs;
   }
 
-  async increment(key: string): Promise<IncrementalResponse> {
+  async increment(key: string): Promise<IncrementResponse> {
     const redis = await getRedis();
     if (!redis) {
       return memoryIncrement(`${this.prefix}:${key}`, this.windowMs);

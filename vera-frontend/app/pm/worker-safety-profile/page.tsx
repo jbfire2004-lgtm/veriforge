@@ -1,4 +1,4 @@
-import PmWorkerSafetyProfileDashboard from "@/src/pages/pm/worker-safety-profile/dashboard";
+import PmWorkerSafetyProfileDashboard from "@/src/screens/pm/worker-safety-profile/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmWorkerSafetyProfileRoute({

@@ -1,4 +1,4 @@
-import CoreDailyLogEditPage from "@/src/pages/core-daily-log/edit";
+import CoreDailyLogEditPage from "@/src/screens/core-daily-log/edit";
 
 export default function CoreDailyLogsEditRoute() {
   return <CoreDailyLogEditPage />;

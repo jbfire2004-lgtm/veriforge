@@ -20,7 +20,7 @@ const TARGETS = [
   "src/components/veriforge",
   "src/layouts",
   "src/mobile",
-  "src/pages/dashboard",
+  "src/screens/dashboard",
   "src/router",
   "src/styles",
 ];

@@ -1,4 +1,4 @@
-import EmergencyMusterPage from "@/src/pages/pm/safety-management/emergency";
+import EmergencyMusterPage from "@/src/screens/pm/safety-management/emergency";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function EmergencyRoute({

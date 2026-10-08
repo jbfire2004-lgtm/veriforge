@@ -14,7 +14,7 @@ End-to-end plan to take this repo from local `npm run dev:veriforge` to a public
 | **Cron worker** | same image, `dist/worker.js` | EKS `veriforge-worker` *or* Compose `worker` |
 | **VeriForge SPA** | `apps/veriforge-frontend` | EKS `veriforge-frontend` (Vite/nginx) |
 | **Vera workspace (Next.js)** | `vera-frontend` | **Not in default K8s overlay** — see [Phase 6](#phase-6--full-workspace-vericore--veripm--hub) |
-| **Nest API** | `backend/` | Separate ECS/EKS service or Compose container |
+| **Nest API** | `backend/` | Compose service `nest` on Path B; separate service on Path A |
 | **Postgres** | SaaS Prisma | **Amazon RDS PostgreSQL 16** |
 | **Redis** | cache / worker | **ElastiCache Redis** (or Redis in Compose for throwaway staging) |
 | **Secrets** | JWT, Stripe, etc. | **Secrets Manager** or **SSM Parameter Store** |
@@ -339,12 +339,19 @@ cp infra/aws/env.aws-staging.example infra/veriforge/.env
 
 ### Phase 5B — Deploy VeriForge stack
 
+Clone the branch that contains this Compose stack (`restore-veriforge-wle-backend` until it is merged). Do not copy a laptop `infra/veriforge/.env` onto the instance. On the server:
+
 ```bash
-cd /opt/veriforge   # or your clone path
+cd /opt/veriforge
+cp infra/aws/env.aws-staging.example infra/veriforge/.env   # staging
+# or: cp infra/veriforge/env/.env.production.example infra/veriforge/.env
+# replace every placeholder, then:
 bash scripts/production-deploy.sh --build
 ```
 
-That brings up: Postgres (or skip if RDS), Redis, SaaS API, worker, **Vera Next (`app`)**, nginx gateway — see [`VERIFORGE-DOCKER.md`](VERIFORGE-DOCKER.md).
+The script refuses placeholder secrets. A public `https://` origin must set `COOKIE_SECURE`, `ENFORCE_HTTPS`, and `VERA_ENFORCE_HTTPS` to `true`. Build on the EC2 host (16 GB). An 8 GB laptop cannot finish the Vera Next image.
+
+That brings up: Postgres (or skip if RDS), Redis, SaaS API, worker, **Nest (`nest`)**, **Vera Next (`app`)**, nginx gateway. The gateway sends `/nest/` to Nest and `/api/` to the SaaS API. See [`VERIFORGE-DOCKER.md`](VERIFORGE-DOCKER.md).
 
 **TLS in front of port 80**
 
@@ -361,17 +368,28 @@ RUN_DB_SEED=0
 
 Do **not** set `NEXT_PUBLIC_VERA_PM_DEV_OPEN=1` or `SEED_DEV_USERS=1` on a public host.
 
-### Phase 5B-extra — Nest (required for modules)
+### Phase 5B-extra — Nest (included in the Compose deploy)
 
-```bash
-# Build backend image from repo root
-docker build -f backend/Dockerfile -t veriforge-nest:staging ./backend
+`scripts/production-deploy.sh` builds `backend/Dockerfile` from the **repo root** (so `packages/` is in the build context), creates the local `vera_nest` database when `NEST_DATABASE_URL` points at the Compose `db` service, runs `prisma migrate deploy`, and starts Nest on the Compose network. The gateway proxies `/nest/` to it.
 
-# Run with Nest DATABASE_URL, PUBLIC_BASE_URL, CORS_ORIGIN
-# Proxy /nest → Nest :3001 from Caddy/nginx (or set NEXT_PUBLIC_API_URL to Nest URL)
+Set these in `infra/veriforge/.env` before the first deploy:
+
+```env
+NEXT_PUBLIC_API_URL=/nest
+NEST_INTERNAL_URL=http://nest:3001
+NEST_DATABASE_URL=postgresql://veriforge:PASSWORD@db:5432/vera_nest?schema=public
+NEST_JWT_SECRET=LONG_RANDOM_SECRET
+ENABLE_ORIGIN_GUARD=true
+VERA_ENFORCE_HTTPS=true
 ```
 
-Run Nest `prisma migrate deploy` against the Nest database.
+Use a separate database from the SaaS `DATABASE_URL`. On RDS, create `vera_nest` yourself and point `NEST_DATABASE_URL` at that endpoint. Leave `VERA_AGENT_REMOTE_URL` unset.
+
+A manual image build, from the repo root:
+
+```bash
+docker build -f backend/Dockerfile -t veriforge-nest:staging .
+```
 
 Then complete [Phase 6](#phase-6--full-workspace-vericore--veripm--hub) accounts + smoke.
 

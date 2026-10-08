@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { routeParam } from '../utils/route-param';
 import { body, param, query } from 'express-validator';
 import type { Request, Response, NextFunction } from 'express';
 import { handleValidation } from '../middleware/error-handler';
@@ -121,7 +122,7 @@ contractorsRouter.post(
   handleValidation,
   asyncHandler(async (req, res) => {
     const row = await contractorDirectoryService.respondConnection({
-      connectionId: req.params.connectionId,
+      connectionId: routeParam(req.params.connectionId),
       contractorId: req.orgId!,
       actorUserId: req.userId!,
       decision: req.body.decision,
@@ -174,7 +175,7 @@ contractorsRouter.get(
   param('id').isUUID(),
   handleValidation,
   asyncHandler(async (req, res) => {
-    const result = await contractorDirectoryService.getById(req.params.id, {
+    const result = await contractorDirectoryService.getById(routeParam(req.params.id), {
       hiringClientId: req.hiringClientId,
     });
     res.json(result);
@@ -189,9 +190,9 @@ contractorsRouter.patch(
   param('id').isUUID(),
   handleValidation,
   asyncHandler(async (req, res) => {
-    contractorDirectoryService.assertContractorActor(req.orgId, req.params.id);
+    contractorDirectoryService.assertContractorActor(req.orgId, routeParam(req.params.id));
     const result = await contractorDirectoryService.update(
-      req.params.id,
+      routeParam(req.params.id),
       {
         legalName: req.body.legalName,
         tradeName: req.body.tradeName,
@@ -217,9 +218,9 @@ contractorsRouter.delete(
   param('id').isUUID(),
   handleValidation,
   asyncHandler(async (req, res) => {
-    contractorDirectoryService.assertContractorActor(req.orgId, req.params.id);
+    contractorDirectoryService.assertContractorActor(req.orgId, routeParam(req.params.id));
     const result = await contractorDirectoryService.delete(
-      req.params.id,
+      routeParam(req.params.id),
       req.userId,
     );
     res.json(result);
@@ -234,8 +235,8 @@ contractorsRouter.post(
   body('fileUrl').isString().isLength({ min: 1 }),
   handleValidation,
   asyncHandler(async (req, res) => {
-    contractorDirectoryService.assertContractorActor(req.orgId, req.params.id);
-    const row = await contractorDirectoryService.addDocument(req.params.id, {
+    contractorDirectoryService.assertContractorActor(req.orgId, routeParam(req.params.id));
+    const row = await contractorDirectoryService.addDocument(routeParam(req.params.id), {
       kind: req.body.kind,
       label: req.body.label,
       fileUrl: req.body.fileUrl,
@@ -254,8 +255,8 @@ contractorsRouter.post(
   body('auditedAt').isISO8601(),
   handleValidation,
   asyncHandler(async (req, res) => {
-    contractorDirectoryService.assertContractorActor(req.orgId, req.params.id);
-    const row = await contractorDirectoryService.addAudit(req.params.id, {
+    contractorDirectoryService.assertContractorActor(req.orgId, routeParam(req.params.id));
+    const row = await contractorDirectoryService.addAudit(routeParam(req.params.id), {
       title: req.body.title,
       auditor: req.body.auditor,
       auditedAt: req.body.auditedAt,
@@ -275,8 +276,8 @@ contractorsRouter.post(
   body('name').isString().isLength({ min: 1 }),
   handleValidation,
   asyncHandler(async (req, res) => {
-    contractorDirectoryService.assertContractorActor(req.orgId, req.params.id);
-    const row = await contractorDirectoryService.addSite(req.params.id, {
+    contractorDirectoryService.assertContractorActor(req.orgId, routeParam(req.params.id));
+    const row = await contractorDirectoryService.addSite(routeParam(req.params.id), {
       name: req.body.name,
       address: req.body.address,
       region: req.body.region,
@@ -292,9 +293,9 @@ contractorsRouter.post(
   param('id').isUUID(),
   handleValidation,
   asyncHandler(async (req, res) => {
-    contractorDirectoryService.assertContractorActor(req.orgId, req.params.id);
+    contractorDirectoryService.assertContractorActor(req.orgId, routeParam(req.params.id));
     const result = await contractorDirectoryService.recalculateCompliance(
-      req.params.id,
+      routeParam(req.params.id),
     );
     res.json(result);
   }),
@@ -314,7 +315,7 @@ contractorsRouter.post(
   asyncHandler(async (req, res) => {
     const row = await contractorDirectoryService.requestConnection({
       hiringClientId: req.hiringClientId!,
-      contractorId: req.params.id,
+      contractorId: routeParam(req.params.id),
       requestedByUserId: req.hiringClientUserId!,
       message: req.body.message,
     });

@@ -3,7 +3,7 @@
 #   cp infra/veriforge/env/.env.production.example infra/veriforge/.env
 #   docker compose -f infra/veriforge/docker-compose.production.yml --env-file infra/veriforge/.env up -d --build
 #
-# Services: app (Next.js), api, db (Postgres), redis, worker (cron)
+# Services: app (Next.js), nest (Nest API), api, db (Postgres), redis, worker (cron)
 
 name: veriforge-prod
 
@@ -17,6 +17,7 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
     volumes:
       - veriforge_pg_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
       interval: 10s
@@ -72,6 +73,9 @@ services:
       REDIS_URL: ${REDIS_URL:-redis://redis:6379}
       JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET:?set JWT_ACCESS_SECRET}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:?set JWT_REFRESH_SECRET}
+      FIELD_ENCRYPTION_KEY: ${FIELD_ENCRYPTION_KEY:?set FIELD_ENCRYPTION_KEY}
+      COOKIE_SECURE: ${COOKIE_SECURE:-false}
+      ENFORCE_HTTPS: ${ENFORCE_HTTPS:-false}
       STRIPE_SECRET_KEY: ${STRIPE_SECRET_KEY:-}
       STRIPE_WEBHOOK_SECRET: ${STRIPE_WEBHOOK_SECRET:-}
       PLATFORM_ADMIN_EMAILS: ${PLATFORM_ADMIN_EMAILS:-}
@@ -122,13 +126,57 @@ services:
       start_period: 25s
     networks: [veriforge]
 
+  nest-migrate:
+    build: &nest_build
+      context: ../..
+      dockerfile: backend/Dockerfile
+      args:
+        NODE_HEAP_MB: ${NODE_HEAP_MB:-8192}
+    image: ${NEST_IMAGE:-veriforge-nest}:${IMAGE_TAG:-latest}
+    command: ["./node_modules/.bin/prisma", "migrate", "deploy"]
+    environment:
+      DATABASE_URL: ${NEST_DATABASE_URL:?set NEST_DATABASE_URL}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks: [veriforge]
+    restart: "no"
+
+  nest:
+    build: *nest_build
+    image: ${NEST_IMAGE:-veriforge-nest}:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: "3001"
+      DATABASE_URL: ${NEST_DATABASE_URL:?set NEST_DATABASE_URL}
+      JWT_SECRET: ${NEST_JWT_SECRET:?set NEST_JWT_SECRET}
+      PUBLIC_BASE_URL: ${APP_PUBLIC_URL:-https://app.veriglobal.ca}
+      CORS_ORIGIN: ${CORS_ORIGIN:?set CORS_ORIGIN}
+      ENABLE_ORIGIN_GUARD: ${ENABLE_ORIGIN_GUARD:-true}
+      VERA_ENFORCE_HTTPS: ${VERA_ENFORCE_HTTPS:-true}
+    depends_on:
+      nest-migrate:
+        condition: service_completed_successfully
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "--header=X-Forwarded-Proto: https", "http://127.0.0.1:3001/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 8
+      start_period: 90s
+    networks: [veriforge]
+
   app:
     build:
       context: ../..
       dockerfile: infra/veriforge/Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/nest}
         NEXT_PUBLIC_SITE_URL: ${APP_PUBLIC_URL:-https://app.veriglobal.ca}
+        NEST_INTERNAL_URL: ${NEST_INTERNAL_URL:-http://nest:3001}
+        NEXT_HEAP_MB: ${NEXT_HEAP_MB:-6144}
     image: ${APP_IMAGE:-veriforge-app}:${IMAGE_TAG:-latest}
     restart: unless-stopped
     environment:
@@ -136,11 +184,14 @@ services:
       PORT: "3000"
       HOSTNAME: 0.0.0.0
       VERIFORGE_SAAS_URL: ${VERIFORGE_SAAS_URL:-http://api:3020}
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/api}
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/nest}
+      NEST_INTERNAL_URL: ${NEST_INTERNAL_URL:-http://nest:3001}
       NEXTAUTH_URL: ${NEXTAUTH_URL:-${APP_PUBLIC_URL:-https://app.veriglobal.ca}}
       NEXTAUTH_SECRET: ${NEXTAUTH_SECRET:-}
     depends_on:
       api:
+        condition: service_healthy
+      nest:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1:3000/"]
@@ -161,6 +212,8 @@ services:
       app:
         condition: service_healthy
       api:
+        condition: service_healthy
+      nest:
         condition: service_healthy
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1/healthz"]

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { routeParam } from '../utils/route-param';
 import { param } from 'express-validator';
 import type { Request, Response, NextFunction } from 'express';
 import { handleValidation } from '../middleware/error-handler';
@@ -121,7 +122,7 @@ gated.get(
     DEVELOPER_PERMISSIONS.SYSTEM_FULL_ACCESS,
   ),
   asyncHandler(async (req, res) => {
-    const org = await developerConsoleService.getOrganizationDetail(req.params.id);
+    const org = await developerConsoleService.getOrganizationDetail(routeParam(req.params.id));
     res.json({ organization: org });
   }),
 );
@@ -156,7 +157,7 @@ gated.post(
   asyncHandler(async (req, res) => {
     const result = await developerConsoleService.endImpersonation({
       developerId: req.developerId!,
-      sessionId: req.params.sessionId,
+      sessionId: routeParam(req.params.sessionId),
       ip: req.ip,
       userAgent: req.get('user-agent') ?? undefined,
     });
@@ -208,7 +209,7 @@ gated.patch(
   asyncHandler(async (req, res) => {
     const result = await developerConsoleService.updateModule({
       developerId: req.developerId!,
-      code: req.params.code,
+      code: routeParam(req.params.code),
       name: req.body.name,
       description: req.body.description,
       isActive: req.body.isActive,
@@ -313,7 +314,7 @@ gated.post(
   asyncHandler(async (req, res) => {
     const result = await developerConsoleService.revokeApiKey({
       developerId: req.developerId!,
-      keyId: req.params.id,
+      keyId: routeParam(req.params.id),
       ip: req.ip,
       userAgent: req.get('user-agent') ?? undefined,
     });

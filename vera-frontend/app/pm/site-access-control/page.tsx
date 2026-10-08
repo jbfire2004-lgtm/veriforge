@@ -1,4 +1,4 @@
-import PmSiteAccessDashboardPage from "@/src/pages/pm/site-access-control/dashboard";
+import PmSiteAccessDashboardPage from "@/src/screens/pm/site-access-control/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmSiteAccessRoute({

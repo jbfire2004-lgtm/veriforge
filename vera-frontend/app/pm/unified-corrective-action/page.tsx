@@ -1,4 +1,4 @@
-import PmUnifiedCorrectiveActionDashboard from "@/src/pages/pm/unified-corrective-action/dashboard";
+import PmUnifiedCorrectiveActionDashboard from "@/src/screens/pm/unified-corrective-action/dashboard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmUnifiedCorrectiveActionRoute({

@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { routeParam } from '../utils/route-param';
 import { param } from 'express-validator';
 import type { Request, Response, NextFunction } from 'express';
 import { handleValidation } from '../middleware/error-handler';
@@ -112,7 +113,7 @@ complianceRouter.get(
   handleValidation,
   requireOrgOrHiringClient,
   asyncHandler(async (req, res) => {
-    const orgId = req.params.orgId;
+    const orgId = routeParam(req.params.orgId);
     if (req.auth) {
       if (req.auth.org_id !== orgId) {
         throw new ForbiddenError('Cross-tenant access denied');
@@ -151,7 +152,7 @@ complianceRouter.post(
   validateBody(complianceReviewSchema),
   asyncHandler(async (req, res) => {
     const result = await complianceService.review({
-      artifactId: req.params.id,
+      artifactId: routeParam(req.params.id),
       reviewerId: req.hiringClientUserId!,
       decision: req.body.decision,
       notes: req.body.notes,
@@ -177,7 +178,7 @@ complianceRouter.post(
   validateBody(complianceUpdateSchema),
   asyncHandler(async (req, res) => {
     const result = await complianceService.update({
-      artifactId: req.params.id,
+      artifactId: routeParam(req.params.id),
       orgId: req.auth!.org_id,
       actorId: req.auth!.user_id,
       fileUrl: req.body.fileUrl,

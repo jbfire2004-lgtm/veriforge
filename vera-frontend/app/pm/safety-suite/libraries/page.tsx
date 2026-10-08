@@ -1,4 +1,4 @@
-import SafetySuiteLibrariesPage from "@/src/pages/pm/safety-suite/libraries";
+import SafetySuiteLibrariesPage from "@/src/screens/pm/safety-suite/libraries";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function SafetySuiteLibrariesRoute({

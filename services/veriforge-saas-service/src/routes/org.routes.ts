@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import { routeParam } from '../utils/route-param';
 import { param } from 'express-validator';
 import type { Request, Response, NextFunction } from 'express';
 import { handleValidation } from '../middleware/error-handler';
@@ -114,8 +115,8 @@ gated.get(
   param('id').isUUID(),
   handleValidation,
   asyncHandler(async (req, res) => {
-    orgService.assertSameOrg(req.auth!, req.params.id);
-    const detail = await orgService.getDetail(req.params.id);
+    orgService.assertSameOrg(req.auth!, routeParam(req.params.id));
+    const detail = await orgService.getDetail(routeParam(req.params.id));
     res.json(detail);
   }),
 );
@@ -126,8 +127,8 @@ gated.get(
   handleValidation,
   requirePermission(PERMISSIONS.ORG_USERS_VIEW, PERMISSIONS.ORG_USERS_MANAGE),
   asyncHandler(async (req, res) => {
-    orgService.assertSameOrg(req.auth!, req.params.id);
-    const users = await orgService.listUsers(req.params.id);
+    orgService.assertSameOrg(req.auth!, routeParam(req.params.id));
+    const users = await orgService.listUsers(routeParam(req.params.id));
     res.json(users);
   }),
 );
@@ -137,8 +138,8 @@ gated.get(
   param('id').isUUID(),
   handleValidation,
   asyncHandler(async (req, res) => {
-    orgService.assertSameOrg(req.auth!, req.params.id);
-    const modules = await orgService.listModules(req.params.id);
+    orgService.assertSameOrg(req.auth!, routeParam(req.params.id));
+    const modules = await orgService.listModules(routeParam(req.params.id));
     res.json({ modules });
   }),
 );
@@ -148,8 +149,8 @@ gated.get(
   param('id').isUUID(),
   handleValidation,
   asyncHandler(async (req, res) => {
-    orgService.assertSameOrg(req.auth!, req.params.id);
-    const roles = await orgService.listRoles(req.params.id);
+    orgService.assertSameOrg(req.auth!, routeParam(req.params.id));
+    const roles = await orgService.listRoles(routeParam(req.params.id));
     res.json({ roles });
   }),
 );

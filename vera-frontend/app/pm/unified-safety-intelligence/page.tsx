@@ -1,4 +1,4 @@
-import PmUnifiedSafetyIntelligenceDashboard from "@/src/pages/pm/unified-safety-intelligence/dashboard";
+import PmUnifiedSafetyIntelligenceDashboard from "@/src/screens/pm/unified-safety-intelligence/dashboard";
 
 export default async function Page({
   searchParams,

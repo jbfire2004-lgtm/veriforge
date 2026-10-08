@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { VeraPageLayout } from "@/src/components/navigation";
-import PmIncidentDetailPage from "@/src/pages/pm/incidents/detail";
+import PmIncidentDetailPage from "@/src/screens/pm/incidents/detail";
 import { resolveRouteParams } from "@/lib/resolve-route-params";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 

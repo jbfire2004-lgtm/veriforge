@@ -1,4 +1,4 @@
-import type { ModuleCode } from '@prisma/client';
+import { Prisma, type ModuleCode } from '@prisma/client';
 import { prisma } from '../db/prisma';
 import { BadRequestError, NotFoundError } from '../utils/errors';
 import { modulePermissionService, rbacService } from './rbac.service';
@@ -10,6 +10,10 @@ import {
   cacheGetJson,
   cacheSetJson,
 } from '../lib/redis';
+
+type EnabledModuleRow = Prisma.OrganizationModuleGetPayload<{
+  include: { module: true };
+}>;
 
 export class ModuleService {
   async listCatalog() {
@@ -100,7 +104,7 @@ export class ModuleService {
 
   async listEnabled(orgId: string) {
     const cacheKey = CacheKeys.orgModules(orgId);
-    const cached = await cacheGetJson<unknown[]>(cacheKey);
+    const cached = await cacheGetJson<EnabledModuleRow[]>(cacheKey);
     if (cached) return cached;
 
     const rows = await prisma.organizationModule.findMany({

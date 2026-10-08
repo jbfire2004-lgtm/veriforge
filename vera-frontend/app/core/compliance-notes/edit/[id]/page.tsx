@@ -1,2 +1,2 @@
-export { default } from "@/src/pages/core-compliance-note/edit";
+export { default } from "@/src/screens/core-compliance-note/edit";
 

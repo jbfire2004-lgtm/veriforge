@@ -1,4 +1,4 @@
-import PmUnifiedCorrectiveActionDetailPage from "@/src/pages/pm/unified-corrective-action/detail";
+import PmUnifiedCorrectiveActionDetailPage from "@/src/screens/pm/unified-corrective-action/detail";
 
 export default async function Page({
   params,

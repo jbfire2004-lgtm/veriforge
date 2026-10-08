@@ -1,4 +1,4 @@
-import PmIncidentWizardPage from "@/src/pages/pm/incidents/wizard";
+import PmIncidentWizardPage from "@/src/screens/pm/incidents/wizard";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmIncidentNewRoute({

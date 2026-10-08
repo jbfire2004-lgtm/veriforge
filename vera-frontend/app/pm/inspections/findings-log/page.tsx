@@ -1,4 +1,4 @@
-import PmInspectionFindingsLogPage from "@/src/pages/pm/inspections/findings-log";
+import PmInspectionFindingsLogPage from "@/src/screens/pm/inspections/findings-log";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmInspectionFindingsLogRoute({

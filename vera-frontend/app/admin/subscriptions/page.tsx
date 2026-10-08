@@ -1,1 +1,1 @@
-export { default } from "@/src/pages/admin/subscriptions";
+export { default } from "@/src/screens/admin/subscriptions";

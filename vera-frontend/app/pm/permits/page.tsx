@@ -1,4 +1,4 @@
-import PmPermitsPage from "@/src/pages/pm/permits/index";
+import PmPermitsPage from "@/src/screens/pm/permits/index";
 import { resolveSearchParams } from "@/lib/resolve-search-params";
 
 export default async function PmPermitsRoute({
