@@ -1,11 +1,14 @@
 node_modules
 simulation-reports/
 packages/vera-workflow-sim/simulation-reports/
-# Keep environment variables out of version control
+
+# Environment variables
 .env
 
-/src/generated/prisma
+# Generated Prisma client
+src/generated/prisma/
 
 # Local VeriForge tenant/ledger JSON stores
-backend/data/
+# IMPORTANT: Do NOT ignore "backend/" because it blocks apps/wle-backend
+apps/wle-backend/data/
 data/
