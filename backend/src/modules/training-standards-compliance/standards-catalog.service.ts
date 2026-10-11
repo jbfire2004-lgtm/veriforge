@@ -11,7 +11,7 @@ import {
   JURISDICTION_REQUIREMENTS_SEED,
   PROVINCIAL_OHS_SEED,
   REJECTION_REASONS_SEED,
-} from './data/standards-catalog.seed';
+} from './standards-catalog.seed';
 
 @Injectable()
 export class StandardsCatalogService implements OnModuleInit {

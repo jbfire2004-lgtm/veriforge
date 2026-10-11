@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { randomUUID } from 'crypto';
-import { PERMIT_TYPE_SEEDS } from '../../prisma/data/permit-types';
+import { PERMIT_TYPE_SEEDS } from '../pm-permits/permit-type-seeds';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkerProjectReadinessService } from '../workers/worker-project-readiness.service';
 import { PermitAiService } from './permit-ai.service';

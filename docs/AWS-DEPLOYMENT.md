@@ -320,14 +320,24 @@ Continue with [Phase 6](#phase-6--full-workspace-vericore--veripm--hub) if you n
 
 ### Phase 3B — EC2 host
 
-1. Launch **Ubuntu 22.04 LTS**, e.g. `t3.xlarge` (4 vCPU / 16 GB) for build+run.
+1. Launch **Ubuntu 22.04 LTS**, **`t3a.large`** (2 vCPU / 8 GB) in `ca-central-1`. That is about **$61/month** on-demand. `t3.xlarge` is about **$135/month** and is only useful if a build runs out of memory. Skip RDS, ElastiCache, a NAT gateway, and an ALB for this first host. Use Compose Postgres and Redis, and Caddy or Certbot on the instance for TLS.
 2. Security group: `22` (your IP only), `80`, `443`.
-3. Elastic IP + DNS `staging.veriglobal.ca` → EIP.
-4. Install Docker + Compose plugin; clone the repo (deploy key or CI artifact — do not leave `.env` in git).
+3. Elastic IP + DNS `staging.veriglobal.ca` → EIP. Stop or terminate any leftover `t3.xlarge`. An Elastic IP costs money while the instance is stopped.
+4. Install Docker + Compose plugin. Add swap so the image compile can finish on 8 GB:
 
-### Phase 4B — Env and managed DB (recommended)
+```bash
+sudo fallocate -l 4G /swapfile
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
+echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+```
 
-1. Create RDS + (optional) ElastiCache as in Phase 3A, **or** use Compose Postgres/Redis only for disposable staging.
+5. Clone the repo (deploy key or CI artifact — do not leave `.env` in git).
+
+### Phase 4B — Env
+
+1. Use Compose Postgres and Redis on the instance. Add RDS or ElastiCache only after the single-host stack is healthy.
 2. Copy env:
 
 ```bash
@@ -349,7 +359,7 @@ cp infra/aws/env.aws-staging.example infra/veriforge/.env   # staging
 bash scripts/production-deploy.sh --build
 ```
 
-The script refuses placeholder secrets. A public `https://` origin must set `COOKIE_SECURE`, `ENFORCE_HTTPS`, and `VERA_ENFORCE_HTTPS` to `true`. Build on the EC2 host (16 GB). An 8 GB laptop cannot finish the Vera Next image.
+The script refuses placeholder secrets. A public `https://` origin must set `COOKIE_SECURE`, `ENFORCE_HTTPS`, and `VERA_ENFORCE_HTTPS` to `true`. Build on the EC2 host after the 4 GB swap is on. The image compile uses about 3.5 GB for Vera and 4 GB for Nest, one image at a time. An 8 GB laptop with Docker Desktop cannot finish that compile.
 
 That brings up: Postgres (or skip if RDS), Redis, SaaS API, worker, **Nest (`nest`)**, **Vera Next (`app`)**, nginx gateway. The gateway sends `/nest/` to Nest and `/api/` to the SaaS API. See [`VERIFORGE-DOCKER.md`](VERIFORGE-DOCKER.md).
 
@@ -460,7 +470,7 @@ Production checklist:
 | RDS db.t4g.micro | ~$15–25 |
 | ElastiCache cache.t4g.micro | ~$12–20 |
 | ALB / data transfer | variable |
-| **EC2 Path B (t3.xlarge)** | often cheaper for a single tester stack |
+| **EC2 Path B (`t3a.large` + Compose Postgres, no ALB/NAT/RDS)** | about $61/month plus a small disk |
 
 ---
 

@@ -9,7 +9,7 @@ import { INSPECTION_CHECKLIST_SEEDS } from './data/inspection-checklists';
 import { SMART_INSPECTION_CATEGORY_SEEDS } from './data/smart-inspection-categories';
 import { HAZARD_SEEDS } from './data/hazards';
 import { CONTROL_SEEDS } from './data/controls';
-import { PERMIT_TYPE_SEEDS } from './data/permit-types';
+import { PERMIT_TYPE_SEEDS } from '../src/pm-permits/permit-type-seeds';
 import { PM_INSPECTION_TEMPLATE_SEEDS } from './data/pm-inspection-templates';
 
 export type VeraCatalogSeedResult = {

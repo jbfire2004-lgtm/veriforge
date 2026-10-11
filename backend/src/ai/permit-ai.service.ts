@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { PmPermitType } from '@prisma/client';
 import { randomUUID } from 'crypto';
-import { PERMIT_TYPE_SEEDS } from '../../prisma/data/permit-types';
+import { PERMIT_TYPE_SEEDS } from '../pm-permits/permit-type-seeds';
 import { HazardControlCatalogService } from '../jha-flha/hazard-control-catalog.service';
 import { PrismaService } from '../prisma/prisma.service';
 import {

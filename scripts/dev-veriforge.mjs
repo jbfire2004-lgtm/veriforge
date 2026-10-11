@@ -53,8 +53,11 @@ run("nest-api", "start:dev", path.join(root, "backend"));
 run("vera-next", "dev", path.join(root, "vera-frontend"), {
   NEXT_PUBLIC_BASE_PATH: "/vera",
   NEXTAUTH_URL: "http://localhost:5175/vera",
+  NEXTAUTH_SECRET:
+    process.env.NEXTAUTH_SECRET ||
+    "dev-only-nextauth-secret-min-32-characters",
   NEXT_PUBLIC_SITE_URL: "http://localhost:5175/vera",
-  NODE_OPTIONS: "--max-old-space-size=8192",
+  NODE_OPTIONS: "--max-old-space-size=3072",
 });
 run("vf-spa", "dev", path.join(root, "apps", "veriforge-frontend"));
 

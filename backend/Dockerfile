@@ -44,7 +44,7 @@ RUN npm ci --legacy-peer-deps
 FROM node:20-alpine AS build
 RUN apk add --no-cache openssl libc6-compat
 WORKDIR /app
-ARG NODE_HEAP_MB=8192
+ARG NODE_HEAP_MB=4096
 ENV NODE_OPTIONS=--max-old-space-size=${NODE_HEAP_MB}
 COPY --from=deps /app/backend/node_modules ./backend/node_modules
 COPY --from=deps /app/packages ./packages

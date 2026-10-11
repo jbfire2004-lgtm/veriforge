@@ -42,8 +42,8 @@ ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 ENV NEST_INTERNAL_URL=$NEST_INTERNAL_URL
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV NODE_ENV=production
-# 16 GB EC2. Override with --build-arg NEXT_HEAP_MB=3072 only on a small machine.
-ARG NEXT_HEAP_MB=6144
+# Fits an 8 GB EC2 with 4 GB swap. Raise only on a larger host.
+ARG NEXT_HEAP_MB=3584
 ENV NODE_OPTIONS=--max-old-space-size=${NEXT_HEAP_MB}
 
 RUN pnpm run build || npm run build

@@ -131,7 +131,7 @@ services:
       context: ../..
       dockerfile: backend/Dockerfile
       args:
-        NODE_HEAP_MB: ${NODE_HEAP_MB:-8192}
+        NODE_HEAP_MB: ${NODE_HEAP_MB:-4096}
     image: ${NEST_IMAGE:-veriforge-nest}:${IMAGE_TAG:-latest}
     command: ["./node_modules/.bin/prisma", "migrate", "deploy"]
     environment:
@@ -176,7 +176,7 @@ services:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-/nest}
         NEXT_PUBLIC_SITE_URL: ${APP_PUBLIC_URL:-https://app.veriglobal.ca}
         NEST_INTERNAL_URL: ${NEST_INTERNAL_URL:-http://nest:3001}
-        NEXT_HEAP_MB: ${NEXT_HEAP_MB:-6144}
+        NEXT_HEAP_MB: ${NEXT_HEAP_MB:-3584}
     image: ${APP_IMAGE:-veriforge-app}:${IMAGE_TAG:-latest}
     restart: unless-stopped
     environment:

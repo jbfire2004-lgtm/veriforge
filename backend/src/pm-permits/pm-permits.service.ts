@@ -10,7 +10,7 @@ import { PmPermitStatus, PmPermitType, Prisma } from '@prisma/client';
 import { randomUUID } from 'crypto';
 import { PrismaService } from '../prisma/prisma.service';
 import { WorkerTrainingHydrationService } from '../workers/worker-training-hydration.service';
-import { PERMIT_TYPE_SEEDS } from '../../prisma/data/permit-types';
+import { PERMIT_TYPE_SEEDS } from './permit-type-seeds';
 import { VeripmFieldosPermitsService } from './veripm-fieldos-permits.service';
 
 export type PermitWorkflowJson = {
